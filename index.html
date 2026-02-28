@@ -1,5 +1,20 @@
-import { useState, useMemo } from "react";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from "recharts";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Renaissance Portal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.min.js"></script>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#060818}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } = Recharts;
 
 const monthlyData = [
   { month: "Jul '25", emailsSent: 5395347, booked: 2031, ratio: 2656, avgDailyMeetings: 89, avgSending: 234410, weekdayRatio: 2712, weekendRatio: 0, GoQualifi: 645, BigThink: 383, GreenBridge: 1205, kpiPct: {a:0,b:0,c:8.70,d:8.70,e:8.70,f:73.91}, kpiDays: {a:0,b:0,c:2,d:2,e:2,f:17} },
@@ -174,52 +189,40 @@ const TIP2={backgroundColor:"#0f172a",border:"1px solid #1e3a5f",borderRadius:10
 
 function TierPill({value,sm=false}){
   const t=getTier(value);
-  if(!t||!value) return <span style={{color:"#475569",fontSize:11}}>—</span>;
-  return <span style={{backgroundColor:t.glow,color:t.color,border:`1px solid ${t.color}44`,borderRadius:6,padding:sm?"2px 7px":"3px 10px",fontSize:sm?10:11,fontWeight:700}}>{value.toLocaleString()}</span>;
+  if(!t||!value) return React.createElement('span',{style:{color:"#475569",fontSize:11}},"—");
+  return React.createElement('span',{style:{backgroundColor:t.glow,color:t.color,border:`1px solid ${t.color}44`,borderRadius:6,padding:sm?"2px 7px":"3px 10px",fontSize:sm?10:11,fontWeight:700}},value.toLocaleString());
 }
 function Panel({title,children,style={}}){
-  return(
-    <div style={{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:16,padding:"18px 20px",...style}}>
-      {title&&<div style={{fontSize:13,fontWeight:700,color:"#94a3b8",marginBottom:14}}>{title}</div>}
-      {children}
-    </div>
+  return React.createElement('div',{style:{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:16,padding:"18px 20px",...style}},
+    title&&React.createElement('div',{style:{fontSize:13,fontWeight:700,color:"#94a3b8",marginBottom:14}},title),
+    children
   );
 }
 function Card1({children,style={}}){
-  return(
-    <div style={{background:"linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))",borderRadius:16,border:"1px solid rgba(255,255,255,0.08)",padding:20,...style}}>
-      {children}
-    </div>
-  );
+  return React.createElement('div',{style:{background:"linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))",borderRadius:16,border:"1px solid rgba(255,255,255,0.08)",padding:20,...style}},children);
 }
 function MiniCard({icon,label,value,color,sub}){
-  return(
-    <div style={{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:14,padding:"14px 16px"}}>
-      <div style={{fontSize:18,marginBottom:5}}>{icon}</div>
-      <div style={{fontSize:20,fontWeight:800,color}}>{value}</div>
-      <div style={{fontSize:10,color:"#64748b",marginTop:3,textTransform:"uppercase",letterSpacing:.8}}>{label}</div>
-      {sub&&<div style={{fontSize:10,color:"#475569",marginTop:2}}>{sub}</div>}
-    </div>
+  return React.createElement('div',{style:{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:14,padding:"14px 16px"}},
+    React.createElement('div',{style:{fontSize:18,marginBottom:5}},icon),
+    React.createElement('div',{style:{fontSize:20,fontWeight:800,color}},value),
+    React.createElement('div',{style:{fontSize:10,color:"#64748b",marginTop:3,textTransform:"uppercase",letterSpacing:.8}},label),
+    sub&&React.createElement('div',{style:{fontSize:10,color:"#475569",marginTop:2}},sub)
   );
 }
 const CustomTip=({active,payload,label})=>{
   if(!active||!payload?.length) return null;
-  return(
-    <div style={TIP2}>
-      <div style={{fontWeight:700,color:"#e2e8f0",marginBottom:6,fontSize:12}}>{label}</div>
-      {payload.map((p,i)=>(
-        <div key={i} style={{fontSize:11,color:p.color,display:"flex",gap:8,alignItems:"center"}}>
-          <span style={{width:8,height:8,borderRadius:"50%",backgroundColor:p.color,display:"inline-block"}}/>
-          {p.name}: <b style={{color:"#f1f5f9"}}>{typeof p.value==="number"?p.value.toLocaleString():p.value}</b>
-        </div>
-      ))}
-    </div>
+  return React.createElement('div',{style:TIP2},
+    React.createElement('div',{style:{fontWeight:700,color:"#e2e8f0",marginBottom:6,fontSize:12}},label),
+    payload.map((p,i)=>React.createElement('div',{key:i,style:{fontSize:11,color:p.color,display:"flex",gap:8,alignItems:"center"}},
+      React.createElement('span',{style:{width:8,height:8,borderRadius:"50%",backgroundColor:p.color,display:"inline-block"}}),
+      p.name,": ",React.createElement('b',{style:{color:"#f1f5f9"}},typeof p.value==="number"?p.value.toLocaleString():p.value)
+    ))
   );
 };
 const TierBar=(props)=>{
   const{x,y,width,height,value}=props;
   const t=getTier(value);
-  return <rect x={x} y={y} width={width} height={Math.max(height,0)} fill={t?t.color:"#334155"} rx={4}/>;
+  return React.createElement('rect',{x,y,width,height:Math.max(height,0),fill:t?t.color:"#334155",rx:4});
 };
 
 const TOP_SECTIONS=[
@@ -236,7 +239,7 @@ const CM_VIEWS=[
 ];
 const INBOX_TABS=["Overview","Accounts","Campaign Managers","Groups","Inbox Managers","Email Types"];
 
-export default function App(){
+function App(){
   const [section,setSection]=useState("overview");
   const [bizTab,setBizTab]=useState("Overview");
   const [rolling,setRolling]=useState(7);
@@ -274,7 +277,6 @@ export default function App(){
   const bestDay=Math.max(...daily.filter(d=>d.booked>0).map(d=>d.booked));
   const partnerData=data.filter(d=>d.GoQualifi||d.BigThink||d.GreenBridge);
   const kpiBandChart=data.map(d=>({month:d.month,">4500":d.kpiPct.a,"4000-4500":d.kpiPct.b,"3600-4000":d.kpiPct.c,"3200-3600":d.kpiPct.d,"2800-3200":d.kpiPct.e,"0-2800":d.kpiPct.f}));
-  const kpiDaysChart=data.map(d=>({month:d.month,">4500":d.kpiDays.a,"4000-4500":d.kpiDays.b,"3600-4000":d.kpiDays.c,"3200-3600":d.kpiDays.d,"2800-3200":d.kpiDays.e,"0-2800":d.kpiDays.f}));
 
   const cmFiltered=useMemo(()=>MONTHLY_CM.filter(r=>selCMs.includes(r.cm)&&selMonths.includes(r.month)),[selCMs,selMonths]);
   const cmAgg=useMemo(()=>{
@@ -301,11 +303,6 @@ export default function App(){
     const m={};CM_DAILY.forEach(r=>{if(!m[r.month])m[r.month]={period:r.month.slice(0,3),totalSent:0,totalBooked:0,aiBooked:0};m[r.month].totalSent+=r.totalSent;m[r.month].totalBooked+=r.totalBooked;m[r.month].aiBooked+=r.aiBooked;});
     return ALL_CM_MONTHS.map(mo=>({...m[mo],sbRatio:ratio(m[mo]?.totalSent,m[mo]?.totalBooked)}));
   },[]);
-  const weekdayAgg=useMemo(()=>["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(s=>{
-    const full={Mon:"Monday",Tue:"Tuesday",Wed:"Wednesday",Thu:"Thursday",Fri:"Friday",Sat:"Saturday",Sun:"Sunday"}[s];
-    const rows=dailyFiltered.filter(r=>r.day===full&&r.totalBooked>0&&r.totalSent>0);
-    return{day:s,avgBooked:rows.length?Math.round(rows.reduce((a,r)=>a+r.totalBooked,0)/rows.length):0,avgRatio:rows.length?Math.round(rows.reduce((a,r)=>a+(r.sbRatio||0),0)/rows.length):null};
-  }),[dailyFiltered]);
   const dailyKpi=useMemo(()=>{
     const rows=dailyFiltered.filter(r=>r.totalBooked>0);
     const ts=rows.reduce((a,r)=>a+r.totalSent,0),tb=rows.reduce((a,r)=>a+r.totalBooked,0),ai=rows.reduce((a,r)=>a+r.aiBooked,0);
@@ -323,12 +320,11 @@ export default function App(){
   const showCMSide=["cms","compare","boards"].includes(cmView);
 
   const Btn=({active,onClick,children,style={}})=>(
-    <button onClick={onClick} style={{background:active?"linear-gradient(135deg,#6366f1,#8b5cf6)":"transparent",border:active?"none":"1px solid rgba(255,255,255,0.08)",borderRadius:9,padding:"7px 14px",cursor:"pointer",fontSize:11,fontWeight:600,color:active?"#fff":"#475569",outline:"none",boxShadow:active?"0 4px 12px rgba(99,102,241,0.4)":"none",...style}}>{children}</button>
+    React.createElement('button',{onClick,style:{background:active?"linear-gradient(135deg,#6366f1,#8b5cf6)":"transparent",border:active?"none":"1px solid rgba(255,255,255,0.08)",borderRadius:9,padding:"7px 14px",cursor:"pointer",fontSize:11,fontWeight:600,color:active?"#fff":"#475569",outline:"none",boxShadow:active?"0 4px 12px rgba(99,102,241,0.4)":"none",...style}},children)
   );
 
   const renderOverview=()=>{
     const byMo={};CM_DAILY.forEach(r=>{if(!byMo[r.month])byMo[r.month]=0;byMo[r.month]+=r.totalBooked;});
-    const bestMo=Object.entries(byMo).sort((a,b)=>b[1]-a[1])[0];
     return(
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
@@ -382,7 +378,7 @@ export default function App(){
                 <Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="accounts" nameKey="status" paddingAngle={2}>
                   {ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}
                 </Pie>
-                <Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString(),n]}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:"#64748b"}}/>
+                <Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:"#64748b"}}/>
               </PieChart>
             </ResponsiveContainer>
           </Panel>
@@ -694,3 +690,8 @@ export default function App(){
     </div>
   );
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
