@@ -16,7 +16,7 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo } = React;
-const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } = Recharts;
+const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } = window.Recharts;
 
 const monthlyData = [
   { month: "Jul '25", emailsSent: 5395347, booked: 2031, ratio: 2656, avgDailyMeetings: 89, avgSending: 234410, weekdayRatio: 2712, weekendRatio: 0, GoQualifi: 645, BigThink: 383, GreenBridge: 1205, kpiPct: {a:0,b:0,c:8.70,d:8.70,e:8.70,f:73.91}, kpiDays: {a:0,b:0,c:2,d:2,e:2,f:17} },
