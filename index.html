@@ -10,7 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://unpkg.com/recharts@2.1.9/umd/Recharts.js"></script>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#060818}</style>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0b0f1a;font-family:'Inter',system-ui,sans-serif}
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-track{background:#0f1623}
+  ::-webkit-scrollbar-thumb{background:#1e2d45;border-radius:2px}
+</style>
 </head>
 <body>
 <div id="root"></div>
@@ -18,20 +25,82 @@
 const { useState, useMemo } = React;
 const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } = window.Recharts;
 
+// ── Design tokens ──────────────────────────────────────────────
+const T = {
+  // Backgrounds
+  bgBase:    '#0b0f1a',
+  bgSurface: 'linear-gradient(180deg,#111827 0%,#0f1623 100%)',
+  bgHero:    'linear-gradient(135deg,#0f2a4a 0%,#0a1e38 100%)',
+  bgNav:     '#0d1422',
+  // Brand
+  brand:     '#3b82f6',
+  brandDim:  '#1d4ed8',
+  brandText: '#60a5fa',
+  brandMid:  '#2563eb',
+  // Slate palette (70%)
+  slate900:  '#0f172a',
+  slate800:  '#1e293b',
+  slate700:  '#334155',
+  slate600:  '#475569',
+  slate500:  '#64748b',
+  slate400:  '#94a3b8',
+  slate300:  '#cbd5e1',
+  slate200:  '#e2e8f0',
+  slate100:  '#f1f5f9',
+  // Semantic
+  success:   '#22c55e',
+  successBg: 'rgba(34,197,94,0.08)',
+  warning:   '#f59e0b',
+  warningBg: 'rgba(245,158,11,0.08)',
+  danger:    '#ef4444',
+  dangerBg:  'rgba(239,68,68,0.08)',
+  // Border / shadow
+  border:    '#1e293b',
+  borderSoft:'rgba(255,255,255,0.06)',
+  shadow:    '0 1px 3px rgba(0,0,0,0.4)',
+  // Chart muted palette (12 muted blues/slates for CMs)
+  chartMuted:['#3b82f6','#60a5fa','#93c5fd','#1d4ed8','#2563eb','#1e40af','#3b82f6','#4b7dc8','#5a8fd0','#6b9fd8','#7cb0e0','#8dc0e8'],
+};
+
+// Card border radius = 8px, padding = 24px
+const CARD = {
+  background: T.bgSurface,
+  border: `1px solid ${T.border}`,
+  borderRadius: 8,
+  padding: '20px 24px',
+  boxShadow: T.shadow,
+};
+const HERO_CARD = {
+  background: T.bgHero,
+  border: `1px solid ${T.brandDim}`,
+  borderRadius: 8,
+  padding: '20px 24px',
+  boxShadow: T.shadow,
+};
+
+// Tooltip style
+const TIP = {
+  backgroundColor: '#111827',
+  border: `1px solid ${T.border}`,
+  borderRadius: 6,
+  fontSize: 11,
+  color: T.slate300,
+  padding: '8px 12px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+};
+
+// ── Data ───────────────────────────────────────────────────────
 const monthlyData = [
-  { month: "Jul '25", emailsSent: 5395347, booked: 2031, ratio: 2656, avgDailyMeetings: 89, avgSending: 234410, weekdayRatio: 2712, weekendRatio: 0, GoQualifi: 645, BigThink: 383, GreenBridge: 1205, kpiPct: {a:0,b:0,c:8.70,d:8.70,e:8.70,f:73.91}, kpiDays: {a:0,b:0,c:2,d:2,e:2,f:17} },
-  { month: "Aug '25", emailsSent: 6662221, booked: 1832, ratio: 3637, avgDailyMeetings: 87, avgSending: 317249, weekdayRatio: 3706, weekendRatio: 0, GoQualifi: 435, BigThink: 107, GreenBridge: 1255, kpiPct: {a:9.52,b:23.81,c:14.29,d:28.57,e:19.05,f:4.76}, kpiDays: {a:2,b:5,c:3,d:6,e:4,f:1} },
-  { month: "Sep '25", emailsSent: 5833608, booked: 1680, ratio: 3472, avgDailyMeetings: 70, avgSending: 224370, weekdayRatio: 3414, weekendRatio: 8463, GoQualifi: null, BigThink: null, GreenBridge: null, kpiPct: {a:4.55,b:13.64,c:13.64,d:31.82,e:18.18,f:18.18}, kpiDays: {a:1,b:3,c:3,d:7,e:4,f:4} },
-  { month: "Oct '25", emailsSent: 6573045, booked: 1992, ratio: 3300, avgDailyMeetings: 64, avgSending: 271848, weekdayRatio: 3375, weekendRatio: 3377, GoQualifi: 747, BigThink: 298, GreenBridge: 911, kpiPct: {a:4.35,b:17.39,c:4.35,d:26.09,e:34.78,f:13.04}, kpiDays: {a:1,b:4,c:1,d:6,e:8,f:3} },
-  { month: "Nov '25", emailsSent: 8115691, booked: 2259, ratio: 3593, avgDailyMeetings: 81, avgSending: 295095, weekdayRatio: 4102, weekendRatio: 4586, GoQualifi: 867, BigThink: 629, GreenBridge: 764, kpiPct: {a:20.00,b:25.00,c:25.00,d:5.00,e:10.00,f:15.00}, kpiDays: {a:4,b:5,c:5,d:1,e:2,f:3} },
-  { month: "Dec '25", emailsSent: 13758083, booked: 3422, ratio: 4020, avgDailyMeetings: 139, avgSending: 562781, weekdayRatio: 4313, weekendRatio: 3894, GoQualifi: 1280, BigThink: 717, GreenBridge: 1318, kpiPct: {a:34.78,b:8.70,c:17.39,d:26.09,e:13.04,f:0}, kpiDays: {a:8,b:2,c:4,d:6,e:3,f:0} },
-  // #1: Jan booked corrected to 4,466
-  { month: "Jan '26", emailsSent: 17653641, booked: 4466, ratio: 3522, avgDailyMeetings: 149, avgSending: 569472, weekdayRatio: 3933, weekendRatio: 5158, GoQualifi: 869, BigThink: 1317, GreenBridge: 2075, kpiPct: {a:22.73,b:18.18,c:22.73,d:22.73,e:9.09,f:4.55}, kpiDays: {a:5,b:4,c:5,d:5,e:2,f:1} },
+  { month:"Jul '25", emailsSent:5395347, booked:2031, ratio:2656, avgDailyMeetings:89, avgSending:234410, weekdayRatio:2712, weekendRatio:0, GoQualifi:645, BigThink:383, GreenBridge:1205, kpiPct:{a:0,b:0,c:8.70,d:8.70,e:8.70,f:73.91}, kpiDays:{a:0,b:0,c:2,d:2,e:2,f:17} },
+  { month:"Aug '25", emailsSent:6662221, booked:1832, ratio:3637, avgDailyMeetings:87, avgSending:317249, weekdayRatio:3706, weekendRatio:0, GoQualifi:435, BigThink:107, GreenBridge:1255, kpiPct:{a:9.52,b:23.81,c:14.29,d:28.57,e:19.05,f:4.76}, kpiDays:{a:2,b:5,c:3,d:6,e:4,f:1} },
+  { month:"Sep '25", emailsSent:5833608, booked:1680, ratio:3472, avgDailyMeetings:70, avgSending:224370, weekdayRatio:3414, weekendRatio:8463, GoQualifi:null, BigThink:null, GreenBridge:null, kpiPct:{a:4.55,b:13.64,c:13.64,d:31.82,e:18.18,f:18.18}, kpiDays:{a:1,b:3,c:3,d:7,e:4,f:4} },
+  { month:"Oct '25", emailsSent:6573045, booked:1992, ratio:3300, avgDailyMeetings:64, avgSending:271848, weekdayRatio:3375, weekendRatio:3377, GoQualifi:747, BigThink:298, GreenBridge:911, kpiPct:{a:4.35,b:17.39,c:4.35,d:26.09,e:34.78,f:13.04}, kpiDays:{a:1,b:4,c:1,d:6,e:8,f:3} },
+  { month:"Nov '25", emailsSent:8115691, booked:2259, ratio:3593, avgDailyMeetings:81, avgSending:295095, weekdayRatio:4102, weekendRatio:4586, GoQualifi:867, BigThink:629, GreenBridge:764, kpiPct:{a:20.00,b:25.00,c:25.00,d:5.00,e:10.00,f:15.00}, kpiDays:{a:4,b:5,c:5,d:1,e:2,f:3} },
+  { month:"Dec '25", emailsSent:13758083, booked:3422, ratio:4020, avgDailyMeetings:139, avgSending:562781, weekdayRatio:4313, weekendRatio:3894, GoQualifi:1280, BigThink:717, GreenBridge:1318, kpiPct:{a:34.78,b:8.70,c:17.39,d:26.09,e:13.04,f:0}, kpiDays:{a:8,b:2,c:4,d:6,e:3,f:0} },
+  { month:"Jan '26", emailsSent:17653641, booked:4466, ratio:3522, avgDailyMeetings:149, avgSending:569472, weekdayRatio:3933, weekendRatio:5158, GoQualifi:869, BigThink:1317, GreenBridge:2075, kpiPct:{a:22.73,b:18.18,c:22.73,d:22.73,e:9.09,f:4.55}, kpiDays:{a:5,b:4,c:5,d:5,e:2,f:1} },
 ];
 
-// #5 & #8: Full daily data with all days included
 const dailyRaw = [
-  // July
   {date:"Jul 1",month:"Jul '25",day:"Tuesday",sent:326165,booked:74,ratio:2356},
   {date:"Jul 2",month:"Jul '25",day:"Wednesday",sent:198000,booked:70,ratio:2829},
   {date:"Jul 3",month:"Jul '25",day:"Thursday",sent:210000,booked:75,ratio:2800},
@@ -54,7 +123,6 @@ const dailyRaw = [
   {date:"Jul 29",month:"Jul '25",day:"Tuesday",sent:295000,booked:91,ratio:3242},
   {date:"Jul 30",month:"Jul '25",day:"Wednesday",sent:288000,booked:88,ratio:3273},
   {date:"Jul 31",month:"Jul '25",day:"Thursday",sent:280000,booked:86,ratio:3256},
-  // August
   {date:"Aug 1",month:"Aug '25",day:"Friday",sent:269344,booked:97,ratio:2777},
   {date:"Aug 4",month:"Aug '25",day:"Monday",sent:335803,booked:96,ratio:3498},
   {date:"Aug 5",month:"Aug '25",day:"Tuesday",sent:328000,booked:98,ratio:3347},
@@ -76,7 +144,6 @@ const dailyRaw = [
   {date:"Aug 27",month:"Aug '25",day:"Wednesday",sent:305000,booked:98,ratio:3112},
   {date:"Aug 28",month:"Aug '25",day:"Thursday",sent:298000,booked:96,ratio:3104},
   {date:"Aug 29",month:"Aug '25",day:"Friday",sent:290000,booked:93,ratio:3118},
-  // September
   {date:"Sep 1",month:"Sep '25",day:"Monday",sent:209860,booked:53,ratio:3960},
   {date:"Sep 2",month:"Sep '25",day:"Tuesday",sent:215000,booked:55,ratio:3909},
   {date:"Sep 3",month:"Sep '25",day:"Wednesday",sent:210000,booked:54,ratio:3889},
@@ -99,7 +166,6 @@ const dailyRaw = [
   {date:"Sep 26",month:"Sep '25",day:"Friday",sent:202000,booked:69,ratio:2928},
   {date:"Sep 29",month:"Sep '25",day:"Monday",sent:243157,booked:94,ratio:2587},
   {date:"Sep 30",month:"Sep '25",day:"Tuesday",sent:238000,booked:92,ratio:2587},
-  // October
   {date:"Oct 1",month:"Oct '25",day:"Wednesday",sent:239455,booked:100,ratio:2395},
   {date:"Oct 2",month:"Oct '25",day:"Thursday",sent:235000,booked:98,ratio:2398},
   {date:"Oct 3",month:"Oct '25",day:"Friday",sent:228000,booked:95,ratio:2400},
@@ -123,7 +189,6 @@ const dailyRaw = [
   {date:"Oct 29",month:"Oct '25",day:"Wednesday",sent:372000,booked:119,ratio:3126},
   {date:"Oct 30",month:"Oct '25",day:"Thursday",sent:365000,booked:117,ratio:3120},
   {date:"Oct 31",month:"Oct '25",day:"Friday",sent:358000,booked:114,ratio:3140},
-  // November
   {date:"Nov 3",month:"Nov '25",day:"Monday",sent:401442,booked:170,ratio:2361},
   {date:"Nov 4",month:"Nov '25",day:"Tuesday",sent:392000,booked:166,ratio:2361},
   {date:"Nov 5",month:"Nov '25",day:"Wednesday",sent:383000,booked:162,ratio:2364},
@@ -142,7 +207,6 @@ const dailyRaw = [
   {date:"Nov 24",month:"Nov '25",day:"Monday",sent:445164,booked:103,ratio:4322},
   {date:"Nov 25",month:"Nov '25",day:"Tuesday",sent:436000,booked:101,ratio:4317},
   {date:"Nov 26",month:"Nov '25",day:"Wednesday",sent:427000,booked:99,ratio:4313},
-  // December
   {date:"Dec 1",month:"Dec '25",day:"Monday",sent:391549,booked:102,ratio:3839},
   {date:"Dec 2",month:"Dec '25",day:"Tuesday",sent:383000,booked:100,ratio:3830},
   {date:"Dec 3",month:"Dec '25",day:"Wednesday",sent:375000,booked:98,ratio:3827},
@@ -164,7 +228,6 @@ const dailyRaw = [
   {date:"Dec 29",month:"Dec '25",day:"Monday",sent:741979,booked:205,ratio:3619},
   {date:"Dec 30",month:"Dec '25",day:"Tuesday",sent:726000,booked:200,ratio:3630},
   {date:"Dec 31",month:"Dec '25",day:"Wednesday",sent:710000,booked:196,ratio:3622},
-  // January
   {date:"Jan 2",month:"Jan '26",day:"Friday",sent:646887,booked:216,ratio:2995},
   {date:"Jan 5",month:"Jan '26",day:"Monday",sent:656903,booked:192,ratio:3421},
   {date:"Jan 6",month:"Jan '26",day:"Tuesday",sent:642000,booked:188,ratio:3415},
@@ -192,83 +255,23 @@ const CM_DAILY = [
   {date:"Oct 1",year:2025,month:"October",day:"Wednesday",inboxes:26791,nonAiSent:218073,nonAiBooked:103,aiSent:0,aiBooked:0,totalSent:218073,totalBooked:103},
   {date:"Oct 6",year:2025,month:"October",day:"Monday",inboxes:22000,nonAiSent:210000,nonAiBooked:58,aiSent:2000,aiBooked:2,totalSent:212000,totalBooked:60},
   {date:"Oct 7",year:2025,month:"October",day:"Tuesday",inboxes:22200,nonAiSent:212000,nonAiBooked:59,aiSent:2200,aiBooked:2,totalSent:214200,totalBooked:61},
-  {date:"Oct 8",year:2025,month:"October",day:"Wednesday",inboxes:22400,nonAiSent:214000,nonAiBooked:60,aiSent:2400,aiBooked:3,totalSent:216400,totalBooked:63},
-  {date:"Oct 9",year:2025,month:"October",day:"Thursday",inboxes:22500,nonAiSent:215000,nonAiBooked:60,aiSent:2500,aiBooked:3,totalSent:217500,totalBooked:63},
-  {date:"Oct 10",year:2025,month:"October",day:"Friday",inboxes:22600,nonAiSent:216000,nonAiBooked:61,aiSent:2600,aiBooked:3,totalSent:218600,totalBooked:64},
   {date:"Oct 13",year:2025,month:"October",day:"Monday",inboxes:22742,nonAiSent:227574,nonAiBooked:62,aiSent:4882,aiBooked:6,totalSent:232456,totalBooked:68},
-  {date:"Oct 14",year:2025,month:"October",day:"Tuesday",inboxes:23000,nonAiSent:230000,nonAiBooked:63,aiSent:5000,aiBooked:6,totalSent:235000,totalBooked:69},
-  {date:"Oct 15",year:2025,month:"October",day:"Wednesday",inboxes:23200,nonAiSent:232000,nonAiBooked:64,aiSent:5200,aiBooked:6,totalSent:237200,totalBooked:70},
-  {date:"Oct 16",year:2025,month:"October",day:"Thursday",inboxes:23400,nonAiSent:234000,nonAiBooked:65,aiSent:5400,aiBooked:7,totalSent:239400,totalBooked:72},
-  {date:"Oct 17",year:2025,month:"October",day:"Friday",inboxes:23500,nonAiSent:235000,nonAiBooked:65,aiSent:5500,aiBooked:7,totalSent:240500,totalBooked:72},
   {date:"Oct 20",year:2025,month:"October",day:"Monday",inboxes:25783,nonAiSent:251266,nonAiBooked:83,aiSent:12338,aiBooked:11,totalSent:263604,totalBooked:94},
-  {date:"Oct 21",year:2025,month:"October",day:"Tuesday",inboxes:26000,nonAiSent:253000,nonAiBooked:84,aiSent:12500,aiBooked:11,totalSent:265500,totalBooked:95},
-  {date:"Oct 22",year:2025,month:"October",day:"Wednesday",inboxes:26200,nonAiSent:255000,nonAiBooked:85,aiSent:12700,aiBooked:12,totalSent:267700,totalBooked:97},
-  {date:"Oct 23",year:2025,month:"October",day:"Thursday",inboxes:26400,nonAiSent:257000,nonAiBooked:86,aiSent:12900,aiBooked:12,totalSent:269900,totalBooked:98},
-  {date:"Oct 24",year:2025,month:"October",day:"Friday",inboxes:26500,nonAiSent:258000,nonAiBooked:86,aiSent:13000,aiBooked:12,totalSent:271000,totalBooked:98},
   {date:"Oct 27",year:2025,month:"October",day:"Monday",inboxes:29856,nonAiSent:344646,nonAiBooked:110,aiSent:37144,aiBooked:17,totalSent:381790,totalBooked:127},
-  {date:"Oct 28",year:2025,month:"October",day:"Tuesday",inboxes:30100,nonAiSent:347000,nonAiBooked:111,aiSent:37400,aiBooked:17,totalSent:384400,totalBooked:128},
-  {date:"Oct 29",year:2025,month:"October",day:"Wednesday",inboxes:30300,nonAiSent:349000,nonAiBooked:112,aiSent:37700,aiBooked:18,totalSent:386700,totalBooked:130},
-  {date:"Oct 30",year:2025,month:"October",day:"Thursday",inboxes:30500,nonAiSent:351000,nonAiBooked:113,aiSent:37900,aiBooked:18,totalSent:388900,totalBooked:131},
-  {date:"Oct 31",year:2025,month:"October",day:"Friday",inboxes:30600,nonAiSent:352000,nonAiBooked:113,aiSent:38000,aiBooked:18,totalSent:390000,totalBooked:131},
   {date:"Nov 3",year:2025,month:"November",day:"Monday",inboxes:34561,nonAiSent:306705,nonAiBooked:160,aiSent:45461,aiBooked:11,totalSent:352166,totalBooked:171},
-  {date:"Nov 4",year:2025,month:"November",day:"Tuesday",inboxes:34800,nonAiSent:309000,nonAiBooked:161,aiSent:45700,aiBooked:11,totalSent:354700,totalBooked:172},
-  {date:"Nov 5",year:2025,month:"November",day:"Wednesday",inboxes:35000,nonAiSent:311000,nonAiBooked:162,aiSent:45900,aiBooked:12,totalSent:356900,totalBooked:174},
-  {date:"Nov 6",year:2025,month:"November",day:"Thursday",inboxes:35200,nonAiSent:313000,nonAiBooked:163,aiSent:46100,aiBooked:12,totalSent:359100,totalBooked:175},
-  {date:"Nov 7",year:2025,month:"November",day:"Friday",inboxes:35300,nonAiSent:314000,nonAiBooked:163,aiSent:46200,aiBooked:12,totalSent:360200,totalBooked:175},
   {date:"Nov 10",year:2025,month:"November",day:"Monday",inboxes:31631,nonAiSent:341970,nonAiBooked:114,aiSent:41098,aiBooked:16,totalSent:383068,totalBooked:130},
-  {date:"Nov 11",year:2025,month:"November",day:"Tuesday",inboxes:31900,nonAiSent:344000,nonAiBooked:115,aiSent:41300,aiBooked:16,totalSent:385300,totalBooked:131},
-  {date:"Nov 12",year:2025,month:"November",day:"Wednesday",inboxes:32100,nonAiSent:346000,nonAiBooked:116,aiSent:41500,aiBooked:16,totalSent:387500,totalBooked:132},
-  {date:"Nov 13",year:2025,month:"November",day:"Thursday",inboxes:32300,nonAiSent:348000,nonAiBooked:117,aiSent:41700,aiBooked:17,totalSent:389700,totalBooked:134},
-  {date:"Nov 14",year:2025,month:"November",day:"Friday",inboxes:32400,nonAiSent:349000,nonAiBooked:117,aiSent:41800,aiBooked:17,totalSent:390800,totalBooked:134},
   {date:"Nov 18",year:2025,month:"November",day:"Tuesday",inboxes:24633,nonAiSent:354109,nonAiBooked:87,aiSent:42122,aiBooked:20,totalSent:396231,totalBooked:107},
-  {date:"Nov 19",year:2025,month:"November",day:"Wednesday",inboxes:24800,nonAiSent:356000,nonAiBooked:88,aiSent:42300,aiBooked:20,totalSent:398300,totalBooked:108},
-  {date:"Nov 20",year:2025,month:"November",day:"Thursday",inboxes:25000,nonAiSent:358000,nonAiBooked:89,aiSent:42500,aiBooked:20,totalSent:400500,totalBooked:109},
-  {date:"Nov 21",year:2025,month:"November",day:"Friday",inboxes:25100,nonAiSent:359000,nonAiBooked:89,aiSent:42600,aiBooked:20,totalSent:401600,totalBooked:109},
   {date:"Nov 24",year:2025,month:"November",day:"Monday",inboxes:33815,nonAiSent:378304,nonAiBooked:94,aiSent:48386,aiBooked:9,totalSent:426690,totalBooked:103},
-  {date:"Nov 25",year:2025,month:"November",day:"Tuesday",inboxes:34000,nonAiSent:380000,nonAiBooked:95,aiSent:48600,aiBooked:9,totalSent:428600,totalBooked:104},
-  {date:"Nov 26",year:2025,month:"November",day:"Wednesday",inboxes:34200,nonAiSent:382000,nonAiBooked:96,aiSent:48800,aiBooked:9,totalSent:430800,totalBooked:105},
   {date:"Dec 1",year:2025,month:"December",day:"Monday",inboxes:41709,nonAiSent:296429,nonAiBooked:95,aiSent:40068,aiBooked:6,totalSent:336497,totalBooked:101},
-  {date:"Dec 2",year:2025,month:"December",day:"Tuesday",inboxes:42000,nonAiSent:298000,nonAiBooked:96,aiSent:40200,aiBooked:6,totalSent:338200,totalBooked:102},
-  {date:"Dec 3",year:2025,month:"December",day:"Wednesday",inboxes:42300,nonAiSent:300000,nonAiBooked:97,aiSent:40400,aiBooked:6,totalSent:340400,totalBooked:103},
-  {date:"Dec 4",year:2025,month:"December",day:"Thursday",inboxes:42500,nonAiSent:301000,nonAiBooked:97,aiSent:40500,aiBooked:6,totalSent:341500,totalBooked:103},
-  {date:"Dec 5",year:2025,month:"December",day:"Friday",inboxes:42700,nonAiSent:303000,nonAiBooked:98,aiSent:40700,aiBooked:7,totalSent:343700,totalBooked:105},
   {date:"Dec 8",year:2025,month:"December",day:"Monday",inboxes:52136,nonAiSent:408215,nonAiBooked:97,aiSent:21880,aiBooked:9,totalSent:430095,totalBooked:106},
-  {date:"Dec 9",year:2025,month:"December",day:"Tuesday",inboxes:52400,nonAiSent:410000,nonAiBooked:98,aiSent:22000,aiBooked:9,totalSent:432000,totalBooked:107},
-  {date:"Dec 10",year:2025,month:"December",day:"Wednesday",inboxes:52700,nonAiSent:412000,nonAiBooked:99,aiSent:22200,aiBooked:9,totalSent:434200,totalBooked:108},
-  {date:"Dec 11",year:2025,month:"December",day:"Thursday",inboxes:52900,nonAiSent:414000,nonAiBooked:100,aiSent:22400,aiBooked:9,totalSent:436400,totalBooked:109},
-  {date:"Dec 12",year:2025,month:"December",day:"Friday",inboxes:53100,nonAiSent:416000,nonAiBooked:101,aiSent:22600,aiBooked:10,totalSent:438600,totalBooked:111},
   {date:"Dec 15",year:2025,month:"December",day:"Monday",inboxes:67402,nonAiSent:614639,nonAiBooked:161,aiSent:20767,aiBooked:7,totalSent:635406,totalBooked:168},
-  {date:"Dec 16",year:2025,month:"December",day:"Tuesday",inboxes:67700,nonAiSent:617000,nonAiBooked:162,aiSent:20900,aiBooked:7,totalSent:637900,totalBooked:169},
-  {date:"Dec 17",year:2025,month:"December",day:"Wednesday",inboxes:68000,nonAiSent:619000,nonAiBooked:163,aiSent:21100,aiBooked:7,totalSent:640100,totalBooked:170},
-  {date:"Dec 18",year:2025,month:"December",day:"Thursday",inboxes:68300,nonAiSent:621000,nonAiBooked:164,aiSent:21300,aiBooked:8,totalSent:642300,totalBooked:172},
-  {date:"Dec 19",year:2025,month:"December",day:"Friday",inboxes:68500,nonAiSent:623000,nonAiBooked:165,aiSent:21500,aiBooked:8,totalSent:644500,totalBooked:173},
   {date:"Dec 22",year:2025,month:"December",day:"Monday",inboxes:71974,nonAiSent:750959,nonAiBooked:110,aiSent:22146,aiBooked:4,totalSent:773105,totalBooked:114},
-  {date:"Dec 23",year:2025,month:"December",day:"Tuesday",inboxes:72200,nonAiSent:753000,nonAiBooked:111,aiSent:22300,aiBooked:4,totalSent:775300,totalBooked:115},
-  {date:"Dec 24",year:2025,month:"December",day:"Wednesday",inboxes:72400,nonAiSent:755000,nonAiBooked:112,aiSent:22500,aiBooked:4,totalSent:777500,totalBooked:116},
   {date:"Dec 29",year:2025,month:"December",day:"Monday",inboxes:69374,nonAiSent:717361,nonAiBooked:192,aiSent:16998,aiBooked:7,totalSent:734359,totalBooked:199},
-  {date:"Dec 30",year:2025,month:"December",day:"Tuesday",inboxes:69600,nonAiSent:719000,nonAiBooked:193,aiSent:17100,aiBooked:7,totalSent:736100,totalBooked:200},
-  {date:"Dec 31",year:2025,month:"December",day:"Wednesday",inboxes:69800,nonAiSent:721000,nonAiBooked:194,aiSent:17200,aiBooked:7,totalSent:738200,totalBooked:201},
   {date:"Jan 2",year:2026,month:"January",day:"Friday",inboxes:61662,nonAiSent:675771,nonAiBooked:219,aiSent:18801,aiBooked:9,totalSent:694572,totalBooked:228},
   {date:"Jan 5",year:2026,month:"January",day:"Monday",inboxes:62212,nonAiSent:688874,nonAiBooked:186,aiSent:23638,aiBooked:6,totalSent:712512,totalBooked:192},
-  {date:"Jan 6",year:2026,month:"January",day:"Tuesday",inboxes:62500,nonAiSent:692000,nonAiBooked:187,aiSent:23800,aiBooked:6,totalSent:715800,totalBooked:193},
-  {date:"Jan 7",year:2026,month:"January",day:"Wednesday",inboxes:62800,nonAiSent:695000,nonAiBooked:188,aiSent:24000,aiBooked:7,totalSent:719000,totalBooked:195},
-  {date:"Jan 8",year:2026,month:"January",day:"Thursday",inboxes:63000,nonAiSent:697000,nonAiBooked:189,aiSent:24200,aiBooked:7,totalSent:721200,totalBooked:196},
-  {date:"Jan 9",year:2026,month:"January",day:"Friday",inboxes:63200,nonAiSent:699000,nonAiBooked:190,aiSent:24400,aiBooked:7,totalSent:723400,totalBooked:197},
   {date:"Jan 12",year:2026,month:"January",day:"Monday",inboxes:73388,nonAiSent:879336,nonAiBooked:212,aiSent:30431,aiBooked:7,totalSent:909767,totalBooked:219},
-  {date:"Jan 13",year:2026,month:"January",day:"Tuesday",inboxes:73700,nonAiSent:883000,nonAiBooked:213,aiSent:30600,aiBooked:7,totalSent:913600,totalBooked:220},
-  {date:"Jan 14",year:2026,month:"January",day:"Wednesday",inboxes:74000,nonAiSent:886000,nonAiBooked:214,aiSent:30800,aiBooked:8,totalSent:916800,totalBooked:222},
-  {date:"Jan 15",year:2026,month:"January",day:"Thursday",inboxes:74200,nonAiSent:889000,nonAiBooked:215,aiSent:31000,aiBooked:8,totalSent:920000,totalBooked:223},
-  {date:"Jan 16",year:2026,month:"January",day:"Friday",inboxes:74500,nonAiSent:892000,nonAiBooked:216,aiSent:31200,aiBooked:8,totalSent:923200,totalBooked:224},
   {date:"Jan 19",year:2026,month:"January",day:"Monday",inboxes:63648,nonAiSent:671468,nonAiBooked:174,aiSent:19120,aiBooked:5,totalSent:690588,totalBooked:179},
-  {date:"Jan 20",year:2026,month:"January",day:"Tuesday",inboxes:63900,nonAiSent:674000,nonAiBooked:175,aiSent:19300,aiBooked:5,totalSent:693300,totalBooked:180},
-  {date:"Jan 21",year:2026,month:"January",day:"Wednesday",inboxes:64200,nonAiSent:677000,nonAiBooked:176,aiSent:19500,aiBooked:5,totalSent:696500,totalBooked:181},
-  {date:"Jan 22",year:2026,month:"January",day:"Thursday",inboxes:64400,nonAiSent:679000,nonAiBooked:177,aiSent:19700,aiBooked:6,totalSent:698700,totalBooked:183},
-  {date:"Jan 23",year:2026,month:"January",day:"Friday",inboxes:64700,nonAiSent:682000,nonAiBooked:178,aiSent:19900,aiBooked:6,totalSent:701900,totalBooked:184},
   {date:"Jan 26",year:2026,month:"January",day:"Monday",inboxes:61548,nonAiSent:704870,nonAiBooked:189,aiSent:22337,aiBooked:5,totalSent:727207,totalBooked:194},
-  {date:"Jan 27",year:2026,month:"January",day:"Tuesday",inboxes:61800,nonAiSent:707000,nonAiBooked:190,aiSent:22500,aiBooked:5,totalSent:729500,totalBooked:195},
-  {date:"Jan 28",year:2026,month:"January",day:"Wednesday",inboxes:62000,nonAiSent:710000,nonAiBooked:191,aiSent:22700,aiBooked:5,totalSent:732700,totalBooked:196},
-  {date:"Jan 29",year:2026,month:"January",day:"Thursday",inboxes:62300,nonAiSent:713000,nonAiBooked:192,aiSent:22900,aiBooked:6,totalSent:735900,totalBooked:198},
-  {date:"Jan 30",year:2026,month:"January",day:"Friday",inboxes:62500,nonAiSent:716000,nonAiBooked:193,aiSent:23100,aiBooked:6,totalSent:739100,totalBooked:199},
 ];
 
 const MONTHLY_CM = [
@@ -311,34 +314,25 @@ const MONTHLY_CM = [
 ];
 
 const ACCOUNT_STATUS = [
-  {status:"Active",accounts:48197,color:"#10b981"},
-  {status:"Warmup",accounts:51340,color:"#6366f1"},
-  {status:"Sent Into Production",accounts:83080,color:"#22d3ee"},
-  {status:"Ramp Up",accounts:53221,color:"#f59e0b"},
-  {status:"Ready to Launch",accounts:2000,color:"#a78bfa"},
-  {status:"Off-Group",accounts:32077,color:"#f97316"},
+  {status:"Active",accounts:48197,color:T.success},
+  {status:"Warmup",accounts:51340,color:T.brand},
+  {status:"Sent Into Production",accounts:83080,color:T.brandText},
+  {status:"Ramp Up",accounts:53221,color:T.warning},
+  {status:"Ready to Launch",accounts:2000,color:T.slate400},
+  {status:"Off-Group",accounts:32077,color:T.danger},
 ];
 
-// #2: Domain data
 const DOMAIN_DATA = {
-  total: 105078,
-  used: 76933,
-  unused: 27938,
-  byTLD: [
-    {tld:".co",count:49571,color:"#6366f1"},
-    {tld:".info",count:51389,color:"#22d3ee"},
-    {tld:".com",count:1449,color:"#10b981"},
-    {tld:".xyz",count:1823,color:"#f59e0b"},
-    {tld:".org",count:743,color:"#a78bfa"},
-    {tld:".space",count:100,color:"#f472b6"},
-    {tld:".io",count:1,color:"#f97316"},
-    {tld:".net",count:1,color:"#38bdf8"},
-    {tld:".agency",count:0,color:"#94a3b8"},
+  total:105078, used:76933, unused:27938,
+  byTLD:[
+    {tld:".co",count:49571},{tld:".info",count:51389},{tld:".com",count:1449},
+    {tld:".xyz",count:1823},{tld:".org",count:743},{tld:".space",count:100},
+    {tld:".io",count:1},{tld:".net",count:1},{tld:".agency",count:0},
   ],
-  byRegistrar: [
-    {registrar:"Porkbun",count:66801,accounts:8,color:"#6366f1"},
-    {registrar:"Dynadot",count:19277,accounts:5,color:"#22d3ee"},
-    {registrar:"Spaceship",count:19000,accounts:3,color:"#f59e0b"},
+  byRegistrar:[
+    {registrar:"Porkbun",count:66801,accounts:8},
+    {registrar:"Dynadot",count:19277,accounts:5},
+    {registrar:"Spaceship",count:19000,accounts:3},
   ],
 };
 
@@ -357,6 +351,33 @@ const CM_INBOX = [
   {cm:"Tomi",accounts:12460,pct:8.94,dailyEmails:157890,groupA:1055,groupB:550},
 ];
 
+const INBOX_MANAGERS = [
+  {manager:"Norman",accounts:24908,pct:28.06},
+  {manager:"Ramir",accounts:15460,pct:17.42},
+  {manager:"Monique",accounts:10760,pct:12.12},
+  {manager:"Rob",accounts:10000,pct:11.26},
+  {manager:"Frank",accounts:8969,pct:10.10},
+  {manager:"Nikko",accounts:8777,pct:9.89},
+  {manager:"Kenneth",accounts:8900,pct:10.03},
+  {manager:"Jessica",accounts:1000,pct:1.13},
+];
+
+const EMAIL_TYPES = [
+  {type:"Reseller",accounts:111206,pct:38.56},
+  {type:"Inboxing",accounts:52837,pct:18.32},
+  {type:"MailIn",accounts:47850,pct:16.59},
+  {type:"Cheap Inboxes",accounts:36520,pct:12.66},
+  {type:"Outreach Today",accounts:25000,pct:8.67},
+  {type:"Maildoso",accounts:8000,pct:2.77},
+  {type:"Panel",accounts:4852,pct:1.68},
+  {type:"Microsoft Panel",accounts:2100,pct:0.73},
+];
+
+const EMAIL_PROVIDERS = [
+  {provider:"Google",accounts:149058,pct:51.69},
+  {provider:"Outlook",accounts:139307,pct:48.31},
+];
+
 const GROUPS = [
   {group:"Equinox",A:5269,B:1700,total:6969},
   {group:"Koi & Destroy",A:3788,B:4972,total:8760},
@@ -369,131 +390,183 @@ const GROUPS = [
   {group:"The Gatekeepers",A:6060,B:8000,total:14060},
 ];
 
-const INBOX_MANAGERS = [
-  {manager:"Norman",accounts:24908,pct:28.06,color:"#6366f1"},
-  {manager:"Ramir",accounts:15460,pct:17.42,color:"#22d3ee"},
-  {manager:"Monique",accounts:10760,pct:12.12,color:"#f59e0b"},
-  {manager:"Rob",accounts:10000,pct:11.26,color:"#a78bfa"},
-  {manager:"Frank",accounts:8969,pct:10.10,color:"#10b981"},
-  {manager:"Nikko",accounts:8777,pct:9.89,color:"#f97316"},
-  {manager:"Kenneth",accounts:8900,pct:10.03,color:"#38bdf8"},
-  {manager:"Jessica",accounts:1000,pct:1.13,color:"#f472b6"},
-];
-
-const EMAIL_TYPES = [
-  {type:"Reseller",accounts:111206,pct:38.56,color:"#6366f1"},
-  {type:"Inboxing",accounts:52837,pct:18.32,color:"#10b981"},
-  {type:"MailIn",accounts:47850,pct:16.59,color:"#22d3ee"},
-  {type:"Cheap Inboxes",accounts:36520,pct:12.66,color:"#f59e0b"},
-  {type:"Outreach Today",accounts:25000,pct:8.67,color:"#a78bfa"},
-  {type:"Maildoso",accounts:8000,pct:2.77,color:"#f472b6"},
-  {type:"Panel",accounts:4852,pct:1.68,color:"#f97316"},
-  {type:"Microsoft Panel",accounts:2100,pct:0.73,color:"#38bdf8"},
-];
-
-const EMAIL_PROVIDERS = [
-  {provider:"Google",accounts:149058,pct:51.69,color:"#4285f4"},
-  {provider:"Outlook",accounts:139307,pct:48.31,color:"#0078d4"},
-];
-
 const MONTH_ORDER=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const ALL_CM_MONTHS=["October","November","December","January"];
 const ALL_CMs=[...new Set(MONTHLY_CM.map(r=>r.cm))].sort();
-const CM_COLORS=["#818cf8","#34d399","#f472b6","#fb923c","#60a5fa","#a78bfa","#2dd4bf","#facc15","#f87171","#38bdf8","#4ade80","#e879f9"];
-const TIERS=[
-  {max:2800,label:"0–2,800",color:"#22c55e",glow:"#22c55e40"},
-  {max:3200,label:"2,800–3,200",color:"#2dd4bf",glow:"#2dd4bf40"},
-  {max:3600,label:"3,200–3,600",color:"#fb923c",glow:"#fb923c40"},
-  {max:4000,label:"3,600–4,000",color:"#f97316",glow:"#f9731640"},
-  {max:4500,label:"4,000–4,500",color:"#ef4444",glow:"#ef444440"},
-  {max:Infinity,label:"> 4,500",color:"#991b1b",glow:"#991b1b40"},
-];
-const KPI_BANDS=[
-  {key:"a",label:"> 4,500",color:"#e05555"},{key:"b",label:"4,000–4,500",color:"#e8837a"},
-  {key:"c",label:"3,600–4,000",color:"#e8943a"},{key:"d",label:"3,200–3,600",color:"#f0b87a"},
-  {key:"e",label:"2,800–3,200",color:"#a8d8c8"},{key:"f",label:"0–2,800",color:"#3ab554"},
-];
 const WEEKDAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-const MEDAL=["🥇","🥈","🥉"];
+const MEDAL=["1st","2nd","3rd"];
 
-const getTier=v=>(v&&v>0)?TIERS.find(t=>v<t.max):null;
-// #4: ratio no longer includes ":1"
 const ratio=(s,b)=>b>0?Math.round(s/b):null;
 const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+"M":n>=1000?(n/1000).toFixed(0)+"K":String(n||0);
 const fmtFull=n=>n?n.toLocaleString():"0";
 
-const TIP1={background:"rgba(10,10,40,0.95)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,fontSize:12,color:"#e2e8f0"};
-const TIP2={backgroundColor:"#0f172a",border:"1px solid #1e3a5f",borderRadius:10,padding:"10px 14px",boxShadow:"0 8px 32px #0008"};
+// Ratio tier — semantic only (success/warning/danger)
+const TIERS=[
+  {max:2800,label:"< 2,800",color:T.success},
+  {max:3200,label:"2,800–3,200",color:"#86efac"},
+  {max:3600,label:"3,200–3,600",color:T.warning},
+  {max:4000,label:"3,600–4,000",color:"#fb923c"},
+  {max:4500,label:"4,000–4,500",color:T.danger},
+  {max:Infinity,label:"> 4,500",color:"#b91c1c"},
+];
+const getTier=v=>(v&&v>0)?TIERS.find(t=>v<t.max):null;
 
-function TierPill({value,sm=false}){
-  const t=getTier(value);
-  if(!t||!value) return React.createElement('span',{style:{color:"#475569",fontSize:11}},"—");
-  // #4: no ":1"
-  return React.createElement('span',{style:{backgroundColor:t.glow,color:t.color,border:`1px solid ${t.color}44`,borderRadius:6,padding:sm?"2px 7px":"3px 10px",fontSize:sm?10:11,fontWeight:700}},value.toLocaleString());
-}
-function Panel({title,children,style={}}){
-  return React.createElement('div',{style:{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:16,padding:"18px 20px",...style}},
-    title&&React.createElement('div',{style:{fontSize:13,fontWeight:700,color:"#94a3b8",marginBottom:14}},title),
-    children
-  );
-}
-function Card1({children,style={}}){
-  return React.createElement('div',{style:{background:"linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))",borderRadius:16,border:"1px solid rgba(255,255,255,0.08)",padding:20,...style}},children);
-}
-function MiniCard({icon,label,value,color,sub}){
-  return React.createElement('div',{style:{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:14,padding:"14px 16px"}},
-    React.createElement('div',{style:{fontSize:18,marginBottom:5}},icon),
-    React.createElement('div',{style:{fontSize:20,fontWeight:800,color}},value),
-    React.createElement('div',{style:{fontSize:10,color:"#64748b",marginTop:3,textTransform:"uppercase",letterSpacing:.8}},label),
-    sub&&React.createElement('div',{style:{fontSize:10,color:"#475569",marginTop:2}},sub)
-  );
-}
+// Muted blue palette for CMs
+const CM_PALETTE = [
+  '#3b82f6','#60a5fa','#93c5fd','#2563eb',
+  '#1d4ed8','#4b7dc8','#5a8fd0','#6b9fd8',
+  '#7cb0e0','#1e40af','#2d5aa0','#3b6fb5'
+];
+
+// ── Shared components ──────────────────────────────────────────
 const CustomTip=({active,payload,label})=>{
   if(!active||!payload?.length) return null;
-  return React.createElement('div',{style:TIP2},
-    React.createElement('div',{style:{fontWeight:700,color:"#e2e8f0",marginBottom:6,fontSize:12}},label),
-    payload.map((p,i)=>React.createElement('div',{key:i,style:{fontSize:11,color:p.color,display:"flex",gap:8,alignItems:"center"}},
-      React.createElement('span',{style:{width:8,height:8,borderRadius:"50%",backgroundColor:p.color,display:"inline-block"}}),
-      p.name,": ",React.createElement('b',{style:{color:"#f1f5f9"}},typeof p.value==="number"?p.value.toLocaleString():p.value)
-    ))
+  return (
+    <div style={TIP}>
+      <div style={{fontWeight:600,color:T.slate200,marginBottom:5,fontSize:11}}>{label}</div>
+      {payload.map((p,i)=>(
+        <div key={i} style={{fontSize:11,color:T.slate400,display:'flex',gap:8,alignItems:'center',marginTop:2}}>
+          <span style={{width:6,height:6,borderRadius:'50%',backgroundColor:p.color||T.brand,display:'inline-block',flexShrink:0}}/>
+          <span>{p.name}:</span>
+          <span style={{color:T.slate200,fontWeight:600}}>{typeof p.value==='number'?p.value.toLocaleString():p.value}</span>
+        </div>
+      ))}
+    </div>
   );
 };
+
+const TierPill=({value,sm=false})=>{
+  const t=getTier(value);
+  if(!t||!value) return <span style={{color:T.slate600,fontSize:10}}>—</span>;
+  return (
+    <span style={{
+      backgroundColor:'rgba(0,0,0,0.3)',
+      color:t.color,
+      border:`1px solid ${t.color}55`,
+      borderRadius:4,
+      padding:sm?'1px 6px':'2px 8px',
+      fontSize:sm?10:11,
+      fontWeight:700,
+      letterSpacing:'0.02em'
+    }}>
+      {value.toLocaleString()}
+    </span>
+  );
+};
+
+// Standard card
+const Card=({children,style={},hero=false})=>(
+  <div style={{...(hero?HERO_CARD:CARD),...style}}>{children}</div>
+);
+
+const SectionLabel=({children,style={}})=>(
+  <div style={{fontSize:10,fontWeight:700,color:T.slate500,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:12,...style}}>
+    {children}
+  </div>
+);
+
+const MetricValue=({value,color,size=28})=>(
+  <div style={{fontSize:size,fontWeight:800,color:color||T.slate100,lineHeight:1,letterSpacing:'-0.02em'}}>{value}</div>
+);
+
+const MetricLabel=({children})=>(
+  <div style={{fontSize:10,fontWeight:600,color:T.slate500,textTransform:'uppercase',letterSpacing:'0.07em',marginTop:4}}>{children}</div>
+);
+
+const MetricSub=({children})=>(
+  <div style={{fontSize:11,color:T.slate600,marginTop:2}}>{children}</div>
+);
+
+const StatusTag=({children,type='neutral'})=>{
+  const colors={
+    success:{bg:'rgba(34,197,94,0.1)',text:T.success,border:'rgba(34,197,94,0.2)'},
+    warning:{bg:'rgba(245,158,11,0.1)',text:T.warning,border:'rgba(245,158,11,0.2)'},
+    danger:{bg:'rgba(239,68,68,0.1)',text:T.danger,border:'rgba(239,68,68,0.2)'},
+    neutral:{bg:'rgba(59,130,246,0.08)',text:T.brandText,border:'rgba(59,130,246,0.2)'},
+  };
+  const c=colors[type]||colors.neutral;
+  return (
+    <span style={{
+      background:c.bg,border:`1px solid ${c.border}`,
+      color:c.text,borderRadius:4,padding:'2px 8px',fontSize:10,fontWeight:600
+    }}>{children}</span>
+  );
+};
+
+// Tab bar — subtle 2px bottom border style
+const TabBar=({tabs,active,onChange})=>(
+  <div style={{display:'flex',gap:0,borderBottom:`1px solid ${T.border}`,marginBottom:24}}>
+    {tabs.map(t=>(
+      <button key={t} onClick={()=>onChange(t)} style={{
+        background:'none',border:'none',cursor:'pointer',
+        padding:'9px 16px',fontSize:12,fontWeight:active===t?700:500,
+        color:active===t?T.brandText:T.slate500,
+        borderBottom:active===t?`2px solid ${T.brand}`:'2px solid transparent',
+        marginBottom:-1,outline:'none',transition:'color 0.15s',
+        letterSpacing:'0.02em'
+      }}>{t}</button>
+    ))}
+  </div>
+);
+
+// Consistent chart props
+const CHART_GRID=<CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false}/>;
+const AXIS_STYLE={fontSize:10,fill:T.slate600,fontFamily:'Inter,system-ui,sans-serif'};
+
+// ── Tier bar shape ─────────────────────────────────────────────
 const TierBar=(props)=>{
   const{x,y,width,height,value}=props;
   const t=getTier(value);
-  return React.createElement('rect',{x,y,width,height:Math.max(height,0),fill:t?t.color:"#334155",rx:4});
+  return <rect x={x} y={y} width={width} height={Math.max(height,0)} fill={t?t.color:T.slate700} rx={3}/>;
 };
 
+// ── Nav icons (minimal SVG outlines) ──────────────────────────
+const IconHome=()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+const IconChart=()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
+const IconUsers=()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>;
+const IconInbox=()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>;
+const NAV_ICONS={overview:<IconHome/>,business:<IconChart/>,cm:<IconUsers/>,inbox:<IconInbox/>};
+
+// ── Btn component ──────────────────────────────────────────────
+const Btn=({active,onClick,children,style={}})=>(
+  <button onClick={onClick} style={{
+    background:active?'rgba(59,130,246,0.12)':'transparent',
+    border:active?`1px solid rgba(59,130,246,0.3)`:`1px solid ${T.borderSoft}`,
+    borderRadius:6,padding:'6px 12px',cursor:'pointer',
+    fontSize:11,fontWeight:active?600:500,
+    color:active?T.brandText:T.slate500,
+    outline:'none',transition:'all 0.15s',
+    ...style
+  }}>{children}</button>
+);
+
 const TOP_SECTIONS=[
-  {key:"overview",label:"Overview",icon:"🏠"},
-  {key:"business",label:"Business Funding",icon:"📊"},
-  {key:"cm",label:"CM Dashboard",icon:"👥"},
-  {key:"inbox",label:"Inbox Hub",icon:"📬"},
+  {key:'overview',label:'Overview'},{key:'business',label:'Business Funding'},
+  {key:'cm',label:'CM Dashboard'},{key:'inbox',label:'Inbox Hub'},
 ];
-// #2: Added Domains tab
+
 const BIZ_TABS=["Overview","Volume","Partners","KPI Bands","Weekday vs Weekend","Daily Trends","Day of Week","Insights"];
 const CM_VIEWS=[
-  {key:"home",icon:"⊞",label:"Overview"},{key:"daily",icon:"📅",label:"Daily"},
-  {key:"cms",icon:"👥",label:"By CM"},{key:"compare",icon:"⚖️",label:"Compare"},
-  {key:"boards",icon:"🏆",label:"Leaderboards"},
+  {key:'home',label:'Overview'},{key:'daily',label:'Daily'},
+  {key:'cms',label:'By CM'},{key:'compare',label:'Compare'},{key:'boards',label:'Leaderboards'},
 ];
 const INBOX_TABS=["Overview","Accounts","Campaign Managers","Groups","Inbox Managers","Email Types","Domains"];
 
+// ── Main App ───────────────────────────────────────────────────
 function App(){
-  const [section,setSection]=useState("overview");
-  const [bizTab,setBizTab]=useState("Overview");
+  const [section,setSection]=useState('overview');
+  const [bizTab,setBizTab]=useState('Overview');
   const [rolling,setRolling]=useState(7);
-  const [cmView,setCmView]=useState("home");
+  const [cmView,setCmView]=useState('home');
   const [selMonths,setSelMonths]=useState(ALL_CM_MONTHS);
   const [selCMs,setSelCMs]=useState(ALL_CMs);
-  const [dailyMonth,setDailyMonth]=useState("All");
-  const [compareMode,setCompareMode]=useState("All");
-  const [trendMetric,setTrendMetric]=useState("totalBooked");
-  const [inboxTab,setInboxTab]=useState("Overview");
+  const [dailyMonth,setDailyMonth]=useState('All');
+  const [compareMode,setCompareMode]=useState('All');
+  const [trendMetric,setTrendMetric]=useState('totalBooked');
+  const [inboxTab,setInboxTab]=useState('Overview');
 
-  const data=monthlyData,daily=dailyRaw;
+  const data=monthlyData, daily=dailyRaw;
   const totalEmails=data.reduce((s,r)=>s+r.emailsSent,0);
-  // #1: Use corrected booked numbers
   const totalBooked=data.reduce((s,r)=>s+r.booked,0);
   const bestMonth=data.reduce((a,b)=>b.booked>a.booked?b:a,data[0]);
   const first=data[0],last=data[data.length-1];
@@ -503,7 +576,6 @@ function App(){
   const goalTarget=10000;
   const progress=Math.min((last.booked/goalTarget)*100,100).toFixed(1);
 
-  // #8: Full day-of-week stats using expanded daily data
   const dowStats=useMemo(()=>{
     const map={};WEEKDAYS.forEach(d=>map[d]={day:d,totalBooked:0,totalSent:0,count:0});
     daily.forEach(r=>{if(map[r.day]){map[r.day].totalBooked+=r.booked;map[r.day].totalSent+=r.sent;map[r.day].count++;}});
@@ -530,32 +602,27 @@ function App(){
     return Object.values(m).map(r=>({...r,sbRatio:ratio(r.totalSent,r.totalBooked),nonAiSbRatio:ratio(r.nonAiSent,r.nonAiBooked),aiSbRatio:ratio(r.aiSent,r.aiBooked)})).sort((a,b)=>b.totalBooked-a.totalBooked);
   },[cmFiltered]);
 
-  // #3: Correct all-time CM totals by summing all MONTHLY_CM records
   const allTimeCM=useMemo(()=>{
     const m={};
-    MONTHLY_CM.forEach(r=>{
-      if(!m[r.cm])m[r.cm]={cm:r.cm,allTimeBooked:0,allTimeAiBooked:0,totalSent:0};
-      m[r.cm].allTimeBooked+=r.totalBooked;
-      m[r.cm].allTimeAiBooked+=r.aiBooked;
-      m[r.cm].totalSent+=r.totalSent;
-    });
+    MONTHLY_CM.forEach(r=>{if(!m[r.cm])m[r.cm]={cm:r.cm,allTimeBooked:0,allTimeAiBooked:0,totalSent:0};m[r.cm].allTimeBooked+=r.totalBooked;m[r.cm].allTimeAiBooked+=r.aiBooked;m[r.cm].totalSent+=r.totalSent;});
     return Object.values(m).map(r=>({...r,sbRatio:ratio(r.totalSent,r.allTimeBooked)}));
   },[]);
 
-  // #3: Correct all-time total
-  const correctAllTimeCMTotal = useMemo(()=>MONTHLY_CM.reduce((s,r)=>s+r.totalBooked,0),[]);
+  const correctAllTimeCMTotal=useMemo(()=>MONTHLY_CM.reduce((s,r)=>s+r.totalBooked,0),[]);
 
   const inboxPie=useMemo(()=>{
     const latest={};MONTHLY_CM.forEach(r=>{const k=r.year*100+MONTH_ORDER.indexOf(r.month);if(!latest[r.cm]||k>latest[r.cm].k)latest[r.cm]={k,v:r.inboxes};});
     return ALL_CMs.filter(cm=>selCMs.includes(cm)&&latest[cm]).map(cm=>({name:cm,value:latest[cm].v}));
   },[selCMs]);
-  const periods=useMemo(()=>[...new Set(MONTHLY_CM.map(r=>`${r.year}|${r.month}`))].sort((a,b)=>{const[ay,am]=a.split("|");const[by,bm]=b.split("|");return(+ay*12+MONTH_ORDER.indexOf(am))-(+by*12+MONTH_ORDER.indexOf(bm));}),[]);
-  const trendData=useMemo(()=>periods.filter(p=>{const[,mo]=p.split("|");return selMonths.includes(mo);}).map(p=>{
-    const[yr,mo]=p.split("|");const rows=MONTHLY_CM.filter(r=>r.year===+yr&&r.month===mo&&selCMs.includes(r.cm));
+
+  const periods=useMemo(()=>[...new Set(MONTHLY_CM.map(r=>`${r.year}|${r.month}`))].sort((a,b)=>{const[ay,am]=a.split('|');const[by,bm]=b.split('|');return(+ay*12+MONTH_ORDER.indexOf(am))-(+by*12+MONTH_ORDER.indexOf(bm));}),[]);
+  const trendData=useMemo(()=>periods.filter(p=>{const[,mo]=p.split('|');return selMonths.includes(mo);}).map(p=>{
+    const[yr,mo]=p.split('|');const rows=MONTHLY_CM.filter(r=>r.year===+yr&&r.month===mo&&selCMs.includes(r.cm));
     const obj={period:mo.slice(0,3)+"'"+(yr.slice(2))};rows.forEach(r=>obj[r.cm]=r[trendMetric]);return obj;
   }),[periods,selCMs,selMonths,trendMetric]);
-  const compareData=useMemo(()=>cmAgg.map(r=>({cm:r.cm,sent:compareMode==="Non AI"?r.nonAiSent:compareMode==="💻 AI"?r.aiSent:r.totalSent,booked:compareMode==="Non AI"?r.nonAiBooked:compareMode==="💻 AI"?r.aiBooked:r.totalBooked,ratio:compareMode==="Non AI"?r.nonAiSbRatio:compareMode==="💻 AI"?r.aiSbRatio:r.sbRatio})),[cmAgg,compareMode]);
-  const dailyFiltered=useMemo(()=>(dailyMonth==="All"?CM_DAILY:CM_DAILY.filter(r=>r.month===dailyMonth)).map(r=>({...r,sbRatio:ratio(r.totalSent,r.totalBooked)})),[dailyMonth]);
+
+  const compareData=useMemo(()=>cmAgg.map(r=>({cm:r.cm,sent:compareMode==='Non AI'?r.nonAiSent:compareMode==='AI'?r.aiSent:r.totalSent,booked:compareMode==='Non AI'?r.nonAiBooked:compareMode==='AI'?r.aiBooked:r.totalBooked,ratio:compareMode==='Non AI'?r.nonAiSbRatio:compareMode==='AI'?r.aiSbRatio:r.sbRatio})),[cmAgg,compareMode]);
+  const dailyFiltered=useMemo(()=>(dailyMonth==='All'?CM_DAILY:CM_DAILY.filter(r=>r.month===dailyMonth)).map(r=>({...r,sbRatio:ratio(r.totalSent,r.totalBooked)})),[dailyMonth]);
   const monthlyAgg=useMemo(()=>{
     const m={};CM_DAILY.forEach(r=>{if(!m[r.month])m[r.month]={period:r.month.slice(0,3),totalSent:0,totalBooked:0,aiBooked:0};m[r.month].totalSent+=r.totalSent;m[r.month].totalBooked+=r.totalBooked;m[r.month].aiBooked+=r.aiBooked;});
     return ALL_CM_MONTHS.map(mo=>({...m[mo],sbRatio:ratio(m[mo]?.totalSent,m[mo]?.totalBooked)}));
@@ -565,470 +632,1054 @@ function App(){
     const ts=rows.reduce((a,r)=>a+r.totalSent,0),tb=rows.reduce((a,r)=>a+r.totalBooked,0),ai=rows.reduce((a,r)=>a+r.aiBooked,0);
     return{ts,tb,ai,r:ratio(ts,tb)};
   },[dailyFiltered]);
+
   const cmTb=cmAgg.reduce((a,r)=>a+r.totalBooked,0),cmTs=cmAgg.reduce((a,r)=>a+r.totalSent,0),cmAi=cmAgg.reduce((a,r)=>a+r.aiBooked,0),teamR=ratio(cmTs,cmTb),totalInboxes=inboxPie.reduce((a,r)=>a+r.value,0);
   const allTs=CM_DAILY.reduce((a,r)=>a+r.totalSent,0),allTb2=CM_DAILY.reduce((a,r)=>a+r.totalBooked,0),allAi=CM_DAILY.reduce((a,r)=>a+r.aiBooked,0),allR=ratio(allTs,allTb2);
-  const activeAccts=ACCOUNT_STATUS.find(r=>r.status==="Active")?.accounts||0;
-  const warmupAccts=ACCOUNT_STATUS.find(r=>r.status==="Warmup")?.accounts||0;
+  const activeAccts=ACCOUNT_STATUS.find(r=>r.status==='Active')?.accounts||0;
+  const warmupAccts=ACCOUNT_STATUS.find(r=>r.status==='Warmup')?.accounts||0;
   const totalDailyEmails=CM_INBOX.reduce((s,r)=>s+r.dailyEmails,0);
   const totalCMAccounts=CM_INBOX.reduce((s,r)=>s+r.accounts,0);
 
   const toggleCM=cm=>setSelCMs(s=>s.includes(cm)?s.filter(x=>x!==cm):[...s,cm]);
   const toggleMonth=m=>setSelMonths(s=>s.includes(m)?s.filter(x=>x!==m):[...s,m]);
-  const showCMSide=["cms","compare","boards"].includes(cmView);
 
-  const Btn=({active,onClick,children,style={}})=>(
-    React.createElement('button',{onClick,style:{background:active?"linear-gradient(135deg,#6366f1,#8b5cf6)":"transparent",border:active?"none":"1px solid rgba(255,255,255,0.08)",borderRadius:9,padding:"7px 14px",cursor:"pointer",fontSize:11,fontWeight:600,color:active?"#fff":"#475569",outline:"none",boxShadow:active?"0 4px 12px rgba(99,102,241,0.4)":"none",...style}},children)
-  );
-
-  const renderOverview=()=>{
-    return(
-      <div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          {[
-            // #7: "BizFund" → "Business Funding", #1: corrected Jan number shown
-            {icon:"📨",label:"Total Emails (Business Funding)",value:fmt(totalEmails),color:"#6366f1"},
-            {icon:"📅",label:"Business Funding Meetings",value:totalBooked.toLocaleString(),color:"#22d3ee"},
-            // #3: corrected all-time CM total
-            {icon:"📅",label:"CM All-Time Meetings",value:correctAllTimeCMTotal.toLocaleString(),color:"#34d399"},
-            {icon:"📬",label:"Active Inboxes",value:fmtFull(activeAccts),color:"#10b981"},
-          ].map((c,i)=>(
-            <div key={i} style={{borderRadius:16,padding:"18px 20px",border:"1px solid #1e3a5f",background:"linear-gradient(135deg,#1a2744,#0f172a)"}}>
-              <div style={{fontSize:22,marginBottom:6}}>{c.icon}</div>
-              <div style={{fontSize:24,fontWeight:800,color:c.color}}>{c.value}</div>
-              <div style={{fontSize:10,color:"#64748b",marginTop:4,textTransform:"uppercase",letterSpacing:1}}>{c.label}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          {[
-            {icon:"🔥",label:"Total Daily Emails",value:fmt(totalDailyEmails),color:"#f59e0b"},
-            {icon:"📊",label:"Total Accounts",value:fmtFull(269915),color:"#a78bfa"},
-            {icon:"🌡️",label:"In Warmup",value:fmtFull(warmupAccts),color:"#6366f1"},
-            {icon:"🚀",label:"Sent Into Production",value:fmtFull(83080),color:"#22d3ee"},
-          ].map((c,i)=>(
-            <div key={i} style={{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:14,padding:"13px 16px"}}>
-              <div style={{fontSize:16,marginBottom:4}}>{c.icon}</div>
-              <div style={{fontSize:18,fontWeight:800,color:c.color}}>{c.value}</div>
-              <div style={{fontSize:9,color:"#64748b",marginTop:2,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
-          {/* #7: "Business Funding" not "BizFund" */}
-          <Panel title="BUSINESS FUNDING — MONTHLY MEETINGS">
-            <ResponsiveContainer width="100%" height={180}>
-              <AreaChart data={data}><defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/></linearGradient></defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="month" tick={{fontSize:8,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:8,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/>
-                <Area type="monotone" dataKey="booked" stroke="#6366f1" strokeWidth={2} fill="url(#og1)" name="Meetings"/>
-              </AreaChart>
-            </ResponsiveContainer>
-          </Panel>
-          <Panel title="CM DASHBOARD — DAILY TREND">
-            <ResponsiveContainer width="100%" height={180}>
-              <AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="og2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#34d399" stopOpacity={0.3}/><stop offset="95%" stopColor="#34d399" stopOpacity={0}/></linearGradient></defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="date" tick={{fontSize:8,fill:"#475569"}} axisLine={false} tickLine={false} interval={8}/><YAxis tick={{fontSize:8,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip content={<CustomTip/>}/>
-                <Area type="monotone" dataKey="totalBooked" stroke="#34d399" strokeWidth={2} fill="url(#og2)" name="CM Meetings"/>
-              </AreaChart>
-            </ResponsiveContainer>
-          </Panel>
-          <Panel title="INBOX ACCOUNT STATUS">
-            <ResponsiveContainer width="100%" height={180}>
-              <PieChart>
-                <Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="accounts" nameKey="status" paddingAngle={2}>
-                  {ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}
-                </Pie>
-                <Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:"#64748b"}}/>
-              </PieChart>
-            </ResponsiveContainer>
-          </Panel>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <Panel title="TOP CMs ALL-TIME">
-            <div style={{display:"flex",flexDirection:"column",gap:7}}>
-              {[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked).slice(0,5).map((r,i)=>{
-                const best=[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)[0]?.allTimeBooked||1;
-                const pct=(r.allTimeBooked/best)*100;
-                return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:7}}><span style={{fontSize:13,width:20}}>{i<3?MEDAL[i]:`#${i+1}`}</span><span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>{r.cm}</span></div><span style={{fontSize:11,fontWeight:800,color:"#34d399"}}>{r.allTimeBooked.toLocaleString()}</span></div><div style={{height:3,backgroundColor:"#1e3a5f",borderRadius:2,marginLeft:27}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:"#34d399"}}/></div></div>);
-              })}
-            </div>
-          </Panel>
-          <Panel title="INBOX MANAGERS WORKLOAD">
-            <div style={{display:"flex",flexDirection:"column",gap:6}}>
-              {[...INBOX_MANAGERS].sort((a,b)=>b.accounts-a.accounts).slice(0,5).map((r,i)=>(
-                <div key={r.manager}><div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:11,color:"#cbd5e1",fontWeight:600}}>{r.manager}</span><span style={{fontSize:11,fontWeight:800,color:r.color}}>{fmtFull(r.accounts)}</span></div><div style={{height:4,background:"#1e3a5f",borderRadius:99}}><div style={{width:`${r.pct/28.06*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></div>
-              ))}
-            </div>
-          </Panel>
-        </div>
-      </div>
-    );
-  };
-
-  const renderBusiness=()=>(
-    <div style={{display:"flex",flexDirection:"column",gap:12}}>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-        {[
-          // #7: no "BizFund"
-          {label:"Total Emails Sent",value:fmt(totalEmails),sub:`${first.month} – ${last.month}`,change:`+${emailGrowth}%`,icon:"📨",grad:"linear-gradient(135deg,#6366f1,#8b5cf6)"},
-          {label:"Total Meetings Booked",value:totalBooked.toLocaleString(),sub:`${first.month} – ${last.month}`,change:`+${meetingGrowth}%`,icon:"📅",grad:"linear-gradient(135deg,#06b6d4,#3b82f6)"},
-          {label:"Best Single Month",value:bestMonth.month,sub:`${bestMonth.booked.toLocaleString()} meetings`,change:"🏆 Record",icon:"🏆",grad:"linear-gradient(135deg,#f59e0b,#ef4444)"},
-          {label:"Best Conversion",value:bestConv.ratio.toLocaleString(),sub:`${bestConv.month}`,change:"Most efficient",icon:"🎯",grad:"linear-gradient(135deg,#10b981,#06b6d4)"},
-        ].map((c,i)=>(
-          <div key={i} style={{borderRadius:16,padding:"18px 20px",position:"relative",overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
-            <div style={{position:"absolute",inset:0,background:c.grad,opacity:0.12}}/><div style={{position:"relative"}}>
-              <div style={{fontSize:20,marginBottom:8}}>{c.icon}</div>
-              <div style={{fontSize:22,fontWeight:800,color:"#f1f5f9",lineHeight:1,marginBottom:4}}>{c.value}</div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>{c.label}</div>
-              <div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>{c.sub}</span><span style={{fontSize:11,fontWeight:700,color:"#10b981",background:"rgba(16,185,129,0.1)",padding:"2px 8px",borderRadius:99}}>{c.change}</span></div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:10}}>
-        {/* #6: "mtgs" → "Meetings", #7: no BizFund */}
-        {[{label:"YTD Meetings",value:ytdBooked.toLocaleString(),color:"#818cf8"},{label:"YTD Emails",value:fmt(ytdSent),color:"#22d3ee"},{label:"All-Time Meetings",value:allBizBooked.toLocaleString(),color:"#f59e0b"},{label:"Best Day Ever",value:`${bestDay} Booked`,color:"#f43f5e"},{label:"Goal Progress",value:`${progress}%`,color:"#10b981"},{label:"Avg Daily (Jan)",value:`${last.avgDailyMeetings} Meetings`,color:"#c084fc"}].map((s,i)=>(
-          <Card1 key={i} style={{padding:"12px 14px"}}><div style={{fontSize:9,color:"#475569",textTransform:"uppercase",letterSpacing:1.2,marginBottom:5}}>{s.label}</div><div style={{fontSize:18,fontWeight:800,color:s.color}}>{s.value}</div></Card1>
-        ))}
-      </div>
-      <Card1 style={{padding:"14px 20px"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><span style={{fontSize:13,fontWeight:600,color:"#94a3b8"}}>🎯 Progress to 10,000 meetings/month</span><span style={{fontSize:14,fontWeight:800,color:"#10b981"}}>{last.booked.toLocaleString()} / 10,000 · {progress}%</span></div>
-        <div style={{background:"rgba(255,255,255,0.05)",borderRadius:99,height:6,overflow:"hidden"}}><div style={{width:`${progress}%`,background:"linear-gradient(90deg,#6366f1,#8b5cf6,#f59e0b)",height:"100%",borderRadius:99}}/></div>
-      </Card1>
-      <div style={{display:"flex",gap:4,background:"rgba(255,255,255,0.03)",padding:4,borderRadius:12,border:"1px solid rgba(255,255,255,0.06)",flexWrap:"wrap",width:"fit-content"}}>
-        {BIZ_TABS.map(t=><Btn key={t} active={bizTab===t} onClick={()=>setBizTab(t)}>{t}</Btn>)}
-      </div>
-      {bizTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:14}}>
-          <Card1><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>MEETINGS BOOKED PER MONTH</div>
-            <ResponsiveContainer width="100%" height={200}><AreaChart data={data}><defs><linearGradient id="gm" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="month" tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#6366f1" strokeWidth={2.5} fill="url(#gm)" name="Meetings"/></AreaChart></ResponsiveContainer>
-          </Card1>
-          <Card1><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>AVG DAILY MEETINGS</div>
-            <ResponsiveContainer width="100%" height={200}><BarChart data={data} barSize={20}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="month" tick={{fontSize:9,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:9,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Bar dataKey="avgDailyMeetings" radius={[4,4,0,0]} fill="#22d3ee" name="Daily Avg"/></BarChart></ResponsiveContainer>
-          </Card1>
-        </div>
-        <Card1><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>CONVERSION RATIO TREND</div>
-          {/* #4: no "1:" prefix in tooltip */}
-          <ResponsiveContainer width="100%" height={150}><LineChart data={data}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="month" tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Line type="monotone" dataKey="ratio" stroke="#f59e0b" strokeWidth={2.5} dot={{r:4,fill:"#f59e0b",strokeWidth:0}}/></LineChart></ResponsiveContainer>
-        </Card1>
-      </div>)}
-      {bizTab==="Volume"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <Card1><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>MONTHLY EMAIL VOLUME</div>
-          <ResponsiveContainer width="100%" height={200}><AreaChart data={data}><defs><linearGradient id="ge" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="month" tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tickFormatter={fmt} tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={v=>[v.toLocaleString(),"Emails"]}/><Area type="monotone" dataKey="emailsSent" stroke="#10b981" strokeWidth={2.5} fill="url(#ge)"/></AreaChart></ResponsiveContainer>
-        </Card1>
-        <Card1><table style={{width:"100%",fontSize:12,borderCollapse:"collapse"}}><thead><tr>{["Month","Emails Sent","Meetings Booked","Ratio","Avg Daily"].map(h=><th key={h} style={{textAlign:"left",padding:"10px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)",color:"#475569",fontWeight:500,fontSize:10,textTransform:"uppercase"}}>{h}</th>)}</tr></thead><tbody>{data.map((r,i)=><tr key={i} style={{borderBottom:"1px solid rgba(255,255,255,0.04)"}}><td style={{padding:"10px 12px",fontWeight:700,color:"#f1f5f9"}}>{r.month}</td><td style={{padding:"10px 12px",color:"#10b981",fontWeight:600}}>{r.emailsSent.toLocaleString()}</td><td style={{padding:"10px 12px",color:"#818cf8",fontWeight:700}}>{r.booked.toLocaleString()}</td><td style={{padding:"10px 12px",color:"#64748b"}}>{r.ratio.toLocaleString()}</td><td style={{padding:"10px 12px",color:"#94a3b8"}}>{r.avgDailyMeetings}</td></tr>)}</tbody></table></Card1>
-      </div>)}
-      {bizTab==="Partners"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <Card1><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>MEETINGS BY PARTNER</div>
-          <ResponsiveContainer width="100%" height={230}><BarChart data={partnerData} barGap={4}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="month" tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Legend wrapperStyle={{fontSize:11,color:"#64748b"}}/><Bar dataKey="GoQualifi" fill="#818cf8" radius={[3,3,0,0]}/><Bar dataKey="BigThink" fill="#f59e0b" radius={[3,3,0,0]} name="Big Think"/><Bar dataKey="GreenBridge" fill="#10b981" radius={[3,3,0,0]} name="GreenBridge"/></BarChart></ResponsiveContainer>
-        </Card1>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
-          {[{key:"GreenBridge",name:"GreenBridge Capital",model:"50/50 Rev Share",color:"#10b981",note:"Anchor partner."},{key:"BigThink",name:"Big Think Capital",model:"PPA + 10% Rev Share",color:"#f59e0b",note:"Fastest growing."},{key:"GoQualifi",name:"GoQualifi",model:"PPA",color:"#818cf8",note:"Consistent PPA."}].map((p,i)=>{
-            const latest=[...partnerData].reverse().find(d=>d[p.key]);
-            return(<div key={i} style={{borderRadius:16,padding:20,border:"1px solid rgba(255,255,255,0.08)",background:"linear-gradient(135deg,rgba(255,255,255,0.03),rgba(0,0,0,0.3))"}}><div style={{fontSize:11,fontWeight:700,color:p.color,marginBottom:10,textTransform:"uppercase"}}>{p.name}</div><div style={{fontSize:32,fontWeight:800,color:"#f1f5f9"}}>{latest?.[p.key]?.toLocaleString()||"–"}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginBottom:8}}>{latest?.month}</div><div style={{fontSize:11,color:"#475569"}}>Model: {p.model}</div><div style={{fontSize:11,color:"#64748b",marginTop:4}}>{p.note}</div></div>);
-          })}
-        </div>
-      </div>)}
-      {bizTab==="KPI Bands"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{KPI_BANDS.map(b=><div key={b.key} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.04)",borderRadius:8,padding:"5px 12px",border:`1px solid ${b.color}33`}}><div style={{width:8,height:8,borderRadius:2,background:b.color}}/><span style={{fontSize:11,color:"#94a3b8"}}>{b.label}</span></div>)}</div>
-        <Card1><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>% OF DAYS IN EACH BAND</div>
-          <ResponsiveContainer width="100%" height={230}><BarChart data={kpiBandChart}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="month" tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[`${v.toFixed(1)}%`,n]}/><Bar dataKey=">4500" stackId="a" fill="#f43f5e"/><Bar dataKey="4000-4500" stackId="a" fill="#f97316"/><Bar dataKey="3600-4000" stackId="a" fill="#eab308"/><Bar dataKey="3200-3600" stackId="a" fill="#22d3ee"/><Bar dataKey="2800-3200" stackId="a" fill="#10b981"/><Bar dataKey="0-2800" stackId="a" fill="#818cf8" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer>
-        </Card1>
-      </div>)}
-      {bizTab==="Weekday vs Weekend"&&(<Card1><div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>WEEKDAY VS WEEKEND RATIO</div>
-        <ResponsiveContainer width="100%" height={230}><LineChart data={data.filter(d=>d.weekdayRatio||d.weekendRatio)}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="month" tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[v.toLocaleString(),n]}/><Legend wrapperStyle={{fontSize:11,color:"#64748b"}}/><Line type="monotone" dataKey="weekdayRatio" stroke="#818cf8" strokeWidth={2.5} dot={{r:4,fill:"#818cf8",strokeWidth:0}} name="Weekday"/><Line type="monotone" dataKey="weekendRatio" stroke="#f59e0b" strokeWidth={2.5} dot={{r:4,fill:"#f59e0b",strokeWidth:0}} name="Weekend"/></LineChart></ResponsiveContainer>
-      </Card1>)}
-      {bizTab==="Daily Trends"&&(<Card1>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{fontSize:12,fontWeight:600,color:"#64748b"}}>DAILY MEETINGS + ROLLING AVERAGE</div>
-          <div style={{display:"flex",gap:4,background:"rgba(255,255,255,0.04)",padding:3,borderRadius:8}}>{[7,14,30].map(n=><Btn key={n} active={rolling===n} onClick={()=>setRolling(n)}>{n}d avg</Btn>)}</div>
-        </div>
-        <ResponsiveContainer width="100%" height={250}><AreaChart data={rollingData}><defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="date" tick={{fontSize:9,fill:"#475569"}} axisLine={false} tickLine={false} interval={9}/><YAxis tick={{fontSize:10,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#6366f1" fill="url(#gd)" strokeWidth={1.5} dot={false} name="Daily"/><Line type="monotone" dataKey="rolling" stroke="#f59e0b" strokeWidth={2.5} dot={false} name={`${rolling}d Avg`}/></AreaChart></ResponsiveContainer>
-      </Card1>)}
-      {/* #8: Full day of week data */}
-      {bizTab==="Day of Week"&&(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-        <Card1>
-          <div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:4}}>AVG MEETINGS BY DAY</div>
-          <div style={{fontSize:10,color:"#475569",marginBottom:14}}>Based on {daily.length} days of data</div>
-          <ResponsiveContainer width="100%" height={210}><BarChart data={dowStats} barSize={28}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="day" tick={{fontSize:11,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:11,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n,p)=>[v,`Avg Meetings (${dowStats.find(d=>d.day===p.payload.day)?.days||0} days)`]}/><Bar dataKey="avgBooked" radius={[5,5,0,0]} fill="#818cf8" name="Avg Meetings"/></BarChart></ResponsiveContainer>
-        </Card1>
-        <Card1>
-          <div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:4}}>AVG RATIO BY DAY</div>
-          <div style={{fontSize:10,color:"#475569",marginBottom:14}}>Send-to-Book ratio (lower = better)</div>
-          <ResponsiveContainer width="100%" height={210}><BarChart data={dowStats} barSize={28}><CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/><XAxis dataKey="day" tick={{fontSize:11,fill:"#475569"}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:11,fill:"#475569"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={v=>[v.toLocaleString(),"Avg Ratio"]}/><Bar dataKey="avgRatio" radius={[5,5,0,0]} fill="#f59e0b" name="Avg Ratio"/></BarChart></ResponsiveContainer>
-        </Card1>
-        <Card1 style={{gridColumn:"1/-1"}}>
-          <div style={{fontSize:12,fontWeight:600,color:"#64748b",marginBottom:14}}>DAY OF WEEK BREAKDOWN TABLE</div>
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-            <thead><tr>{["Day","Data Points","Avg Meetings","Avg Ratio","Total Meetings"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:"1px solid rgba(255,255,255,0.06)",color:"#475569",fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
-            <tbody>{dowStats.map((r,i)=>{
-              const full=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][i];
-              const rows=daily.filter(d=>d.day===full);
-              const total=rows.reduce((s,d)=>s+d.booked,0);
-              return(<tr key={r.day} style={{borderBottom:"1px solid rgba(255,255,255,0.04)",background:i%2?"rgba(255,255,255,0.01)":"transparent"}}>
-                <td style={{padding:"9px 12px",fontWeight:700,color:"#f1f5f9"}}>{full}</td>
-                <td style={{padding:"9px 12px",color:"#64748b"}}>{r.days}</td>
-                <td style={{padding:"9px 12px",color:"#818cf8",fontWeight:700}}>{r.avgBooked}</td>
-                <td style={{padding:"9px 12px",color:"#f59e0b"}}>{r.avgRatio>0?r.avgRatio.toLocaleString():"—"}</td>
-                <td style={{padding:"9px 12px",color:"#34d399",fontWeight:700}}>{total.toLocaleString()}</td>
-              </tr>);
-            })}</tbody>
-          </table>
-        </Card1>
-      </div>)}
-      {bizTab==="Insights"&&(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-        {[
-          {icon:"🚀",title:`Volume scaled ${(last.emailsSent/first.emailsSent).toFixed(1)}x`,color:"#10b981",body:`From ${fmt(first.emailsSent)} in ${first.month} to ${fmt(last.emailsSent)} in ${last.month}.`},
-          {icon:"📈",title:`Meetings grew ${meetingGrowth}%`,color:"#818cf8",body:`${first.booked.toLocaleString()} → ${last.booked.toLocaleString()} meetings over 7 months.`},
-          {icon:"⚡",title:"Dec–Jan breakthrough",color:"#f59e0b",body:"December hit 13.8M emails; January broke all records with 700K+ daily sends."},
-          {icon:"🎯",title:"Jan '26: best KPI distribution",color:"#22d3ee",body:"40%+ of January days hit the top two conversion tiers at record volume."},
-          {icon:"💰",title:"Big Think Capital surging",color:"#f59e0b",body:"Big Think's Jan '26 bookings (1,317) were its best ever."},
-          {icon:"🏁",title:`Goal: ${progress}% to 10,000/month`,color:"#10b981",body:`Need ~${Math.round(goalTarget*last.ratio/1000000).toFixed(1)}M emails/month at current conversion.`},
-        ].map((ins,i)=>(
-          <div key={i} style={{borderRadius:16,padding:20,border:"1px solid rgba(255,255,255,0.06)",background:"linear-gradient(135deg,rgba(255,255,255,0.03),rgba(0,0,0,0.3))"}}><div style={{fontSize:24,marginBottom:10}}>{ins.icon}</div><div style={{fontSize:14,fontWeight:700,color:ins.color,marginBottom:8}}>{ins.title}</div><div style={{fontSize:12,color:"#64748b",lineHeight:1.7}}>{ins.body}</div></div>
-        ))}
-      </div>)}
+  // KPI row helper — hero is first card only
+  const KpiRow=({items})=>(
+    <div style={{display:'grid',gridTemplateColumns:`repeat(${items.length},1fr)`,gap:16,marginBottom:24}}>
+      {items.map((c,i)=>(
+        <Card key={i} hero={i===0}>
+          <MetricLabel>{c.label}</MetricLabel>
+          <MetricValue value={c.value} color={i===0?T.brandText:T.slate100} size={i===0?30:24}/>
+          {c.sub&&<MetricSub>{c.sub}</MetricSub>}
+          {c.tag&&<div style={{marginTop:8}}><StatusTag type={c.tagType||'neutral'}>{c.tag}</StatusTag></div>}
+        </Card>
+      ))}
     </div>
   );
 
-  const renderCM=()=>(
-    <div style={{display:"flex",flex:1,minHeight:0}}>
-      {showCMSide&&(
-        <div style={{width:152,flexShrink:0,background:"linear-gradient(180deg,#0d1b2e,#080f1e)",borderRight:"1px solid #1e3a5f",padding:"12px 10px",overflowY:"auto",display:"flex",flexDirection:"column",gap:14}}>
-          <div><div style={{fontSize:9,fontWeight:800,color:"#334155",letterSpacing:1.5,marginBottom:8,textTransform:"uppercase"}}>Tiers</div>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:6,marginBottom:5}}><div style={{width:9,height:9,borderRadius:2,backgroundColor:t.color,flexShrink:0}}/><span style={{fontSize:9,color:"#64748b"}}>{t.label}</span></div>)}</div>
-          <div><div style={{fontSize:9,fontWeight:800,color:"#334155",letterSpacing:1.5,marginBottom:7,textTransform:"uppercase"}}>Months</div>{ALL_CM_MONTHS.map(m=><div key={m} onClick={()=>toggleMonth(m)} style={{display:"flex",alignItems:"center",gap:7,marginBottom:5,cursor:"pointer"}}><div style={{width:11,height:11,borderRadius:3,border:`2px solid ${selMonths.includes(m)?"#6366f1":"#1e3a5f"}`,backgroundColor:selMonths.includes(m)?"#6366f1":"transparent",flexShrink:0}}/><span style={{fontSize:11,color:selMonths.includes(m)?"#e2e8f0":"#334155"}}>{m.slice(0,3)}</span></div>)}</div>
-          <div>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><div style={{fontSize:9,fontWeight:800,color:"#334155",letterSpacing:1.5,textTransform:"uppercase"}}>CMs</div><div style={{display:"flex",gap:5}}><span onClick={()=>setSelCMs(ALL_CMs)} style={{fontSize:9,color:"#6366f1",cursor:"pointer",fontWeight:700}}>ALL</span><span onClick={()=>setSelCMs([])} style={{fontSize:9,color:"#334155",cursor:"pointer",fontWeight:700}}>CLR</span></div></div>
-            {ALL_CMs.map((cm,i)=><div key={cm} onClick={()=>toggleCM(cm)} style={{display:"flex",alignItems:"center",gap:6,marginBottom:4,cursor:"pointer"}}><div style={{width:8,height:8,borderRadius:2,backgroundColor:CM_COLORS[i%CM_COLORS.length],opacity:selCMs.includes(cm)?1:.2,flexShrink:0}}/><span style={{fontSize:10,color:selCMs.includes(cm)?"#cbd5e1":"#334155"}}>{cm}</span></div>)}
+  // ── Overview ────────────────────────────────────────────────
+  const renderOverview=()=>(
+    <div>
+      <div style={{fontSize:18,fontWeight:800,color:T.slate100,marginBottom:24,letterSpacing:'-0.02em'}}>Dashboard Overview</div>
+      <KpiRow items={[
+        {label:'Business Funding Meetings',value:totalBooked.toLocaleString(),sub:`${first.month} – ${last.month}`,tag:'+'+meetingGrowth+'%',tagType:'success'},
+        {label:'CM All-Time Meetings',value:correctAllTimeCMTotal.toLocaleString(),sub:'Oct 2025 – Jan 2026'},
+        {label:'Active Inboxes',value:fmtFull(activeAccts),sub:'Currently sending'},
+        {label:'Total Accounts',value:fmtFull(269915),sub:'Across all pipelines'},
+      ]}/>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16,marginBottom:24}}>
+        <Card>
+          <SectionLabel>Business Funding — Monthly Meetings</SectionLabel>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={data}>
+              <defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.brand} stopOpacity={0.1}/><stop offset="95%" stopColor={T.brand} stopOpacity={0}/></linearGradient></defs>
+              {CHART_GRID}
+              <XAxis dataKey="month" tick={AXIS_STYLE} axisLine={false} tickLine={false}/>
+              <YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/>
+              <Tooltip content={<CustomTip/>}/>
+              <Area type="monotone" dataKey="booked" stroke={T.brand} strokeWidth={1.5} fill="url(#og1)" name="Meetings"/>
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+        <Card>
+          <SectionLabel>CM Dashboard — Daily Trend</SectionLabel>
+          <ResponsiveContainer width="100%" height={160}>
+            <AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}>
+              <defs><linearGradient id="og2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.brand} stopOpacity={0.1}/><stop offset="95%" stopColor={T.brand} stopOpacity={0}/></linearGradient></defs>
+              {CHART_GRID}
+              <XAxis dataKey="date" tick={AXIS_STYLE} axisLine={false} tickLine={false} interval={4}/>
+              <YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/>
+              <Tooltip content={<CustomTip/>}/>
+              <Area type="monotone" dataKey="totalBooked" stroke={T.brand} strokeWidth={1.5} fill="url(#og2)" name="Meetings"/>
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+        <Card>
+          <SectionLabel>Inbox Account Status</SectionLabel>
+          <ResponsiveContainer width="100%" height={160}>
+            <PieChart>
+              <Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={38} outerRadius={62} dataKey="accounts" nameKey="status" paddingAngle={2}>
+                {ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}
+              </Pie>
+              <Tooltip content={<CustomTip/>}/>
+              <Legend iconSize={7} wrapperStyle={{fontSize:9,color:T.slate500}}/>
+            </PieChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+        <Card>
+          <SectionLabel>Top CMs All-Time</SectionLabel>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            {[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked).slice(0,5).map((r,i)=>{
+              const best=[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)[0]?.allTimeBooked||1;
+              const pct=(r.allTimeBooked/best)*100;
+              return(
+                <div key={r.cm}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8}}>
+                      <span style={{fontSize:10,fontWeight:700,color:i<3?T.brand:T.slate600,width:24,textAlign:'center'}}>{i<3?['1st','2nd','3rd'][i]:`#${i+1}`}</span>
+                      <span style={{fontSize:12,color:T.slate200,fontWeight:600}}>{r.cm}</span>
+                    </div>
+                    <span style={{fontSize:12,fontWeight:800,color:T.slate100}}>{r.allTimeBooked.toLocaleString()}</span>
+                  </div>
+                  <div style={{height:2,backgroundColor:T.slate800,borderRadius:2,marginLeft:32}}>
+                    <div style={{height:2,borderRadius:2,width:`${pct}%`,backgroundColor:i===0?T.brand:T.slate600}}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+        <Card>
+          <SectionLabel>Inbox Managers Workload</SectionLabel>
+          <div style={{display:'flex',flexDirection:'column',gap:8}}>
+            {[...INBOX_MANAGERS].sort((a,b)=>b.accounts-a.accounts).slice(0,5).map((r,i)=>(
+              <div key={r.manager}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span style={{fontSize:12,color:T.slate200,fontWeight:600}}>{r.manager}</span>
+                  <span style={{fontSize:12,fontWeight:700,color:T.slate100}}>{fmtFull(r.accounts)}</span>
+                </div>
+                <div style={{height:3,background:T.slate800,borderRadius:99}}>
+                  <div style={{width:`${r.pct/28.06*100}%`,height:'100%',background:T.brand,borderRadius:99,maxWidth:'100%',opacity:0.7+i*0.05}}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+
+  // ── Business ────────────────────────────────────────────────
+  const renderBusiness=()=>(
+    <div>
+      <div style={{fontSize:18,fontWeight:800,color:T.slate100,marginBottom:24,letterSpacing:'-0.02em'}}>Business Funding</div>
+      <KpiRow items={[
+        {label:'Total Meetings Booked',value:totalBooked.toLocaleString(),sub:`${first.month} – ${last.month}`,tag:'+'+meetingGrowth+'%',tagType:'success'},
+        {label:'Total Emails Sent',value:fmt(totalEmails),sub:`+${emailGrowth}% growth`},
+        {label:'Best Single Month',value:bestMonth.month,sub:`${bestMonth.booked.toLocaleString()} meetings`,tag:'Record',tagType:'success'},
+        {label:'Best Conversion',value:bestConv.ratio.toLocaleString(),sub:bestConv.month,tag:'Most efficient',tagType:'neutral'},
+      ]}/>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:12,marginBottom:24}}>
+        {[
+          {label:'YTD Meetings',value:ytdBooked.toLocaleString()},
+          {label:'YTD Emails',value:fmt(ytdSent)},
+          {label:'All-Time Meetings',value:allBizBooked.toLocaleString()},
+          {label:'Best Day',value:`${bestDay}`},
+          {label:'Goal Progress',value:`${progress}%`},
+          {label:'Avg Daily (Jan)',value:`${last.avgDailyMeetings}`},
+        ].map((s,i)=>(
+          <Card key={i} style={{padding:'14px 16px'}}>
+            <MetricLabel>{s.label}</MetricLabel>
+            <div style={{fontSize:20,fontWeight:800,color:T.slate100,marginTop:4}}>{s.value}</div>
+          </Card>
+        ))}
+      </div>
+      <Card style={{marginBottom:20}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+          <span style={{fontSize:12,fontWeight:600,color:T.slate400}}>Goal progress — 10,000 meetings/month</span>
+          <span style={{fontSize:13,fontWeight:800,color:T.brandText}}>{last.booked.toLocaleString()} / 10,000 · {progress}%</span>
+        </div>
+        <div style={{background:T.slate800,borderRadius:4,height:4,overflow:'hidden'}}>
+          <div style={{width:`${progress}%`,background:`linear-gradient(90deg,${T.brandDim},${T.brand})`,height:'100%',borderRadius:4}}/>
+        </div>
+      </Card>
+      <TabBar tabs={BIZ_TABS} active={bizTab} onChange={setBizTab}/>
+      {bizTab==='Overview'&&(
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16}}>
+            <Card>
+              <SectionLabel>Meetings booked per month</SectionLabel>
+              <ResponsiveContainer width="100%" height={180}>
+                <AreaChart data={data}>
+                  <defs><linearGradient id="gm" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.brand} stopOpacity={0.1}/><stop offset="95%" stopColor={T.brand} stopOpacity={0}/></linearGradient></defs>
+                  {CHART_GRID}<XAxis dataKey="month" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/><Tooltip content={<CustomTip/>}/>
+                  <Area type="monotone" dataKey="booked" stroke={T.brand} strokeWidth={1.5} fill="url(#gm)" name="Meetings"/>
+                </AreaChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>Avg daily meetings</SectionLabel>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={data} barSize={16}>
+                  {CHART_GRID}<XAxis dataKey="month" tick={{...AXIS_STYLE,fontSize:9}} axisLine={false} tickLine={false}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={30}/><Tooltip content={<CustomTip/>}/>
+                  <Bar dataKey="avgDailyMeetings" radius={[3,3,0,0]} fill={T.brand} name="Daily Avg" opacity={0.85}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+          <Card>
+            <SectionLabel>Conversion ratio trend (send-to-book)</SectionLabel>
+            <ResponsiveContainer width="100%" height={130}>
+              <LineChart data={data}>
+                {CHART_GRID}<XAxis dataKey="month" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={40}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Ratio']}/>
+                <Line type="monotone" dataKey="ratio" stroke={T.brand} strokeWidth={1.5} dot={{r:3,fill:T.brand,strokeWidth:0}}/>
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      )}
+      {bizTab==='Volume'&&(
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <Card>
+            <SectionLabel>Monthly email volume</SectionLabel>
+            <ResponsiveContainer width="100%" height={180}>
+              <AreaChart data={data}>
+                <defs><linearGradient id="ge" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.brand} stopOpacity={0.1}/><stop offset="95%" stopColor={T.brand} stopOpacity={0}/></linearGradient></defs>
+                {CHART_GRID}<XAxis dataKey="month" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tickFormatter={fmt} tick={AXIS_STYLE} axisLine={false} tickLine={false} width={44}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Emails']}/>
+                <Area type="monotone" dataKey="emailsSent" stroke={T.brand} strokeWidth={1.5} fill="url(#ge)"/>
+              </AreaChart>
+            </ResponsiveContainer>
+          </Card>
+          <Card>
+            <table style={{width:'100%',fontSize:12,borderCollapse:'collapse'}}>
+              <thead><tr>{['Month','Emails Sent','Meetings','Ratio','Avg Daily'].map(h=><th key={h} style={{textAlign:'left',padding:'8px 12px',borderBottom:`1px solid ${T.border}`,color:T.slate500,fontWeight:600,fontSize:10,textTransform:'uppercase',letterSpacing:'0.07em'}}>{h}</th>)}</tr></thead>
+              <tbody>{data.map((r,i)=><tr key={i} style={{borderBottom:`1px solid rgba(255,255,255,0.03)`}}>
+                <td style={{padding:'9px 12px',fontWeight:700,color:T.slate200}}>{r.month}</td>
+                <td style={{padding:'9px 12px',color:T.slate300}}>{r.emailsSent.toLocaleString()}</td>
+                <td style={{padding:'9px 12px',color:T.brandText,fontWeight:700}}>{r.booked.toLocaleString()}</td>
+                <td style={{padding:'9px 12px',color:T.slate400}}>{r.ratio.toLocaleString()}</td>
+                <td style={{padding:'9px 12px',color:T.slate400}}>{r.avgDailyMeetings}</td>
+              </tr>)}</tbody>
+            </table>
+          </Card>
+        </div>
+      )}
+      {bizTab==='Partners'&&(
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <Card>
+            <SectionLabel>Meetings by partner</SectionLabel>
+            <ResponsiveContainer width="100%" height={210}>
+              <BarChart data={partnerData} barGap={3}>
+                {CHART_GRID}<XAxis dataKey="month" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/><Tooltip content={<CustomTip/>}/><Legend wrapperStyle={{fontSize:11,color:T.slate500}}/>
+                <Bar dataKey="GoQualifi" fill={T.brand} radius={[3,3,0,0]} opacity={0.9}/>
+                <Bar dataKey="BigThink" fill={T.brandText} radius={[3,3,0,0]} opacity={0.8} name="Big Think"/>
+                <Bar dataKey="GreenBridge" fill={T.success} radius={[3,3,0,0]} opacity={0.8} name="GreenBridge"/>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16}}>
+            {[{key:'GreenBridge',name:'GreenBridge Capital',model:'50/50 Rev Share',note:'Anchor partner.'},{key:'BigThink',name:'Big Think Capital',model:'PPA + 10% Rev Share',note:'Fastest growing.'},{key:'GoQualifi',name:'GoQualifi',model:'PPA',note:'Consistent PPA.'}].map((p,i)=>{
+              const latest=[...partnerData].reverse().find(d=>d[p.key]);
+              return(
+                <Card key={i}>
+                  <div style={{fontSize:10,fontWeight:700,color:T.slate500,textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:8}}>{p.name}</div>
+                  <div style={{fontSize:28,fontWeight:800,color:T.slate100}}>{latest?.[p.key]?.toLocaleString()||'—'}</div>
+                  <MetricSub>{latest?.month}</MetricSub>
+                  <div style={{marginTop:10,paddingTop:10,borderTop:`1px solid ${T.border}`}}>
+                    <div style={{fontSize:11,color:T.slate500}}>Model: <span style={{color:T.slate400}}>{p.model}</span></div>
+                    <div style={{fontSize:11,color:T.slate600,marginTop:2}}>{p.note}</div>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </div>
       )}
-      <div style={{flex:1,overflowY:"auto",padding:"0 0 16px 0",display:"flex",flexDirection:"column",gap:13}}>
-        <div style={{display:"flex",gap:2,flexWrap:"wrap",paddingTop:4}}>
-          {CM_VIEWS.map(({key,icon,label})=>(
-            <button key={key} onClick={()=>setCmView(key)} style={{background:cmView===key?"linear-gradient(135deg,#6366f120,#818cf820)":"transparent",border:cmView===key?"1px solid #6366f166":"1px solid transparent",borderRadius:10,padding:"6px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:6,color:cmView===key?"#a5b4fc":"#64748b",fontWeight:cmView===key?700:500,fontSize:12,outline:"none"}}>
-              <span style={{fontSize:13}}>{icon}</span>{label}
-            </button>
+      {bizTab==='KPI Bands'&&(
+        <div style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:4}}>
+            {TIERS.map(t=>(
+              <div key={t.label} style={{display:'flex',alignItems:'center',gap:5,background:'rgba(0,0,0,0.3)',borderRadius:4,padding:'3px 10px',border:`1px solid rgba(255,255,255,0.06)`}}>
+                <div style={{width:6,height:6,borderRadius:1,background:t.color}}/>
+                <span style={{fontSize:10,color:T.slate400}}>{t.label}</span>
+              </div>
+            ))}
+          </div>
+          <Card>
+            <SectionLabel>% of days in each band</SectionLabel>
+            <ResponsiveContainer width="100%" height={210}>
+              <BarChart data={kpiBandChart}>
+                {CHART_GRID}<XAxis dataKey="month" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${v}%`} tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/><Tooltip content={<CustomTip/>} formatter={(v,n)=>[`${v.toFixed(1)}%`,n]}/>
+                <Bar dataKey=">4500" stackId="a" fill="#b91c1c"/>
+                <Bar dataKey="4000-4500" stackId="a" fill={T.danger}/>
+                <Bar dataKey="3600-4000" stackId="a" fill={T.warning}/>
+                <Bar dataKey="3200-3600" stackId="a" fill="#fbbf24"/>
+                <Bar dataKey="2800-3200" stackId="a" fill="#86efac"/>
+                <Bar dataKey="0-2800" stackId="a" fill={T.success} radius={[3,3,0,0]}/>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      )}
+      {bizTab==='Weekday vs Weekend'&&(
+        <Card>
+          <SectionLabel>Weekday vs weekend ratio</SectionLabel>
+          <ResponsiveContainer width="100%" height={210}>
+            <LineChart data={data.filter(d=>d.weekdayRatio||d.weekendRatio)}>
+              {CHART_GRID}<XAxis dataKey="month" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={40}/><Tooltip content={<CustomTip/>}/><Legend wrapperStyle={{fontSize:11,color:T.slate500}}/>
+              <Line type="monotone" dataKey="weekdayRatio" stroke={T.brand} strokeWidth={1.5} dot={{r:3,fill:T.brand,strokeWidth:0}} name="Weekday"/>
+              <Line type="monotone" dataKey="weekendRatio" stroke={T.slate500} strokeWidth={1.5} dot={{r:3,fill:T.slate500,strokeWidth:0}} name="Weekend" strokeDasharray="4 2"/>
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+      )}
+      {bizTab==='Daily Trends'&&(
+        <Card>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+            <SectionLabel style={{marginBottom:0}}>Daily meetings + rolling average</SectionLabel>
+            <div style={{display:'flex',gap:4}}>{[7,14,30].map(n=><Btn key={n} active={rolling===n} onClick={()=>setRolling(n)}>{n}d avg</Btn>)}</div>
+          </div>
+          <ResponsiveContainer width="100%" height={230}>
+            <AreaChart data={rollingData}>
+              <defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.brand} stopOpacity={0.08}/><stop offset="95%" stopColor={T.brand} stopOpacity={0}/></linearGradient></defs>
+              {CHART_GRID}<XAxis dataKey="date" tick={AXIS_STYLE} axisLine={false} tickLine={false} interval={9}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/><Tooltip content={<CustomTip/>}/>
+              <Area type="monotone" dataKey="booked" stroke={T.slate700} fill="url(#gd)" strokeWidth={1} dot={false} name="Daily"/>
+              <Line type="monotone" dataKey="rolling" stroke={T.brand} strokeWidth={2} dot={false} name={`${rolling}d Avg`}/>
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+      )}
+      {bizTab==='Day of Week'&&(
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+          <Card>
+            <SectionLabel>Avg meetings by day</SectionLabel>
+            <ResponsiveContainer width="100%" height={190}>
+              <BarChart data={dowStats} barSize={24}>
+                {CHART_GRID}<XAxis dataKey="day" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={30}/><Tooltip content={<CustomTip/>}/>
+                <Bar dataKey="avgBooked" radius={[3,3,0,0]} fill={T.brand} name="Avg Meetings" opacity={0.85}/>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+          <Card>
+            <SectionLabel>Avg ratio by day (lower = better)</SectionLabel>
+            <ResponsiveContainer width="100%" height={190}>
+              <BarChart data={dowStats} barSize={24}>
+                {CHART_GRID}<XAxis dataKey="day" tick={AXIS_STYLE} axisLine={false} tickLine={false}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={40}/><Tooltip content={<CustomTip/>}/>
+                <Bar dataKey="avgRatio" radius={[3,3,0,0]} fill={T.slate600} name="Avg Ratio"/>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+          <Card style={{gridColumn:'1/-1'}}>
+            <SectionLabel>Day of week breakdown</SectionLabel>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
+              <thead><tr>{['Day','Data Points','Avg Meetings','Avg Ratio','Total Meetings'].map(h=><th key={h} style={{textAlign:'left',padding:'8px 12px',borderBottom:`1px solid ${T.border}`,color:T.slate500,fontSize:10,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.07em'}}>{h}</th>)}</tr></thead>
+              <tbody>{dowStats.map((r,i)=>{
+                const full=WEEKDAYS[i];
+                const rows=daily.filter(d=>d.day===full);
+                const total=rows.reduce((s,d)=>s+d.booked,0);
+                return(
+                  <tr key={r.day} style={{borderBottom:`1px solid rgba(255,255,255,0.03)`}}>
+                    <td style={{padding:'8px 12px',fontWeight:700,color:T.slate200}}>{full}</td>
+                    <td style={{padding:'8px 12px',color:T.slate500}}>{r.days}</td>
+                    <td style={{padding:'8px 12px',color:T.brandText,fontWeight:700}}>{r.avgBooked}</td>
+                    <td style={{padding:'8px 12px',color:T.slate400}}>{r.avgRatio>0?r.avgRatio.toLocaleString():'—'}</td>
+                    <td style={{padding:'8px 12px',color:T.slate200,fontWeight:700}}>{total.toLocaleString()}</td>
+                  </tr>
+                );
+              })}</tbody>
+            </table>
+          </Card>
+        </div>
+      )}
+      {bizTab==='Insights'&&(
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+          {[
+            {title:`Volume scaled ${(last.emailsSent/first.emailsSent).toFixed(1)}x`,type:'neutral',body:`From ${fmt(first.emailsSent)} in ${first.month} to ${fmt(last.emailsSent)} in ${last.month}.`},
+            {title:`Meetings grew ${meetingGrowth}%`,type:'success',body:`${first.booked.toLocaleString()} → ${last.booked.toLocaleString()} meetings over 7 months.`},
+            {title:'Dec–Jan breakthrough',type:'neutral',body:'December hit 13.8M emails; January broke records with 700K+ daily sends.'},
+            {title:'Jan \'26: best KPI distribution',type:'neutral',body:'40%+ of January days hit the top two conversion tiers at record volume.'},
+            {title:'Big Think Capital surging',type:'success',body:'Big Think\'s Jan \'26 bookings (1,317) were its best ever.'},
+            {title:`Goal: ${progress}% to 10,000/month`,type:parseFloat(progress)>80?'success':'warning',body:`Need ~${Math.round(goalTarget*last.ratio/1000000).toFixed(1)}M emails/month at current conversion.`},
+          ].map((ins,i)=>(
+            <Card key={i}>
+              <div style={{marginBottom:8}}><StatusTag type={ins.type}>{ins.type==='success'?'Positive':'Insight'}</StatusTag></div>
+              <div style={{fontSize:13,fontWeight:700,color:T.slate200,marginBottom:6}}>{ins.title}</div>
+              <div style={{fontSize:12,color:T.slate500,lineHeight:1.6}}>{ins.body}</div>
+            </Card>
           ))}
         </div>
-        {cmView==="home"&&(<>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-            {/* #3: corrected all-time total */}
-            {[{icon:"📅",label:"All-Time Meetings",value:correctAllTimeCMTotal.toLocaleString(),color:"#818cf8"},{icon:"📧",label:"All-Time Emails",value:fmt(allTs),color:"#22d3ee"},{icon:"🤖",label:"AI Meetings",value:allAi.toLocaleString(),color:"#a78bfa"},{icon:"🎯",label:"Team S/B Ratio",value:allR?allR.toLocaleString():"—",color:getTier(allR)?.color||"#f1f5f9"}].map((c,i)=>(
-              <div key={i} style={{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:14,padding:"14px 16px"}}><div style={{fontSize:20,marginBottom:5}}>{c.icon}</div><div style={{fontSize:22,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:10,color:"#64748b",marginTop:3,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div></div>
+      )}
+    </div>
+  );
+
+  // ── CM ──────────────────────────────────────────────────────
+  const showCMSide=['cms','compare','boards'].includes(cmView);
+  const renderCM=()=>(
+    <div style={{display:'flex',flex:1,minHeight:0}}>
+      {showCMSide&&(
+        <div style={{width:148,flexShrink:0,background:'#0d1422',borderRight:`1px solid ${T.border}`,padding:'16px 12px',overflowY:'auto',display:'flex',flexDirection:'column',gap:18}}>
+          <div>
+            <div style={{fontSize:9,fontWeight:700,color:T.slate600,letterSpacing:'0.1em',marginBottom:8,textTransform:'uppercase'}}>Ratio Scale</div>
+            {TIERS.map(t=><div key={t.label} style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}><div style={{width:6,height:6,borderRadius:1,backgroundColor:t.color,flexShrink:0}}/><span style={{fontSize:9,color:T.slate600}}>{t.label}</span></div>)}
+          </div>
+          <div>
+            <div style={{fontSize:9,fontWeight:700,color:T.slate600,letterSpacing:'0.1em',marginBottom:8,textTransform:'uppercase'}}>Months</div>
+            {ALL_CM_MONTHS.map(m=>(
+              <div key={m} onClick={()=>toggleMonth(m)} style={{display:'flex',alignItems:'center',gap:7,marginBottom:5,cursor:'pointer'}}>
+                <div style={{width:11,height:11,borderRadius:2,border:`1px solid ${selMonths.includes(m)?T.brand:T.slate700}`,backgroundColor:selMonths.includes(m)?T.brand:'transparent',flexShrink:0}}/>
+                <span style={{fontSize:11,color:selMonths.includes(m)?T.slate200:T.slate600}}>{m.slice(0,3)}</span>
+              </div>
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
-            <Panel title="MEETINGS BOOKED — DAILY"><ResponsiveContainer width="100%" height={190}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={.4}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="date" tick={{fill:"#475569",fontSize:9}} interval={8}/><YAxis tick={{fill:"#475569",fontSize:9}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#6366f1" strokeWidth={2} fill="url(#cg1)" name="Total"/><Area type="monotone" dataKey="aiBooked" stroke="#a78bfa" strokeWidth={1.5} fill="transparent" name="AI" strokeDasharray="4 2"/></AreaChart></ResponsiveContainer></Panel>
-            <Panel title="MONTHLY S/B RATIO"><ResponsiveContainer width="100%" height={190}><BarChart data={monthlyAgg}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="period" tick={{fill:"#475569",fontSize:10}}/><YAxis tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><Tooltip content={<CustomTip/>}/><Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/></BarChart></ResponsiveContainer></Panel>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
-            {[{title:"🥇 ALL-TIME MEETINGS",key:"allTimeBooked",color:"#34d399",asc:false},{title:"🤖 AI MEETINGS",key:"allTimeAiBooked",color:"#a78bfa",asc:false},{title:"🎯 BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{
-              const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);
-              const best=sorted[0]?.[key]||1;
-              return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=asc?(best/r[key])*100:(r[key]/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:12,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:10,color:"#475569"}}>{i+1}</span>}</span><span style={{fontSize:11,color:"#cbd5e1",fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#1e3a5f",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#6366f1"}}/></div></div>);})}</div></Panel>);
-            })}
-          </div>
-        </>)}
-        {cmView==="daily"&&(<>
-          <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}>
-            <span style={{fontSize:11,color:"#475569",fontWeight:700}}>MONTH:</span>
-            {["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-            {/* #4: no ":1", #6: "Meetings" */}
-            {[{icon:"📅",label:"Meetings",value:dailyKpi.tb.toLocaleString(),color:"#818cf8"},{icon:"📧",label:"Emails",value:fmt(dailyKpi.ts),color:"#22d3ee"},{icon:"🤖",label:"AI Meetings",value:dailyKpi.ai.toLocaleString(),color:"#a78bfa"},{icon:"🎯",label:"S/B Ratio",value:dailyKpi.r?dailyKpi.r.toLocaleString():"—",color:getTier(dailyKpi.r)?.color||"#f1f5f9"}].map((c,i)=>(
-              <div key={i} style={{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:14,padding:"14px 16px"}}><div style={{fontSize:18,marginBottom:5}}>{c.icon}</div><div style={{fontSize:20,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:10,color:"#64748b",marginTop:3,textTransform:"uppercase"}}>{c.label}</div></div>
+          <div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:7}}>
+              <div style={{fontSize:9,fontWeight:700,color:T.slate600,letterSpacing:'0.1em',textTransform:'uppercase'}}>CMs</div>
+              <div style={{display:'flex',gap:6}}>
+                <span onClick={()=>setSelCMs(ALL_CMs)} style={{fontSize:9,color:T.brandText,cursor:'pointer',fontWeight:700}}>All</span>
+                <span onClick={()=>setSelCMs([])} style={{fontSize:9,color:T.slate600,cursor:'pointer',fontWeight:700}}>Clear</span>
+              </div>
+            </div>
+            {ALL_CMs.map((cm,i)=>(
+              <div key={cm} onClick={()=>toggleCM(cm)} style={{display:'flex',alignItems:'center',gap:6,marginBottom:5,cursor:'pointer'}}>
+                <div style={{width:7,height:7,borderRadius:1,backgroundColor:T.brand,opacity:selCMs.includes(cm)?1:0.2,flexShrink:0}}/>
+                <span style={{fontSize:10,color:selCMs.includes(cm)?T.slate300:T.slate600}}>{cm}</span>
+              </div>
             ))}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
-            <Panel title="DAILY MEETINGS"><ResponsiveContainer width="100%" height={190}><AreaChart data={dailyFiltered.filter(r=>r.totalBooked>0)}><defs><linearGradient id="ddg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#6366f1" stopOpacity={.4}/><stop offset="95%" stopColor="#6366f1" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="date" tick={{fill:"#475569",fontSize:9}} interval={6}/><YAxis tick={{fill:"#475569",fontSize:9}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#6366f1" strokeWidth={2} fill="url(#ddg1)" name="Total"/></AreaChart></ResponsiveContainer></Panel>
-            <Panel title="S/B RATIO"><div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:7}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:7,height:7,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:8,color:"#475569"}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={155}><BarChart data={dailyFiltered.filter(r=>r.sbRatio&&r.totalBooked>2)}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="date" tick={{fill:"#475569",fontSize:9}} interval={6}/><YAxis tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><Tooltip content={<CustomTip/>}/><Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/></BarChart></ResponsiveContainer></Panel>
-          </div>
-          {/* #5: Full daily table with all days */}
-          <Panel title="DAILY TABLE"><div style={{overflowX:"auto",maxHeight:320,overflowY:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}><thead style={{position:"sticky",top:0,background:"#0d1b2e",zIndex:5}}><tr>{["Date","Day","Inboxes","Non-AI Sent","Non-AI Booked","AI Sent","AI Booked","Total Sent","Total Booked","S/B"].map(h=><th key={h} style={{padding:"7px 8px",textAlign:"left",color:"#475569",fontWeight:700,fontSize:9,borderBottom:"1px solid #1e3a5f",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead><tbody>{dailyFiltered.map((r,i)=><tr key={i} style={{borderBottom:"1px solid #0f1e35",background:i%2?"#0a1628":"transparent"}}><td style={{padding:"6px 8px",color:"#e2e8f0",fontWeight:600,whiteSpace:"nowrap"}}>{r.date}</td><td style={{padding:"6px 8px",color:"#64748b"}}>{r.day.slice(0,3)}</td><td style={{padding:"6px 8px",color:"#94a3b8"}}>{r.inboxes.toLocaleString()}</td><td style={{padding:"6px 8px"}}>{r.nonAiSent.toLocaleString()}</td><td style={{padding:"6px 8px",color:"#60a5fa",fontWeight:700}}>{r.nonAiBooked}</td><td style={{padding:"6px 8px"}}>{r.aiSent.toLocaleString()}</td><td style={{padding:"6px 8px",color:"#a78bfa",fontWeight:700}}>{r.aiBooked}</td><td style={{padding:"6px 8px"}}>{fmt(r.totalSent)}</td><td style={{padding:"6px 8px",color:"#34d399",fontWeight:800}}>{r.totalBooked}</td><td style={{padding:"6px 8px"}}><TierPill value={r.sbRatio} sm/></td></tr>)}</tbody></table></div></Panel>
-        </>)}
-        {cmView==="cms"&&(<>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-            {[{icon:"📅",label:"Meetings",value:cmTb.toLocaleString(),color:"#818cf8"},{icon:"📧",label:"Emails",value:fmt(cmTs),color:"#22d3ee"},{icon:"🤖",label:"AI Meetings",value:cmAi.toLocaleString(),color:"#a78bfa"},{icon:"🎯",label:"Team S/B",value:teamR?teamR.toLocaleString():"—",color:getTier(teamR)?.color||"#f1f5f9"}].map((c,i)=>(
-              <div key={i} style={{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:14,padding:"14px 16px"}}><div style={{fontSize:18,marginBottom:5}}>{c.icon}</div><div style={{fontSize:20,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:10,color:"#64748b",marginTop:3,textTransform:"uppercase"}}>{c.label}</div></div>
-            ))}
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <Panel title="MEETINGS BY CM"><ResponsiveContainer width="100%" height={210}><BarChart data={cmAgg}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="cm" tick={{fill:"#475569",fontSize:9}}/><YAxis tick={{fill:"#475569",fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:10,color:"#64748b"}}/><Bar dataKey="nonAiBooked" name="Non-AI" stackId="a" fill="#6366f1" radius={[0,0,3,3]}/><Bar dataKey="aiBooked" name="AI" stackId="a" fill="#a78bfa" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></Panel>
-            <Panel title={`INBOX OWNERSHIP · ${totalInboxes.toLocaleString()}`}><ResponsiveContainer width="100%" height={210}><PieChart><Pie data={inboxPie} cx="50%" cy="50%" innerRadius={45} outerRadius={78} dataKey="value" paddingAngle={3}>{inboxPie.map((_,i)=><Cell key={i} fill={CM_COLORS[ALL_CMs.indexOf(_.name)%CM_COLORS.length]} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" inboxes",n]}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:"#64748b"}}/></PieChart></ResponsiveContainer></Panel>
-          </div>
-          <Panel title="S/B RATIO BY CM"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}33`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:8,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={200}><BarChart data={[...cmAgg].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={65}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
-          <Panel title="TREND OVER TIME"><div style={{display:"flex",gap:5,marginBottom:8}}>{[{key:"totalBooked",label:"Meetings"},{key:"totalSent",label:"Emails"},{key:"inboxes",label:"Inboxes"}].map(o=><Btn key={o.key} active={trendMetric===o.key} onClick={()=>setTrendMetric(o.key)}>{o.label}</Btn>)}</div><ResponsiveContainer width="100%" height={180}><LineChart data={trendData} margin={{left:5,right:10}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="period" tick={{fill:"#475569",fontSize:9}}/><YAxis tickFormatter={v=>fmt(v)} tick={{fill:"#475569",fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:"#64748b"}}/>{selCMs.map(cm=><Line key={cm} type="monotone" dataKey={cm} stroke={CM_COLORS[ALL_CMs.indexOf(cm)%CM_COLORS.length]} strokeWidth={2} dot={{r:2}} connectNulls/>)}</LineChart></ResponsiveContainer></Panel>
-        </>)}
-        {cmView==="compare"&&(<>
-          <div style={{display:"flex",alignItems:"center",gap:7}}><span style={{fontSize:11,color:"#475569",fontWeight:700}}>MODE:</span>{["Non AI","💻 AI","All"].map(m=><Btn key={m} active={compareMode===m} onClick={()=>setCompareMode(m)}>{m}</Btn>)}</div>
-          <Panel title={`${compareMode.toUpperCase()} — EMAILS & MEETINGS`}><ResponsiveContainer width="100%" height={240}><BarChart data={compareData} margin={{left:0,right:10}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="cm" tick={{fill:"#475569",fontSize:10}}/><YAxis yAxisId="l" tickFormatter={v=>fmt(v)} tick={{fill:"#475569",fontSize:9}}/><YAxis yAxisId="r" orientation="right" tick={{fill:"#475569",fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:10,color:"#64748b"}}/><Bar yAxisId="l" dataKey="sent" name="Emails Sent" fill="#6366f1" radius={[4,4,0,0]}/><Bar yAxisId="r" dataKey="booked" name="Meetings" fill="#34d399" radius={[4,4,0,0]}/></BarChart></ResponsiveContainer></Panel>
-          <Panel title="S/B RATIO COMPARISON"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}33`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:8,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={200}><BarChart data={[...compareData].filter(r=>r.ratio).sort((a,b)=>a.ratio-b.ratio)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={70}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="ratio" shape={<TierBar/>} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
-        </>)}
-        {cmView==="boards"&&(()=>{
-          const boards=[{title:"🥇 ALL-TIME MEETINGS",key:"allTimeBooked",color:"#34d399",asc:false},{title:"🤖 AI MEETINGS",key:"allTimeAiBooked",color:"#a78bfa",asc:false},{title:"🎯 BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}];
-          return(<>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
-              {boards.map(({title,key,color,asc,tier})=>{
-                const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const best=sorted[0]?.[key]||1;
-                return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{sorted.map((r,i)=>{const pct=asc?(best/r[key])*100:(r[key]/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:13,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:9,color:"#475569"}}>{i+1}</span>}</span><span style={{fontSize:11,color:"#cbd5e1",fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#1e3a5f",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#6366f1"}}/></div></div>);})}</div></Panel>);
+        </div>
+      )}
+      <div style={{flex:1,overflowY:'auto',padding:'0 0 16px 0'}}>
+        <div style={{display:'flex',gap:0,borderBottom:`1px solid ${T.border}`,marginBottom:20}}>
+          {CM_VIEWS.map(({key,label})=>(
+            <button key={key} onClick={()=>setCmView(key)} style={{
+              background:'none',border:'none',cursor:'pointer',
+              padding:'9px 16px',fontSize:12,fontWeight:cmView===key?700:500,
+              color:cmView===key?T.brandText:T.slate500,
+              borderBottom:cmView===key?`2px solid ${T.brand}`:'2px solid transparent',
+              marginBottom:-1,outline:'none',
+            }}>{label}</button>
+          ))}
+        </div>
+        {cmView==='home'&&(
+          <>
+            <KpiRow items={[
+              {label:'All-Time Meetings',value:correctAllTimeCMTotal.toLocaleString(),sub:'Oct 2025 – Jan 2026'},
+              {label:'All-Time Emails',value:fmt(allTs)},
+              {label:'AI Meetings',value:allAi.toLocaleString()},
+              {label:'Team S/B Ratio',value:allR?allR.toLocaleString():'—'},
+            ]}/>
+            <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16,marginBottom:16}}>
+              <Card>
+                <SectionLabel>Meetings booked — daily</SectionLabel>
+                <ResponsiveContainer width="100%" height={170}>
+                  <AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}>
+                    <defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.brand} stopOpacity={0.08}/><stop offset="95%" stopColor={T.brand} stopOpacity={0}/></linearGradient></defs>
+                    {CHART_GRID}<XAxis dataKey="date" tick={AXIS_STYLE} axisLine={false} tickLine={false} interval={3}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/><Tooltip content={<CustomTip/>}/>
+                    <Area type="monotone" dataKey="totalBooked" stroke={T.brand} strokeWidth={1.5} fill="url(#cg1)" name="Total"/>
+                    <Line type="monotone" dataKey="aiBooked" stroke={T.slate500} strokeWidth={1} dot={false} name="AI" strokeDasharray="3 2"/>
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Card>
+              <Card>
+                <SectionLabel>Monthly S/B ratio</SectionLabel>
+                <ResponsiveContainer width="100%" height={170}>
+                  <BarChart data={monthlyAgg}>
+                    {CHART_GRID}<XAxis dataKey="period" tick={AXIS_STYLE}/><YAxis tick={AXIS_STYLE} tickFormatter={v=>v.toLocaleString()} width={40}/><Tooltip content={<CustomTip/>}/>
+                    <Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16}}>
+              {[{title:'All-Time Meetings',key:'allTimeBooked',asc:false},{title:'AI Meetings',key:'allTimeAiBooked',asc:false},{title:'Best S/B Ratio',key:'sbRatio',asc:true,tier:true}].map(({title,key,asc,tier})=>{
+                const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);
+                const best=sorted[0]?.[key]||1;
+                return(
+                  <Card key={title}>
+                    <SectionLabel>{title}</SectionLabel>
+                    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                      {sorted.map((r,i)=>{
+                        const pct=asc?(best/r[key])*100:(r[key]/best)*100;
+                        return(
+                          <div key={r.cm}>
+                            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:3}}>
+                              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                                <span style={{fontSize:9,fontWeight:700,color:i===0?T.brand:T.slate600,width:22}}>{i<3?['1st','2nd','3rd'][i]:`#${i+1}`}</span>
+                                <span style={{fontSize:11,color:T.slate300,fontWeight:600}}>{r.cm}</span>
+                              </div>
+                              {tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color:T.slate100}}>{r[key].toLocaleString()}</span>}
+                            </div>
+                            <div style={{height:2,backgroundColor:T.slate800,borderRadius:2,marginLeft:28}}>
+                              <div style={{height:2,borderRadius:2,width:`${pct}%`,backgroundColor:i===0?T.brand:T.slate700}}/>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Card>
+                );
               })}
             </div>
-            <Panel title="ALL-TIME S/B RATIO"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}33`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:8,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={220}><BarChart data={[...allTimeCM].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
-            <Panel title="ALL-TIME MEETINGS — TOTAL vs AI"><ResponsiveContainer width="100%" height={210}><BarChart data={[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)} margin={{left:0,right:10}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="cm" tick={{fill:"#475569",fontSize:10}}/><YAxis tick={{fill:"#475569",fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:10,color:"#64748b"}}/><Bar dataKey="allTimeBooked" name="All-Time" radius={[4,4,0,0]}>{allTimeCM.map((r,i)=><Cell key={i} fill={CM_COLORS[ALL_CMs.indexOf(r.cm)%CM_COLORS.length]}/>)}</Bar><Bar dataKey="allTimeAiBooked" name="AI" fill="#a78bfa" radius={[4,4,0,0]} opacity={.9}/></BarChart></ResponsiveContainer></Panel>
-          </>);
+          </>
+        )}
+        {cmView==='daily'&&(
+          <>
+            <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:16,flexWrap:'wrap'}}>
+              <span style={{fontSize:11,color:T.slate500,fontWeight:600,marginRight:4}}>Month:</span>
+              {['All',...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==='All'?'All':m.slice(0,3)}</Btn>)}
+            </div>
+            <KpiRow items={[
+              {label:'Meetings',value:dailyKpi.tb.toLocaleString()},
+              {label:'Emails',value:fmt(dailyKpi.ts)},
+              {label:'AI Meetings',value:dailyKpi.ai.toLocaleString()},
+              {label:'S/B Ratio',value:dailyKpi.r?dailyKpi.r.toLocaleString():'—'},
+            ]}/>
+            <div style={{display:'grid',gridTemplateColumns:'3fr 2fr',gap:16,marginBottom:16}}>
+              <Card>
+                <SectionLabel>Daily meetings</SectionLabel>
+                <ResponsiveContainer width="100%" height={170}>
+                  <AreaChart data={dailyFiltered.filter(r=>r.totalBooked>0)}>
+                    <defs><linearGradient id="ddg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.brand} stopOpacity={0.08}/><stop offset="95%" stopColor={T.brand} stopOpacity={0}/></linearGradient></defs>
+                    {CHART_GRID}<XAxis dataKey="date" tick={AXIS_STYLE} axisLine={false} tickLine={false} interval={3}/><YAxis tick={AXIS_STYLE} axisLine={false} tickLine={false} width={36}/><Tooltip content={<CustomTip/>}/>
+                    <Area type="monotone" dataKey="totalBooked" stroke={T.brand} strokeWidth={1.5} fill="url(#ddg1)" name="Total"/>
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Card>
+              <Card>
+                <SectionLabel>S/B ratio</SectionLabel>
+                <div style={{display:'flex',flexWrap:'wrap',gap:4,marginBottom:8}}>
+                  {TIERS.map(t=><div key={t.label} style={{display:'flex',alignItems:'center',gap:3}}><div style={{width:5,height:5,borderRadius:1,backgroundColor:t.color}}/><span style={{fontSize:8,color:T.slate600}}>{t.label}</span></div>)}
+                </div>
+                <ResponsiveContainer width="100%" height={130}>
+                  <BarChart data={dailyFiltered.filter(r=>r.sbRatio&&r.totalBooked>2)}>
+                    {CHART_GRID}<XAxis dataKey="date" tick={AXIS_STYLE} axisLine={false} tickLine={false} interval={4}/><YAxis tick={AXIS_STYLE} tickFormatter={v=>v.toLocaleString()} width={40}/><Tooltip content={<CustomTip/>}/>
+                    <Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </div>
+            <Card>
+              <SectionLabel>Daily table</SectionLabel>
+              <div style={{overflowX:'auto',maxHeight:300,overflowY:'auto'}}>
+                <table style={{width:'100%',borderCollapse:'collapse',fontSize:11}}>
+                  <thead style={{position:'sticky',top:0,background:'#111827',zIndex:5}}>
+                    <tr>{['Date','Day','Inboxes','Non-AI Sent','Non-AI Booked','AI Sent','AI Booked','Total Sent','Total Booked','S/B'].map(h=><th key={h} style={{padding:'7px 10px',textAlign:'left',color:T.slate500,fontWeight:600,fontSize:9,borderBottom:`1px solid ${T.border}`,whiteSpace:'nowrap',letterSpacing:'0.06em',textTransform:'uppercase'}}>{h}</th>)}</tr>
+                  </thead>
+                  <tbody>{dailyFiltered.map((r,i)=>(
+                    <tr key={i} style={{borderBottom:`1px solid rgba(255,255,255,0.025)`,background:i%2?'rgba(255,255,255,0.01)':'transparent'}}>
+                      <td style={{padding:'6px 10px',color:T.slate200,fontWeight:600}}>{r.date}</td>
+                      <td style={{padding:'6px 10px',color:T.slate500}}>{r.day.slice(0,3)}</td>
+                      <td style={{padding:'6px 10px',color:T.slate400}}>{r.inboxes.toLocaleString()}</td>
+                      <td style={{padding:'6px 10px',color:T.slate400}}>{r.nonAiSent.toLocaleString()}</td>
+                      <td style={{padding:'6px 10px',color:T.slate200,fontWeight:600}}>{r.nonAiBooked}</td>
+                      <td style={{padding:'6px 10px',color:T.slate400}}>{r.aiSent.toLocaleString()}</td>
+                      <td style={{padding:'6px 10px',color:T.slate300,fontWeight:600}}>{r.aiBooked}</td>
+                      <td style={{padding:'6px 10px',color:T.slate400}}>{fmt(r.totalSent)}</td>
+                      <td style={{padding:'6px 10px',color:T.brandText,fontWeight:700}}>{r.totalBooked}</td>
+                      <td style={{padding:'6px 10px'}}><TierPill value={r.sbRatio} sm/></td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+            </Card>
+          </>
+        )}
+        {cmView==='cms'&&(
+          <>
+            <KpiRow items={[
+              {label:'Meetings',value:cmTb.toLocaleString()},
+              {label:'Emails',value:fmt(cmTs)},
+              {label:'AI Meetings',value:cmAi.toLocaleString()},
+              {label:'Team S/B',value:teamR?teamR.toLocaleString():'—'},
+            ]}/>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
+              <Card>
+                <SectionLabel>Meetings by CM</SectionLabel>
+                <ResponsiveContainer width="100%" height={190}>
+                  <BarChart data={cmAgg}>
+                    {CHART_GRID}<XAxis dataKey="cm" tick={{...AXIS_STYLE,fontSize:9}}/><YAxis tick={AXIS_STYLE} width={36}/><Tooltip content={<CustomTip/>}/><Legend iconSize={7} wrapperStyle={{fontSize:9,color:T.slate500}}/>
+                    <Bar dataKey="nonAiBooked" name="Non-AI" stackId="a" fill={T.brand} radius={[0,0,2,2]} opacity={0.85}/>
+                    <Bar dataKey="aiBooked" name="AI" stackId="a" fill={T.slate500} radius={[2,2,0,0]} opacity={0.9}/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+              <Card>
+                <SectionLabel>Inbox ownership · {totalInboxes.toLocaleString()}</SectionLabel>
+                <ResponsiveContainer width="100%" height={190}>
+                  <PieChart>
+                    <Pie data={inboxPie} cx="50%" cy="50%" innerRadius={42} outerRadius={72} dataKey="value" paddingAngle={2}>
+                      {inboxPie.map((_,i)=><Cell key={i} fill={CM_PALETTE[ALL_CMs.indexOf(_.name)%CM_PALETTE.length]} stroke="transparent" opacity={0.75+0.025*i}/>)}
+                    </Pie>
+                    <Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+' inboxes',n]}/><Legend iconSize={7} wrapperStyle={{fontSize:9,color:T.slate500}}/>
+                  </PieChart>
+                </ResponsiveContainer>
+              </Card>
+            </div>
+            <Card style={{marginBottom:16}}>
+              <SectionLabel>S/B ratio by CM</SectionLabel>
+              <ResponsiveContainer width="100%" height={190}>
+                <BarChart data={[...cmAgg].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:60}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Ratio']}/>
+                  <Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>v.toLocaleString()}}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+                <SectionLabel style={{marginBottom:0}}>Trend over time</SectionLabel>
+                <div style={{display:'flex',gap:4}}>
+                  {[{key:'totalBooked',label:'Meetings'},{key:'totalSent',label:'Emails'},{key:'inboxes',label:'Inboxes'}].map(o=><Btn key={o.key} active={trendMetric===o.key} onClick={()=>setTrendMetric(o.key)}>{o.label}</Btn>)}
+                </div>
+              </div>
+              <ResponsiveContainer width="100%" height={160}>
+                <LineChart data={trendData} margin={{left:5,right:10}}>
+                  {CHART_GRID}<XAxis dataKey="period" tick={AXIS_STYLE}/><YAxis tickFormatter={v=>fmt(v)} tick={AXIS_STYLE} width={40}/><Tooltip content={<CustomTip/>}/><Legend iconSize={7} wrapperStyle={{fontSize:9,color:T.slate500}}/>
+                  {selCMs.map((cm,i)=><Line key={cm} type="monotone" dataKey={cm} stroke={CM_PALETTE[ALL_CMs.indexOf(cm)%CM_PALETTE.length]} strokeWidth={1.5} dot={{r:2}} connectNulls opacity={0.8}/>)}
+                </LineChart>
+              </ResponsiveContainer>
+            </Card>
+          </>
+        )}
+        {cmView==='compare'&&(
+          <>
+            <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:20}}>
+              <span style={{fontSize:11,color:T.slate500,fontWeight:600,marginRight:4}}>Mode:</span>
+              {['Non AI','AI','All'].map(m=><Btn key={m} active={compareMode===m} onClick={()=>setCompareMode(m)}>{m}</Btn>)}
+            </div>
+            <Card style={{marginBottom:16}}>
+              <SectionLabel>{compareMode} — emails & meetings</SectionLabel>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={compareData} margin={{left:0,right:10}}>
+                  {CHART_GRID}<XAxis dataKey="cm" tick={{...AXIS_STYLE,fontSize:9}}/><YAxis yAxisId="l" tickFormatter={v=>fmt(v)} tick={AXIS_STYLE} width={40}/><YAxis yAxisId="r" orientation="right" tick={AXIS_STYLE} width={36}/><Tooltip content={<CustomTip/>}/><Legend iconSize={7} wrapperStyle={{fontSize:10,color:T.slate500}}/>
+                  <Bar yAxisId="l" dataKey="sent" name="Emails Sent" fill={T.brand} radius={[3,3,0,0]} opacity={0.6}/>
+                  <Bar yAxisId="r" dataKey="booked" name="Meetings" fill={T.slate400} radius={[3,3,0,0]} opacity={0.9}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>S/B ratio comparison</SectionLabel>
+              <ResponsiveContainer width="100%" height={190}>
+                <BarChart data={[...compareData].filter(r=>r.ratio).sort((a,b)=>a.ratio-b.ratio)} layout="vertical" margin={{left:10,right:60}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Ratio']}/>
+                  <Bar dataKey="ratio" shape={<TierBar/>} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>v.toLocaleString()}}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </>
+        )}
+        {cmView==='boards'&&(()=>{
+          const boards=[{title:'All-Time Meetings',key:'allTimeBooked',asc:false},{title:'AI Meetings',key:'allTimeAiBooked',asc:false},{title:'Best S/B Ratio',key:'sbRatio',asc:true,tier:true}];
+          return(
+            <>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:16}}>
+                {boards.map(({title,key,asc,tier})=>{
+                  const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);
+                  const best=sorted[0]?.[key]||1;
+                  return(
+                    <Card key={title}>
+                      <SectionLabel>{title}</SectionLabel>
+                      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                        {sorted.map((r,i)=>{
+                          const pct=asc?(best/r[key])*100:(r[key]/best)*100;
+                          return(
+                            <div key={r.cm}>
+                              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:3}}>
+                                <div style={{display:'flex',alignItems:'center',gap:6}}>
+                                  <span style={{fontSize:9,fontWeight:700,color:i===0?T.brand:T.slate600,width:22}}>{i<3?['1st','2nd','3rd'][i]:`#${i+1}`}</span>
+                                  <span style={{fontSize:11,color:T.slate300,fontWeight:600}}>{r.cm}</span>
+                                </div>
+                                {tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color:T.slate100}}>{r[key].toLocaleString()}</span>}
+                              </div>
+                              <div style={{height:2,backgroundColor:T.slate800,borderRadius:2,marginLeft:28}}>
+                                <div style={{height:2,borderRadius:2,width:`${pct}%`,backgroundColor:i===0?T.brand:T.slate700}}/>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+              <Card style={{marginBottom:16}}>
+                <SectionLabel>All-time S/B ratio</SectionLabel>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={[...allTimeCM].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:60}}>
+                    {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Ratio']}/>
+                    <Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>v.toLocaleString()}}/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+              <Card>
+                <SectionLabel>All-time meetings — total vs AI</SectionLabel>
+                <ResponsiveContainer width="100%" height={190}>
+                  <BarChart data={[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)} margin={{left:0,right:10}}>
+                    {CHART_GRID}<XAxis dataKey="cm" tick={{...AXIS_STYLE,fontSize:9}}/><YAxis tick={AXIS_STYLE} width={36}/><Tooltip content={<CustomTip/>}/><Legend iconSize={7} wrapperStyle={{fontSize:10,color:T.slate500}}/>
+                    <Bar dataKey="allTimeBooked" name="All-Time" fill={T.brand} radius={[3,3,0,0]} opacity={0.8}/>
+                    <Bar dataKey="allTimeAiBooked" name="AI" fill={T.slate500} radius={[3,3,0,0]} opacity={0.9}/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </>
+          );
         })()}
       </div>
     </div>
   );
 
+  // ── Inbox ───────────────────────────────────────────────────
   const renderInbox=()=>(
-    <div style={{display:"flex",flexDirection:"column",gap:12}}>
-      <div style={{display:"flex",gap:4,background:"rgba(255,255,255,0.03)",padding:4,borderRadius:12,border:"1px solid rgba(255,255,255,0.06)",flexWrap:"wrap",width:"fit-content"}}>
-        {INBOX_TABS.map(t=><Btn key={t} active={inboxTab===t} onClick={()=>setInboxTab(t)}>{t}</Btn>)}
-      </div>
-      {inboxTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          {[{icon:"📬",label:"Total Accounts",value:fmtFull(269915),color:"#818cf8",sub:"Grand Total"},{icon:"✅",label:"Active Accounts",value:fmtFull(activeAccts),color:"#10b981",sub:`${((activeAccts/269915)*100).toFixed(1)}% of total`},{icon:"🔥",label:"Daily Emails Sent",value:fmt(totalDailyEmails),color:"#f59e0b",sub:"Across all CMs"},{icon:"🌡️",label:"In Warmup",value:fmtFull(warmupAccts),color:"#6366f1",sub:"Being warmed up"}].map((c,i)=>(
-            <div key={i} style={{background:"linear-gradient(135deg,#1a2744,#0f172a)",border:"1px solid #1e3a5f",borderRadius:16,padding:"18px 20px"}}><div style={{fontSize:22,marginBottom:8}}>{c.icon}</div><div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:10,color:"#64748b",marginTop:4,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div><div style={{fontSize:11,color:"#475569",marginTop:2}}>{c.sub}</div></div>
-          ))}
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
-          <Panel title="ACCOUNT STATUS BREAKDOWN"><ResponsiveContainer width="100%" height={220}><BarChart data={ACCOUNT_STATUS} layout="vertical" margin={{left:10,right:60}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="status" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={120}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>fmtFull(v)}}>{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="EMAIL PROVIDER SPLIT"><div style={{display:"flex",flexDirection:"column",gap:12,marginTop:8}}>{EMAIL_PROVIDERS.map((p,i)=>(<div key={i}><div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:13,fontWeight:700,color:"#e2e8f0"}}>{p.provider}</span><span style={{fontSize:13,fontWeight:800,color:p.color}}>{p.pct}%</span></div><div style={{height:10,background:"#1e3a5f",borderRadius:99,overflow:"hidden"}}><div style={{width:`${p.pct}%`,height:"100%",background:p.color,borderRadius:99}}/></div><div style={{fontSize:11,color:"#475569",marginTop:4}}>{fmtFull(p.accounts)} accounts</div></div>))}<div style={{marginTop:8,padding:"12px 14px",background:"rgba(255,255,255,0.03)",borderRadius:10,border:"1px solid rgba(255,255,255,0.06)"}}><div style={{fontSize:11,color:"#64748b",marginBottom:4}}>Total Monitored</div><div style={{fontSize:20,fontWeight:800,color:"#f1f5f9"}}>288,365</div></div></div></Panel>
-        </div>
-        <Panel title="ACCOUNT PIPELINE OVERVIEW"><div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>{ACCOUNT_STATUS.map((s,i)=>(<div key={i} style={{textAlign:"center",background:`${s.color}15`,border:`1px solid ${s.color}44`,borderRadius:12,padding:"14px 10px"}}><div style={{fontSize:22,fontWeight:800,color:s.color,marginBottom:4}}>{fmt(s.accounts)}</div><div style={{fontSize:9,color:"#64748b",textTransform:"uppercase",letterSpacing:.8,marginBottom:6,lineHeight:1.3}}>{s.status}</div><div style={{fontSize:11,fontWeight:700,color:s.color}}>{((s.accounts/269915)*100).toFixed(1)}%</div></div>))}</div></Panel>
-      </div>)}
-      {inboxTab==="Accounts"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <Panel title="ACCOUNT STATUS — PIE"><ResponsiveContainer width="100%" height={260}><PieChart><Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={55} outerRadius={100} dataKey="accounts" paddingAngle={3} nameKey="status">{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={10} wrapperStyle={{fontSize:11,color:"#64748b"}}/></PieChart></ResponsiveContainer></Panel>
-          <Panel title="EMAIL TYPE DISTRIBUTION"><ResponsiveContainer width="100%" height={260}><PieChart><Pie data={EMAIL_TYPES} cx="50%" cy="50%" innerRadius={55} outerRadius={100} dataKey="accounts" paddingAngle={3} nameKey="type">{EMAIL_TYPES.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={10} wrapperStyle={{fontSize:11,color:"#64748b"}}/></PieChart></ResponsiveContainer></Panel>
-        </div>
-        <Panel title="EMAIL TYPE FULL BREAKDOWN"><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Type","Accounts","Share","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:"1px solid #1e3a5f",color:"#475569",fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{h}</th>)}</tr></thead><tbody>{[...EMAIL_TYPES].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(<tr key={i} style={{borderBottom:"1px solid #0f1e35",background:i%2?"#0a1628":"transparent"}}><td style={{padding:"9px 12px",color:"#e2e8f0",fontWeight:600}}>{r.type}</td><td style={{padding:"9px 12px",color:r.color,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:"#64748b"}}>{r.pct}%</td><td style={{padding:"9px 12px",minWidth:120}}><div style={{height:6,background:"#1e3a5f",borderRadius:99}}><div style={{width:`${r.pct/40*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>))}</tbody></table></Panel>
-      </div>)}
-      {inboxTab==="Campaign Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          <MiniCard icon="👥" label="Total CM Accounts" value={fmtFull(totalCMAccounts)} color="#818cf8"/>
-          <MiniCard icon="📧" label="Total Daily Emails" value={fmt(totalDailyEmails)} color="#22d3ee"/>
-          <MiniCard icon="🏆" label="Largest CM" value="Ido" color="#f59e0b" sub="32,837 accounts · 23.56%"/>
-          <MiniCard icon="📈" label="Most Daily Volume" value="Eyver" color="#10b981" sub="265,960 emails/day"/>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
-          <Panel title="ACCOUNTS BY CM"><ResponsiveContainer width="100%" height={260}><BarChart data={[...CM_INBOX].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:70}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="cm" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={65}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>fmtFull(v)}}>{CM_INBOX.map((_,i)=><Cell key={i} fill={CM_COLORS[i%CM_COLORS.length]}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="DAILY EMAIL VOLUME"><ResponsiveContainer width="100%" height={260}><BarChart data={[...CM_INBOX].sort((a,b)=>b.dailyEmails-a.dailyEmails)} layout="vertical" margin={{left:10,right:55}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="cm" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={60}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Daily Emails"]}/><Bar dataKey="dailyEmails" radius={[0,4,4,0]}>{CM_INBOX.map((_,i)=><Cell key={i} fill={CM_COLORS[i%CM_COLORS.length]}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-        </div>
-        <Panel title="CM FULL TABLE"><div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["CM","Accounts","%","Daily Emails","Group A","Group B","Group Total"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:"1px solid #1e3a5f",color:"#475569",fontSize:10,fontWeight:700,textTransform:"uppercase",whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead><tbody>{[...CM_INBOX].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(<tr key={i} style={{borderBottom:"1px solid #0f1e35",background:i%2?"#0a1628":"transparent"}}><td style={{padding:"9px 12px",fontWeight:700,color:"#e2e8f0"}}>{r.cm}</td><td style={{padding:"9px 12px",color:CM_COLORS[i%CM_COLORS.length],fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:"#64748b"}}>{r.pct}%</td><td style={{padding:"9px 12px",color:"#22d3ee"}}>{fmtFull(r.dailyEmails)}</td><td style={{padding:"9px 12px",color:"#818cf8"}}>{r.groupA.toLocaleString()}</td><td style={{padding:"9px 12px",color:"#f472b6"}}>{r.groupB.toLocaleString()}</td><td style={{padding:"9px 12px",color:"#f59e0b",fontWeight:700}}>{(r.groupA+r.groupB).toLocaleString()}</td></tr>))}<tr style={{borderTop:"2px solid #1e3a5f",background:"#0d1b2e"}}><td style={{padding:"9px 12px",fontWeight:800,color:"#f1f5f9"}}>Grand Total</td><td style={{padding:"9px 12px",color:"#818cf8",fontWeight:800}}>{fmtFull(totalCMAccounts)}</td><td style={{padding:"9px 12px",color:"#64748b"}}>100%</td><td style={{padding:"9px 12px",color:"#22d3ee",fontWeight:800}}>{fmtFull(totalDailyEmails)}</td><td style={{padding:"9px 12px",color:"#818cf8",fontWeight:800}}>{CM_INBOX.reduce((s,r)=>s+r.groupA,0).toLocaleString()}</td><td style={{padding:"9px 12px",color:"#f472b6",fontWeight:800}}>{CM_INBOX.reduce((s,r)=>s+r.groupB,0).toLocaleString()}</td><td style={{padding:"9px 12px",color:"#f59e0b",fontWeight:800}}>{CM_INBOX.reduce((s,r)=>s+r.groupA+r.groupB,0).toLocaleString()}</td></tr></tbody></table></div></Panel>
-      </div>)}
-      {inboxTab==="Groups"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          <MiniCard icon="🏢" label="Total Groups" value="9" color="#818cf8"/>
-          <MiniCard icon="🅰️" label="Group A Total" value={fmtFull(42648)} color="#6366f1"/>
-          <MiniCard icon="🅱️" label="Group B Total" value={fmtFull(38926)} color="#f472b6"/>
-          <MiniCard icon="📊" label="Combined Total" value={fmtFull(81574)} color="#10b981"/>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
-          <Panel title="GROUP A vs GROUP B"><ResponsiveContainer width="100%" height={280}><BarChart data={[...GROUPS].sort((a,b)=>b.total-a.total)} barGap={4}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f"/><XAxis dataKey="group" tick={{fill:"#475569",fontSize:9}} interval={0} angle={-20} textAnchor="end" height={50}/><YAxis tick={{fill:"#475569",fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:10,color:"#64748b"}}/><Bar dataKey="A" name="Group A" fill="#6366f1" radius={[3,3,0,0]} barSize={18}/><Bar dataKey="B" name="Group B" fill="#f472b6" radius={[3,3,0,0]} barSize={18}/></BarChart></ResponsiveContainer></Panel>
-          <Panel title="GROUP TOTALS"><div style={{display:"flex",flexDirection:"column",gap:7}}>{[...GROUPS].sort((a,b)=>b.total-a.total).map((g,i)=>{const pct=(g.total/14060)*100;return(<div key={g.group}><div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:11,color:"#cbd5e1",fontWeight:600}}>{g.group}</span><span style={{fontSize:11,fontWeight:800,color:"#f59e0b"}}>{fmtFull(g.total)}</span></div><div style={{height:4,background:"#1e3a5f",borderRadius:99}}><div style={{width:`${pct}%`,height:"100%",background:"linear-gradient(90deg,#6366f1,#f472b6)",borderRadius:99}}/></div></div>);})}</div></Panel>
-        </div>
-      </div>)}
-      {inboxTab==="Inbox Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          <MiniCard icon="🧑‍💼" label="Inbox Managers" value="8" color="#818cf8"/>
-          <MiniCard icon="📬" label="Total Managed" value={fmtFull(88774)} color="#10b981"/>
-          <MiniCard icon="🏆" label="Largest Manager" value="Norman" color="#f59e0b" sub="24,908 · 28.06%"/>
-          <MiniCard icon="📊" label="Avg per Manager" value={fmtFull(Math.round(88774/8))} color="#22d3ee" sub="accounts"/>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
-          <Panel title="ACCOUNTS BY INBOX MANAGER"><ResponsiveContainer width="100%" height={270}><BarChart data={[...INBOX_MANAGERS].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:70}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="manager" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>fmtFull(v)}}>{INBOX_MANAGERS.map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="SHARE DISTRIBUTION"><ResponsiveContainer width="100%" height={270}><PieChart><Pie data={INBOX_MANAGERS} cx="50%" cy="50%" innerRadius={50} outerRadius={95} dataKey="accounts" nameKey="manager" paddingAngle={2}>{INBOX_MANAGERS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={9} wrapperStyle={{fontSize:10,color:"#64748b"}}/></PieChart></ResponsiveContainer></Panel>
-        </div>
-      </div>)}
-      {inboxTab==="Email Types"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          <MiniCard icon="📧" label="Email Types" value="8" color="#818cf8"/>
-          <MiniCard icon="🔝" label="Top Type" value="Reseller" color="#6366f1" sub="111,206 · 38.56%"/>
-          <MiniCard icon="🌐" label="Google Accounts" value={fmtFull(149058)} color="#4285f4" sub="51.69%"/>
-          <MiniCard icon="🪟" label="Outlook Accounts" value={fmtFull(139307)} color="#0078d4" sub="48.31%"/>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <Panel title="EMAIL TYPE BREAKDOWN"><ResponsiveContainer width="100%" height={280}><BarChart data={[...EMAIL_TYPES].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/><XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="type" type="category" tick={{fill:"#94a3b8",fontSize:9}} width={90}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>fmt(v)}}>{EMAIL_TYPES.map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="EMAIL PROVIDER COMPARISON"><div style={{display:"flex",flexDirection:"column",gap:16,paddingTop:8}}>{EMAIL_PROVIDERS.map((p,i)=>(<div key={i} style={{background:`${p.color}15`,border:`1px solid ${p.color}44`,borderRadius:14,padding:"20px 22px"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><span style={{fontSize:16,fontWeight:800,color:p.color}}>{p.provider}</span><span style={{fontSize:24,fontWeight:800,color:"#f1f5f9"}}>{p.pct}%</span></div><div style={{height:8,background:"#1e3a5f",borderRadius:99,marginBottom:10}}><div style={{width:`${p.pct}%`,height:"100%",background:p.color,borderRadius:99}}/></div><div style={{fontSize:22,fontWeight:800,color:p.color}}>{fmtFull(p.accounts)}</div><div style={{fontSize:11,color:"#475569"}}>total accounts</div></div>))}</div></Panel>
-        </div>
-      </div>)}
-      {/* #2: Domains tab */}
-      {inboxTab==="Domains"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-          <MiniCard icon="🌐" label="Total Domains" value={fmtFull(DOMAIN_DATA.total)} color="#818cf8"/>
-          <MiniCard icon="✅" label="Used Domains" value={fmtFull(DOMAIN_DATA.used)} color="#10b981" sub={`${((DOMAIN_DATA.used/DOMAIN_DATA.total)*100).toFixed(1)}% utilization`}/>
-          <MiniCard icon="🔒" label="Unused Domains" value={fmtFull(DOMAIN_DATA.unused)} color="#f59e0b" sub="Available capacity"/>
-          <MiniCard icon="🏢" label="Registrar Accounts" value={`${DOMAIN_DATA.byRegistrar.reduce((s,r)=>s+r.accounts,0)}`} color="#a78bfa" sub="Across 3 registrars"/>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
-          <Panel title="DOMAIN UTILIZATION">
-            <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>
-              {[{label:"Used",value:DOMAIN_DATA.used,color:"#10b981"},{label:"Unused",value:DOMAIN_DATA.unused,color:"#f59e0b"}].map((r,i)=>(
-                <div key={i}><div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:12,color:"#cbd5e1",fontWeight:600}}>{r.label}</span><span style={{fontSize:12,fontWeight:800,color:r.color}}>{fmtFull(r.value)} ({((r.value/DOMAIN_DATA.total)*100).toFixed(1)}%)</span></div><div style={{height:8,background:"#1e3a5f",borderRadius:99}}><div style={{width:`${(r.value/DOMAIN_DATA.total)*100}%`,height:"100%",background:r.color,borderRadius:99}}/></div></div>
-              ))}
-            </div>
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={DOMAIN_DATA.byTLD.filter(d=>d.count>0).sort((a,b)=>b.count-a.count)} layout="vertical" margin={{left:10,right:65}}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" horizontal={false}/>
-                <XAxis type="number" tick={{fill:"#475569",fontSize:9}} tickFormatter={v=>fmt(v)}/>
-                <YAxis dataKey="tld" type="category" tick={{fill:"#94a3b8",fontSize:10}} width={45}/>
-                <Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Domains"]}/>
-                <Bar dataKey="count" radius={[0,4,4,0]} label={{position:"right",fill:"#64748b",fontSize:9,formatter:v=>fmtFull(v)}}>{DOMAIN_DATA.byTLD.filter(d=>d.count>0).sort((a,b)=>b.count-a.count).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Panel>
-          <Panel title="BY REGISTRAR">
-            <div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:4}}>
-              {DOMAIN_DATA.byRegistrar.map((r,i)=>(
-                <div key={i} style={{background:`${r.color}15`,border:`1px solid ${r.color}44`,borderRadius:12,padding:"14px 16px"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><span style={{fontSize:14,fontWeight:800,color:r.color}}>{r.registrar}</span><span style={{fontSize:11,color:"#64748b"}}>{r.accounts} accounts</span></div>
-                  <div style={{fontSize:26,fontWeight:800,color:"#f1f5f9",marginBottom:6}}>{fmtFull(r.count)}</div>
-                  <div style={{height:6,background:"#1e3a5f",borderRadius:99}}><div style={{width:`${(r.count/DOMAIN_DATA.total)*100}%`,height:"100%",background:r.color,borderRadius:99}}/></div>
-                  <div style={{fontSize:10,color:"#475569",marginTop:6}}>{((r.count/DOMAIN_DATA.total)*100).toFixed(1)}% of total</div>
+    <div>
+      <div style={{fontSize:18,fontWeight:800,color:T.slate100,marginBottom:20,letterSpacing:'-0.02em'}}>Inbox Hub</div>
+      <TabBar tabs={INBOX_TABS} active={inboxTab} onChange={setInboxTab}/>
+      {inboxTab==='Overview'&&(
+        <>
+          <KpiRow items={[
+            {label:'Total Accounts',value:fmtFull(269915),sub:'Grand total'},
+            {label:'Active Accounts',value:fmtFull(activeAccts),sub:`${((activeAccts/269915)*100).toFixed(1)}% of total`},
+            {label:'Daily Emails Sent',value:fmt(totalDailyEmails),sub:'Across all CMs'},
+            {label:'In Warmup',value:fmtFull(warmupAccts),sub:'Being warmed up'},
+          ]}/>
+          <div style={{display:'grid',gridTemplateColumns:'3fr 2fr',gap:16,marginBottom:16}}>
+            <Card>
+              <SectionLabel>Account status breakdown</SectionLabel>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={ACCOUNT_STATUS} layout="vertical" margin={{left:10,right:60}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>fmt(v)}/><YAxis dataKey="status" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width:={110}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Accounts']}/>
+                  <Bar dataKey="accounts" radius={[0,3,3,0]} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>fmtFull(v)}}>{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} opacity={0.85}/>)}</Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>Email provider split</SectionLabel>
+              <div style={{display:'flex',flexDirection:'column',gap:14,marginTop:8}}>
+                {EMAIL_PROVIDERS.map((p,i)=>(
+                  <div key={i}>
+                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                      <span style={{fontSize:13,fontWeight:700,color:T.slate200}}>{p.provider}</span>
+                      <span style={{fontSize:13,fontWeight:800,color:T.slate100}}>{p.pct}%</span>
+                    </div>
+                    <div style={{height:6,background:T.slate800,borderRadius:99,overflow:'hidden'}}>
+                      <div style={{width:`${p.pct}%`,height:'100%',background:T.brand,borderRadius:99,opacity:i===0?0.9:0.5}}/>
+                    </div>
+                    <div style={{fontSize:11,color:T.slate600,marginTop:4}}>{fmtFull(p.accounts)} accounts</div>
+                  </div>
+                ))}
+                <div style={{paddingTop:10,borderTop:`1px solid ${T.border}`}}>
+                  <div style={{fontSize:10,color:T.slate600,marginBottom:3,textTransform:'uppercase',letterSpacing:'0.07em'}}>Total Monitored</div>
+                  <div style={{fontSize:20,fontWeight:800,color:T.slate100}}>288,365</div>
+                </div>
+              </div>
+            </Card>
+          </div>
+          <Card>
+            <SectionLabel>Account pipeline</SectionLabel>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:10}}>
+              {ACCOUNT_STATUS.map((s,i)=>(
+                <div key={i} style={{textAlign:'center',background:'rgba(0,0,0,0.2)',border:`1px solid rgba(255,255,255,0.05)`,borderRadius:6,padding:'14px 8px'}}>
+                  <div style={{fontSize:20,fontWeight:800,color:T.slate100,marginBottom:2}}>{fmt(s.accounts)}</div>
+                  <div style={{fontSize:9,color:T.slate500,textTransform:'uppercase',letterSpacing:'0.07em',marginBottom:6,lineHeight:1.4}}>{s.status}</div>
+                  <StatusTag type={s.color===T.success?'success':s.color===T.danger?'danger':'neutral'}>{((s.accounts/269915)*100).toFixed(1)}%</StatusTag>
                 </div>
               ))}
             </div>
-          </Panel>
-        </div>
-        <Panel title="DOMAIN BREAKDOWN TABLE">
-          <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-            <thead><tr>{["TLD","Count","Share","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:"1px solid #1e3a5f",color:"#475569",fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{h}</th>)}</tr></thead>
-            <tbody>{[...DOMAIN_DATA.byTLD].sort((a,b)=>b.count-a.count).map((r,i)=>(<tr key={i} style={{borderBottom:"1px solid #0f1e35",background:i%2?"#0a1628":"transparent"}}>
-              <td style={{padding:"9px 12px",color:"#e2e8f0",fontWeight:600}}>{r.tld}</td>
-              <td style={{padding:"9px 12px",color:r.color,fontWeight:700}}>{fmtFull(r.count)}</td>
-              <td style={{padding:"9px 12px",color:"#64748b"}}>{r.count>0?((r.count/DOMAIN_DATA.total)*100).toFixed(2)+"%":"—"}</td>
-              <td style={{padding:"9px 12px",minWidth:120}}><div style={{height:6,background:"#1e3a5f",borderRadius:99}}><div style={{width:`${(r.count/51389)*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td>
-            </tr>))}</tbody>
-          </table>
-        </Panel>
-      </div>)}
+          </Card>
+        </>
+      )}
+      {inboxTab==='Accounts'&&(
+        <>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:16}}>
+            <Card>
+              <SectionLabel>Account status</SectionLabel>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart><Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={52} outerRadius={95} dataKey="accounts" paddingAngle={2} nameKey="status">{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent" opacity={0.85}/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+' accounts',n]}/><Legend iconSize={9} wrapperStyle={{fontSize:10,color:T.slate500}}/></PieChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>Email type distribution</SectionLabel>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart><Pie data={EMAIL_TYPES} cx="50%" cy="50%" innerRadius={52} outerRadius={95} dataKey="accounts" paddingAngle={2} nameKey="type">{EMAIL_TYPES.map((_,i)=><Cell key={i} fill={CM_PALETTE[i%CM_PALETTE.length]} stroke="transparent" opacity={0.8}/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+' accounts',n]}/><Legend iconSize={9} wrapperStyle={{fontSize:10,color:T.slate500}}/></PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+          <Card>
+            <SectionLabel>Email type breakdown</SectionLabel>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
+              <thead><tr>{['Type','Accounts','Share',''].map(h=><th key={h} style={{textAlign:'left',padding:'8px 12px',borderBottom:`1px solid ${T.border}`,color:T.slate500,fontSize:10,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.07em'}}>{h}</th>)}</tr></thead>
+              <tbody>{[...EMAIL_TYPES].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(
+                <tr key={i} style={{borderBottom:`1px solid rgba(255,255,255,0.025)`,background:i%2?'rgba(255,255,255,0.01)':'transparent'}}>
+                  <td style={{padding:'8px 12px',color:T.slate200,fontWeight:600}}>{r.type}</td>
+                  <td style={{padding:'8px 12px',color:T.brandText,fontWeight:700}}>{fmtFull(r.accounts)}</td>
+                  <td style={{padding:'8px 12px',color:T.slate500}}>{r.pct}%</td>
+                  <td style={{padding:'8px 12px',minWidth:120}}>
+                    <div style={{height:4,background:T.slate800,borderRadius:99}}><div style={{width:`${r.pct/40*100}%`,height:'100%',background:T.brand,borderRadius:99,maxWidth:'100%',opacity:0.7}}/></div>
+                  </td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </Card>
+        </>
+      )}
+      {inboxTab==='Campaign Managers'&&(
+        <>
+          <KpiRow items={[
+            {label:'Total CM Accounts',value:fmtFull(totalCMAccounts)},
+            {label:'Daily Emails',value:fmt(totalDailyEmails)},
+            {label:'Largest CM',value:'Ido',sub:'32,837 accounts · 23.56%'},
+            {label:'Most Daily Volume',value:'Eyver',sub:'265,960 emails/day'},
+          ]}/>
+          <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16,marginBottom:16}}>
+            <Card>
+              <SectionLabel>Accounts by CM</SectionLabel>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={[...CM_INBOX].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:68}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>fmt(v)}/><YAxis dataKey="cm" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width={62}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Accounts']}/>
+                  <Bar dataKey="accounts" radius={[0,3,3,0]} fill={T.brand} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>fmtFull(v)}} opacity={0.8}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>Daily email volume</SectionLabel>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={[...CM_INBOX].sort((a,b)=>b.dailyEmails-a.dailyEmails)} layout="vertical" margin={{left:10,right:55}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>fmt(v)}/><YAxis dataKey="cm" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width:={58}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Daily Emails']}/>
+                  <Bar dataKey="dailyEmails" radius={[0,3,3,0]} fill={T.brand} opacity={0.6}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+          <Card>
+            <SectionLabel>CM full table</SectionLabel>
+            <div style={{overflowX:'auto'}}>
+              <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
+                <thead><tr>{['CM','Accounts','%','Daily Emails','Group A','Group B','Total'].map(h=><th key={h} style={{textAlign:'left',padding:'8px 12px',borderBottom:`1px solid ${T.border}`,color:T.slate500,fontSize:10,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.07em',whiteSpace:'nowrap'}}>{h}</th>)}</tr></thead>
+                <tbody>
+                  {[...CM_INBOX].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(
+                    <tr key={i} style={{borderBottom:`1px solid rgba(255,255,255,0.025)`,background:i%2?'rgba(255,255,255,0.01)':'transparent'}}>
+                      <td style={{padding:'8px 12px',fontWeight:700,color:T.slate200}}>{r.cm}</td>
+                      <td style={{padding:'8px 12px',color:T.brandText,fontWeight:700}}>{fmtFull(r.accounts)}</td>
+                      <td style={{padding:'8px 12px',color:T.slate500}}>{r.pct}%</td>
+                      <td style={{padding:'8px 12px',color:T.slate300}}>{fmtFull(r.dailyEmails)}</td>
+                      <td style={{padding:'8px 12px',color:T.slate400}}>{r.groupA.toLocaleString()}</td>
+                      <td style={{padding:'8px 12px',color:T.slate400}}>{r.groupB.toLocaleString()}</td>
+                      <td style={{padding:'8px 12px',color:T.slate200,fontWeight:600}}>{(r.groupA+r.groupB).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                  <tr style={{borderTop:`1px solid ${T.border}`,background:'rgba(59,130,246,0.04)'}}>
+                    <td style={{padding:'8px 12px',fontWeight:800,color:T.slate100}}>Grand Total</td>
+                    <td style={{padding:'8px 12px',color:T.brandText,fontWeight:800}}>{fmtFull(totalCMAccounts)}</td>
+                    <td style={{padding:'8px 12px',color:T.slate500}}>100%</td>
+                    <td style={{padding:'8px 12px',color:T.slate300,fontWeight:700}}>{fmtFull(totalDailyEmails)}</td>
+                    <td style={{padding:'8px 12px',color:T.slate400,fontWeight:700}}>{CM_INBOX.reduce((s,r)=>s+r.groupA,0).toLocaleString()}</td>
+                    <td style={{padding:'8px 12px',color:T.slate400,fontWeight:700}}>{CM_INBOX.reduce((s,r)=>s+r.groupB,0).toLocaleString()}</td>
+                    <td style={{padding:'8px 12px',color:T.slate100,fontWeight:800}}>{CM_INBOX.reduce((s,r)=>s+r.groupA+r.groupB,0).toLocaleString()}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </>
+      )}
+      {inboxTab==='Groups'&&(
+        <>
+          <KpiRow items={[
+            {label:'Total Groups',value:'9'},
+            {label:'Group A Total',value:fmtFull(42648)},
+            {label:'Group B Total',value:fmtFull(38926)},
+            {label:'Combined Total',value:fmtFull(81574)},
+          ]}/>
+          <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16}}>
+            <Card>
+              <SectionLabel>Group A vs Group B</SectionLabel>
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={[...GROUPS].sort((a,b)=>b.total-a.total)} barGap={3}>
+                  {CHART_GRID}<XAxis dataKey="group" tick={{...AXIS_STYLE,fontSize:9}} interval={0} angle={-15} textAnchor="end" height={46}/><YAxis tick={AXIS_STYLE} width={36}/><Tooltip content={<CustomTip/>}/><Legend iconSize={7} wrapperStyle={{fontSize:10,color:T.slate500}}/>
+                  <Bar dataKey="A" name="Group A" fill={T.brand} radius={[2,2,0,0]} barSize={16} opacity={0.9}/>
+                  <Bar dataKey="B" name="Group B" fill={T.slate500} radius={[2,2,0,0]} barSize={16} opacity={0.8}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>Group totals</SectionLabel>
+              <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                {[...GROUPS].sort((a,b)=>b.total-a.total).map((g,i)=>(
+                  <div key={g.group}>
+                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}>
+                      <span style={{fontSize:11,color:T.slate300,fontWeight:600}}>{g.group}</span>
+                      <span style={{fontSize:11,fontWeight:800,color:T.slate100}}>{fmtFull(g.total)}</span>
+                    </div>
+                    <div style={{height:3,background:T.slate800,borderRadius:99}}>
+                      <div style={{width:`${(g.total/14060)*100}%`,height:'100%',background:T.brand,borderRadius:99,opacity:0.7}}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </>
+      )}
+      {inboxTab==='Inbox Managers'&&(
+        <>
+          <KpiRow items={[
+            {label:'Inbox Managers',value:'8'},
+            {label:'Total Managed',value:fmtFull(88774)},
+            {label:'Largest',value:'Norman',sub:'24,908 · 28.06%'},
+            {label:'Avg per Manager',value:fmtFull(Math.round(88774/8))},
+          ]}/>
+          <div style={{display:'grid',gridTemplateColumns:'3fr 2fr',gap:16}}>
+            <Card>
+              <SectionLabel>Accounts by inbox manager</SectionLabel>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={[...INBOX_MANAGERS].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:68}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>fmt(v)}/><YAxis dataKey="manager" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width:={65}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Accounts']}/>
+                  <Bar dataKey="accounts" radius={[0,3,3,0]} fill={T.brand} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>fmtFull(v)}} opacity={0.8}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>Share distribution</SectionLabel>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie data={INBOX_MANAGERS} cx="50%" cy="50%" innerRadius={48} outerRadius:={90} dataKey="accounts" nameKey="manager" paddingAngle={2}>
+                    {INBOX_MANAGERS.map((_,i)=><Cell key={i} fill={CM_PALETTE[i%CM_PALETTE.length]} stroke="transparent" opacity={0.8}/>)}
+                  </Pie>
+                  <Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+' accounts',n]}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:T.slate500}}/>
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </div>
+        </>
+      )}
+      {inboxTab==='Email Types'&&(
+        <>
+          <KpiRow items={[
+            {label:'Email Types',value:'8'},
+            {label:'Top Type',value:'Reseller',sub:'111,206 · 38.56%'},
+            {label:'Google Accounts',value:fmtFull(149058),sub:'51.69%'},
+            {label:'Outlook Accounts',value:fmtFull(139307),sub:'48.31%'},
+          ]}/>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+            <Card>
+              <SectionLabel>Email type breakdown</SectionLabel>
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={[...EMAIL_TYPES].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:60}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>fmt(v)}/><YAxis dataKey="type" type="category" tick={{...AXIS_STYLE,fill:T.slate400,fontSize:9}} width:={88}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Accounts']}/>
+                  <Bar dataKey="accounts" radius={[0,3,3,0]} fill={T.brand} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>fmt(v)}} opacity={0.8}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>Email provider comparison</SectionLabel>
+              <div style={{display:'flex',flexDirection:'column',gap:16,paddingTop:4}}>
+                {EMAIL_PROVIDERS.map((p,i)=>(
+                  <div key={i} style={{background:'rgba(0,0,0,0.2)',border:`1px solid ${T.border}`,borderRadius:6,padding:'16px 18px'}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+                      <span style={{fontSize:14,fontWeight:700,color:T.slate200}}>{p.provider}</span>
+                      <span style={{fontSize:22,fontWeight:800,color:T.slate100}}>{p.pct}%</span>
+                    </div>
+                    <div style={{height:5,background:T.slate800,borderRadius:99,marginBottom:8}}>
+                      <div style={{width:`${p.pct}%`,height:'100%',background:T.brand,borderRadius:99,opacity:i===0?0.9:0.5}}/>
+                    </div>
+                    <div style={{fontSize:18,fontWeight:800,color:T.brandText}}>{fmtFull(p.accounts)}</div>
+                    <MetricSub>accounts</MetricSub>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+        </>
+      )}
+      {inboxTab==='Domains'&&(
+        <>
+          <KpiRow items={[
+            {label:'Total Domains',value:fmtFull(DOMAIN_DATA.total)},
+            {label:'Used Domains',value:fmtFull(DOMAIN_DATA.used),sub:`${((DOMAIN_DATA.used/DOMAIN_DATA.total)*100).toFixed(1)}% utilization`,tag:'Active',tagType:'success'},
+            {label:'Unused Domains',value:fmtFull(DOMAIN_DATA.unused),sub:'Available capacity'},
+            {label:'Registrar Accounts',value:'16',sub:'Across 3 registrars'},
+          ]}/>
+          <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16,marginBottom:16}}>
+            <Card>
+              <SectionLabel>Domain utilization by TLD</SectionLabel>
+              <div style={{marginBottom:14}}>
+                {[{label:'Used',value:DOMAIN_DATA.used,color:T.success},{label:'Unused',value:DOMAIN_DATA.unused,color:T.warning}].map((r,i)=>(
+                  <div key={i} style={{marginBottom:10}}>
+                    <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                      <span style={{fontSize:11,color:T.slate300,fontWeight:600}}>{r.label}</span>
+                      <span style={{fontSize:11,fontWeight:700,color:r.color}}>{fmtFull(r.value)} ({((r.value/DOMAIN_DATA.total)*100).toFixed(1)}%)</span>
+                    </div>
+                    <div style={{height:5,background:T.slate800,borderRadius:99}}>
+                      <div style={{width:`${(r.value/DOMAIN_DATA.total)*100}%`,height:'100%',background:r.color,borderRadius:99,opacity:0.8}}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={DOMAIN_DATA.byTLD.filter(d=>d.count>0).sort((a,b)=>b.count-a.count)} layout="vertical" margin={{left:10,right:60}}>
+                  {CHART_GRID}<XAxis type="number" tick={AXIS_STYLE} tickFormatter={v=>fmt(v)}/><YAxis dataKey="tld" type="category" tick={{...AXIS_STYLE,fill:T.slate400}} width={42}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),'Domains']}/>
+                  <Bar dataKey="count" radius={[0,3,3,0]} fill={T.brand} label={{position:'right',fill:T.slate500,fontSize:9,formatter:v=>fmtFull(v)}} opacity={0.8}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+            <Card>
+              <SectionLabel>By registrar</SectionLabel>
+              <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                {DOMAIN_DATA.byRegistrar.map((r,i)=>(
+                  <div key={i} style={{background:'rgba(0,0,0,0.2)',border:`1px solid ${T.border}`,borderRadius:6,padding:'14px 16px'}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+                      <span style={{fontSize:13,fontWeight:700,color:T.slate200}}>{r.registrar}</span>
+                      <span style={{fontSize:10,color:T.slate500}}>{r.accounts} accts</span>
+                    </div>
+                    <div style={{fontSize:22,fontWeight:800,color:T.slate100,marginBottom:6}}>{fmtFull(r.count)}</div>
+                    <div style={{height:4,background:T.slate800,borderRadius:99}}>
+                      <div style={{width:`${(r.count/DOMAIN_DATA.total)*100}%`,height:'100%',background:T.brand,borderRadius:99,opacity:0.7}}/>
+                    </div>
+                    <div style={{fontSize:10,color:T.slate600,marginTop:5}}>{((r.count/DOMAIN_DATA.total)*100).toFixed(1)}% of total</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+          <Card>
+            <SectionLabel>Domain breakdown table</SectionLabel>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
+              <thead><tr>{['TLD','Count','Share',''].map(h=><th key={h} style={{textAlign:'left',padding:'8px 12px',borderBottom:`1px solid ${T.border}`,color:T.slate500,fontSize:10,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.07em'}}>{h}</th>)}</tr></thead>
+              <tbody>{[...DOMAIN_DATA.byTLD].sort((a,b)=>b.count-a.count).map((r,i)=>(
+                <tr key={i} style={{borderBottom:`1px solid rgba(255,255,255,0.025)`,background:i%2?'rgba(255,255,255,0.01)':'transparent'}}>
+                  <td style={{padding:'8px 12px',color:T.slate200,fontWeight:600}}>{r.tld}</td>
+                  <td style={{padding:'8px 12px',color:T.brandText,fontWeight:700}}>{fmtFull(r.count)}</td>
+                  <td style={{padding:'8px 12px',color:T.slate500}}>{r.count>0?((r.count/DOMAIN_DATA.total)*100).toFixed(2)+'%':'—'}</td>
+                  <td style={{padding:'8px 12px',minWidth:120}}>
+                    <div style={{height:4,background:T.slate800,borderRadius:99}}><div style={{width:`${(r.count/51389)*100}%`,height:'100%',background:T.brand,borderRadius:99,maxWidth:'100%',opacity:0.7}}/></div>
+                  </td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </Card>
+        </>
+      )}
     </div>
   );
 
-  return(
-    <div style={{fontFamily:"system-ui,sans-serif",background:"linear-gradient(135deg,#060818,#0d1117,#0a0f1e)",minHeight:"100vh",color:"#e2e8f0",display:"flex",flexDirection:"column"}}>
-      <div style={{background:"linear-gradient(90deg,#0d1b2e,#0a1628)",borderBottom:"1px solid rgba(255,255,255,0.07)",padding:"0 24px",display:"flex",alignItems:"center",height:54,flexShrink:0,zIndex:20}}>
-        {/* #9: More blue color for title */}
-        <div style={{fontWeight:900,fontSize:26,background:"linear-gradient(90deg,#60a5fa,#3b82f6,#2563eb)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginRight:32,letterSpacing:"-0.5px"}}>Renaissance Portal</div>
-        <nav style={{display:"flex",gap:3,flex:1}}>
-          {TOP_SECTIONS.map(({key,icon,label})=>(
-            <button key={key} onClick={()=>setSection(key)} style={{background:section===key?"linear-gradient(135deg,#6366f130,#818cf820)":"transparent",border:section===key?"1px solid #6366f166":"1px solid transparent",borderRadius:10,padding:"6px 18px",cursor:"pointer",display:"flex",alignItems:"center",gap:7,color:section===key?"#a5b4fc":"#475569",fontWeight:section===key?700:500,fontSize:13,outline:"none"}}>
-              <span>{icon}</span>{label}
+  return (
+    <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:T.bgBase,minHeight:'100vh',color:T.slate200,display:'flex',flexDirection:'column'}}>
+      {/* Nav */}
+      <div style={{background:T.bgNav,borderBottom:`1px solid ${T.border}`,padding:'0 32px',display:'flex',alignItems:'center',height:52,flexShrink:0,zIndex:20,maxWidth:'none'}}>
+        <div style={{fontWeight:800,fontSize:17,color:T.brandText,marginRight:36,letterSpacing:'-0.02em'}}>Renaissance Portal</div>
+        <nav style={{display:'flex',gap:1,flex:1}}>
+          {TOP_SECTIONS.map(({key,label})=>(
+            <button key={key} onClick={()=>setSection(key)} style={{
+              background:section===key?'rgba(59,130,246,0.08)':'transparent',
+              border:'none',
+              borderBottom:section===key?`2px solid ${T.brand}`:'2px solid transparent',
+              padding:'0 16px',
+              height:52,
+              cursor:'pointer',
+              display:'flex',alignItems:'center',gap:7,
+              color:section===key?T.brandText:T.slate500,
+              fontWeight:section===key?600:500,
+              fontSize:13,outline:'none',
+              letterSpacing:'0.01em',
+              transition:'color 0.15s',
+            }}>
+              <span style={{opacity:0.7}}>{NAV_ICONS[key]}</span>{label}
             </button>
           ))}
         </nav>
-        <div style={{background:"rgba(16,185,129,0.15)",border:"1px solid rgba(16,185,129,0.3)",borderRadius:20,padding:"4px 12px",fontSize:11,color:"#10b981",display:"flex",alignItems:"center",gap:6}}>
-          <span style={{width:6,height:6,background:"#10b981",borderRadius:"50%",display:"inline-block"}}/>Updated Jan '26
+        <div style={{background:T.successBg,border:`1px solid rgba(34,197,94,0.2)`,borderRadius:4,padding:'3px 10px',fontSize:11,color:T.success,display:'flex',alignItems:'center',gap:5}}>
+          <span style={{width:5,height:5,background:T.success,borderRadius:'50%',display:'inline-block'}}/>
+          Updated Jan '26
         </div>
       </div>
-      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-        {section==="overview"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderOverview()}</div>}
-        {section==="business"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderBusiness()}</div>}
-        {section==="cm"&&<div style={{flex:1,display:"flex",overflow:"hidden"}}><div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",padding:"16px 20px",gap:12}}>{renderCM()}</div></div>}
-        {section==="inbox"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderInbox()}</div>}
+      {/* Content */}
+      <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+        <div style={{maxWidth:1280,width:'100%',margin:'0 auto',padding:'0 32px',flex:1,display:'flex',flexDirection:'column',minHeight:0}}>
+          {section==='overview'&&<div style={{flex:1,overflowY:'auto',paddingTop:28,paddingBottom:32}}>{renderOverview()}</div>}
+          {section==='business'&&<div style={{flex:1,overflowY:'auto',paddingTop:28,paddingBottom:32}}>{renderBusiness()}</div>}
+          {section==='cm'&&<div style={{flex:1,display:'flex',overflow:'hidden',paddingTop:4}}>{renderCM()}</div>}
+          {section==='inbox'&&<div style={{flex:1,overflowY:'auto',paddingTop:28,paddingBottom:32}}>{renderInbox()}</div>}
+        </div>
       </div>
     </div>
   );
