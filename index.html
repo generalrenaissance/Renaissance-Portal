@@ -17,6 +17,10 @@ body{background:#f0f4f8}
 .nav-tooltip::before{content:'';position:absolute;right:100%;top:50%;transform:translateY(-50%);border:5px solid transparent;border-right-color:#1e293b;}
 .nav-item-wrap{position:relative;}
 .nav-item-wrap:hover .nav-tooltip{display:block;}
+.updated-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;}
+.updated-wrap .updated-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:999;}
+.updated-wrap .updated-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1e293b;}
+.updated-wrap:hover .updated-tooltip{display:block;}
 </style>
 </head>
 <body>
@@ -59,6 +63,115 @@ const IconChevron = ({size=16,color="currentColor",left=false}) => (
     {left ? <polyline points="15 18 9 12 15 6"/> : <polyline points="9 18 15 12 9 6"/>}
   </svg>
 );
+const IconMenu = ({size=18,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+const IconPanelLeft = ({size=18,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <line x1="9" y1="3" x2="9" y2="21"/>
+  </svg>
+);
+const IconHistory = ({size=18,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="1 4 1 10 7 10"/>
+    <path d="M3.51 15a9 9 0 1 0 .49-4.68"/>
+    <polyline points="12 7 12 12 15 15"/>
+  </svg>
+);
+
+// Biz tab icons
+const IconOverview = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+  </svg>
+);
+const IconVolume = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+  </svg>
+);
+const IconPartners = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+    <path d="M16 3.13a4 4 0 010 7.75"/>
+  </svg>
+);
+const IconKPI = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 20V10M12 20V4M6 20v-6M2 20h20"/>
+  </svg>
+);
+const IconWeekday = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+const IconTrend = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+    <polyline points="17 6 23 6 23 12"/>
+  </svg>
+);
+const IconDayOfWeek = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+const IconInsights = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="8" x2="12" y2="12"/>
+    <line x1="12" y1="16" x2="12.01" y2="16"/>
+  </svg>
+);
+
+// CM tab icons
+const IconGrid = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+  </svg>
+);
+const IconCalendar = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+const IconPeople = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+    <path d="M16 3.13a4 4 0 010 7.75"/>
+  </svg>
+);
+const IconScale = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="3" x2="12" y2="21"/>
+    <path d="M5 6l7-3 7 3M5 18l7 3 7-3"/>
+    <path d="M3 9l2-3 2 3-2 3z"/><path d="M17 9l2-3 2 3-2 3z"/>
+  </svg>
+);
+const IconTrophy = ({size=14,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 6 2 18 2 18 9"/>
+    <path d="M6 18H4a2 2 0 01-2-2v-1a2 2 0 012-2h16a2 2 0 012 2v1a2 2 0 01-2 2h-2"/>
+    <rect x="6" y="18" width="12" height="4"/>
+  </svg>
+);
 
 // ── Data ───────────────────────────────────────────────────────────────────
 const monthlyData = [
@@ -95,20 +208,60 @@ const MONTHLY_CM = [
   {year:2026,month:"January",cm:"Ido",inboxes:11134,nonAiSent:2703474,nonAiBooked:463,aiSent:5839,aiBooked:0,totalSent:2703474,totalBooked:463},{year:2026,month:"January",cm:"Carlos",inboxes:8951,nonAiSent:1648369,nonAiBooked:474,aiSent:3478,aiBooked:0,totalSent:1648369,totalBooked:474},{year:2026,month:"January",cm:"Eyver",inboxes:7285,nonAiSent:2060585,nonAiBooked:958,aiSent:2151,aiBooked:0,totalSent:1988185,totalBooked:925},{year:2026,month:"January",cm:"Leonardo",inboxes:4632,nonAiSent:1822817,nonAiBooked:424,aiSent:269507,aiBooked:62,totalSent:2053492,totalBooked:476},{year:2026,month:"January",cm:"Samuel",inboxes:4987,nonAiSent:2032424,nonAiBooked:365,aiSent:17613,aiBooked:1,totalSent:1989358,totalBooked:366},{year:2026,month:"January",cm:"Shaan",inboxes:6940,nonAiSent:1957682,nonAiBooked:372,aiSent:5263,aiBooked:0,totalSent:1957682,totalBooked:372},{year:2026,month:"January",cm:"Tomi",inboxes:5558,nonAiSent:1640851,nonAiBooked:410,aiSent:258354,aiBooked:54,totalSent:1826379,totalBooked:464},{year:2026,month:"January",cm:"Chuck",inboxes:9239,nonAiSent:2226449,nonAiBooked:305,aiSent:36580,aiBooked:1,totalSent:2185376,totalBooked:306},{year:2026,month:"January",cm:"Brendan",inboxes:4568,nonAiSent:2204942,nonAiBooked:468,aiSent:4711,aiBooked:0,totalSent:2149014,totalBooked:468},{year:2026,month:"January",cm:"Lautaro",inboxes:2488,nonAiSent:417559,nonAiBooked:40,aiSent:10439,aiBooked:0,totalSent:408559,totalBooked:38},{year:2026,month:"January",cm:"Alex",inboxes:2880,nonAiSent:182496,nonAiBooked:12,aiSent:15208,aiBooked:0,totalSent:182496,totalBooked:12},
 ];
 
-const ACCOUNT_STATUS=[{status:"Active",accounts:48197,color:"#16a34a"},{status:"Warmup",accounts:51340,color:"#4f46e5"},{status:"Sent Into Production",accounts:83080,color:"#0891b2"},{status:"Ramp Up",accounts:53221,color:"#d97706"},{status:"Ready to Launch",accounts:2000,color:"#7c3aed"},{status:"Off-Group",accounts:32077,color:"#ea580c"}];
-const DOMAIN_DATA={total:105078,used:76933,unused:27938,byTLD:[{tld:".co",count:49571,color:"#4f46e5"},{tld:".info",count:51389,color:"#0891b2"},{tld:".com",count:1449,color:"#16a34a"},{tld:".xyz",count:1823,color:"#d97706"},{tld:".org",count:743,color:"#7c3aed"},{tld:".space",count:100,color:"#db2777"},{tld:".io",count:1,color:"#ea580c"},{tld:".net",count:1,color:"#0284c7"},{tld:".agency",count:0,color:"#94a3b8"}],byRegistrar:[{registrar:"Porkbun",count:66801,accounts:8,color:"#4f46e5"},{registrar:"Dynadot",count:19277,accounts:5,color:"#0891b2"},{registrar:"Spaceship",count:19000,accounts:3,color:"#d97706"}]};
+// ── Change #8: distinct blues for non-metric charts ──
+const ACCOUNT_STATUS=[
+  {status:"Active",accounts:48197,color:"#1e40af"},
+  {status:"Warmup",accounts:51340,color:"#0ea5e9"},
+  {status:"Sent Into Production",accounts:83080,color:"#06b6d4"},
+  {status:"Ramp Up",accounts:53221,color:"#3b82f6"},
+  {status:"Ready to Launch",accounts:2000,color:"#38bdf8"},
+  {status:"Off-Group",accounts:32077,color:"#0284c7"}
+];
+const DOMAIN_DATA={total:105078,used:76933,unused:27938,byTLD:[
+  {tld:".co",count:49571,color:"#1e3a8a"},
+  {tld:".info",count:51389,color:"#0369a1"},
+  {tld:".com",count:1449,color:"#0891b2"},
+  {tld:".xyz",count:1823,color:"#38bdf8"},
+  {tld:".org",count:743,color:"#1d4ed8"},
+  {tld:".space",count:100,color:"#3b82f6"},
+  {tld:".io",count:1,color:"#06b6d4"},
+  {tld:".net",count:1,color:"#0ea5e9"},
+  {tld:".agency",count:0,color:"#93c5fd"}
+],byRegistrar:[
+  {registrar:"Porkbun",count:66801,accounts:8,color:"#1e40af"},
+  {registrar:"Dynadot",count:19277,accounts:5,color:"#0369a1"},
+  {registrar:"Spaceship",count:19000,accounts:3,color:"#38bdf8"}
+]};
+
 const CM_INBOX=[{cm:"Alex",accounts:9048,pct:6.49,dailyEmails:105220,groupA:362,groupB:313},{cm:"Andres",accounts:1500,pct:1.08,dailyEmails:22500,groupA:150,groupB:15},{cm:"Brendan",accounts:14060,pct:10.09,dailyEmails:211700,groupA:141,groupB:180},{cm:"Carlos",accounts:13277,pct:9.52,dailyEmails:170739,groupA:675,groupB:410},{cm:"Eyver",accounts:16544,pct:11.87,dailyEmails:265960,groupA:1166,groupB:650},{cm:"Ido",accounts:32837,pct:23.56,dailyEmails:244587,groupA:702,groupB:545},{cm:"Lautaro",accounts:9500,pct:6.82,dailyEmails:142500,groupA:75,groupB:25},{cm:"Leo",accounts:12969,pct:9.30,dailyEmails:185804,groupA:824,groupB:537},{cm:"Marcos",accounts:1500,pct:1.08,dailyEmails:15000,groupA:0,groupB:0},{cm:"Samuel",accounts:2800,pct:2.01,dailyEmails:42000,groupA:282,groupB:26},{cm:"Shaan",accounts:12900,pct:9.25,dailyEmails:133500,groupA:740,groupB:300},{cm:"Tomi",accounts:12460,pct:8.94,dailyEmails:157890,groupA:1055,groupB:550}];
 const GROUPS=[{group:"Equinox",A:5269,B:1700,total:6969},{group:"Koi & Destroy",A:3788,B:4972,total:8760},{group:"Prospect Power",A:3900,B:3000,total:6900},{group:"Renaissance 1",A:2500,B:2700,total:5200},{group:"Renaissance 2",A:5000,B:5000,total:10000},{group:"Renaissance 4",A:5560,B:7048,total:12608},{group:"The Dyad",A:5371,B:1406,total:6777},{group:"The Eagles",A:5200,B:5100,total:10300},{group:"The Gatekeepers",A:6060,B:8000,total:14060}];
-const INBOX_MANAGERS=[{manager:"Norman",accounts:24908,pct:28.06,color:"#4f46e5"},{manager:"Ramir",accounts:15460,pct:17.42,color:"#0891b2"},{manager:"Monique",accounts:10760,pct:12.12,color:"#d97706"},{manager:"Rob",accounts:10000,pct:11.26,color:"#7c3aed"},{manager:"Frank",accounts:8969,pct:10.10,color:"#16a34a"},{manager:"Nikko",accounts:8777,pct:9.89,color:"#ea580c"},{manager:"Kenneth",accounts:8900,pct:10.03,color:"#0284c7"},{manager:"Jessica",accounts:1000,pct:1.13,color:"#db2777"}];
-const EMAIL_TYPES=[{type:"Reseller",accounts:111206,pct:38.56,color:"#4f46e5"},{type:"Inboxing",accounts:52837,pct:18.32,color:"#16a34a"},{type:"MailIn",accounts:47850,pct:16.59,color:"#0891b2"},{type:"Cheap Inboxes",accounts:36520,pct:12.66,color:"#d97706"},{type:"Outreach Today",accounts:25000,pct:8.67,color:"#7c3aed"},{type:"Maildoso",accounts:8000,pct:2.77,color:"#db2777"},{type:"Panel",accounts:4852,pct:1.68,color:"#ea580c"},{type:"Microsoft Panel",accounts:2100,pct:0.73,color:"#0284c7"}];
+const INBOX_MANAGERS=[{manager:"Norman",accounts:24908,pct:28.06,color:"#1e40af"},{manager:"Ramir",accounts:15460,pct:17.42,color:"#0369a1"},{manager:"Monique",accounts:10760,pct:12.12,color:"#0891b2"},{manager:"Rob",accounts:10000,pct:11.26,color:"#38bdf8"},{manager:"Frank",accounts:8969,pct:10.10,color:"#1d4ed8"},{manager:"Nikko",accounts:8777,pct:9.89,color:"#3b82f6"},{manager:"Kenneth",accounts:8900,pct:10.03,color:"#0ea5e9"},{manager:"Jessica",accounts:1000,pct:1.13,color:"#06b6d4"}];
+const EMAIL_TYPES=[{type:"Reseller",accounts:111206,pct:38.56,color:"#1e3a8a"},{type:"Inboxing",accounts:52837,pct:18.32,color:"#0369a1"},{type:"MailIn",accounts:47850,pct:16.59,color:"#0891b2"},{type:"Cheap Inboxes",accounts:36520,pct:12.66,color:"#38bdf8"},{type:"Outreach Today",accounts:25000,pct:8.67,color:"#1d4ed8"},{type:"Maildoso",accounts:8000,pct:2.77,color:"#3b82f6"},{type:"Panel",accounts:4852,pct:1.68,color:"#0ea5e9"},{type:"Microsoft Panel",accounts:2100,pct:0.73,color:"#06b6d4"}];
 const EMAIL_PROVIDERS=[{provider:"Google",accounts:149058,pct:51.69,color:"#4285f4"},{provider:"Outlook",accounts:139307,pct:48.31,color:"#0078d4"}];
 
 const MONTH_ORDER=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const ALL_CM_MONTHS=["October","November","December","January"];
 const ALL_CMs=[...new Set(MONTHLY_CM.map(r=>r.cm))].sort();
 const CM_COLORS=["#4f46e5","#059669","#db2777","#ea580c","#2563eb","#7c3aed","#0891b2","#ca8a04","#dc2626","#0284c7","#16a34a","#9333ea"];
-const TIERS=[{max:2800,label:"0–2,800",color:"#16a34a",glow:"#16a34a20"},{max:3200,label:"2,800–3,200",color:"#0891b2",glow:"#0891b220"},{max:3600,label:"3,200–3,600",color:"#d97706",glow:"#d9770620"},{max:4000,label:"3,600–4,000",color:"#ea580c",glow:"#ea580c20"},{max:4500,label:"4,000–4,500",color:"#dc2626",glow:"#dc262620"},{max:Infinity,label:"> 4,500",color:"#991b1b",glow:"#991b1b20"}];
-const KPI_BANDS=[{key:"a",label:"> 4,500",color:"#dc2626"},{key:"b",label:"4,000–4,500",color:"#ea580c"},{key:"c",label:"3,600–4,000",color:"#d97706"},{key:"d",label:"3,200–3,600",color:"#ca8a04"},{key:"e",label:"2,800–3,200",color:"#0891b2"},{key:"f",label:"0–2,800",color:"#16a34a"}];
+
+// ── Change #1: Updated KPI bands ──
+const TIERS=[
+  {max:2800,label:"0–2,800",color:"#16A34A",glow:"#16A34A20"},
+  {max:3200,label:"2,800–3,200",color:"#84CC16",glow:"#84CC1620"},
+  {max:3600,label:"3,200–3,600",color:"#EAB308",glow:"#EAB30820"},
+  {max:4000,label:"3,600–4,000",color:"#F59E0B",glow:"#F59E0B20"},
+  {max:4500,label:"4,000–4,500",color:"#EA580C",glow:"#EA580C20"},
+  {max:Infinity,label:"> 4,500",color:"#DC2626",glow:"#DC262620"}
+];
+const KPI_BANDS=[
+  {key:"a",label:"> 4,500",color:"#DC2626"},
+  {key:"b",label:"4,000–4,500",color:"#EA580C"},
+  {key:"c",label:"3,600–4,000",color:"#F59E0B"},
+  {key:"d",label:"3,200–3,600",color:"#EAB308"},
+  {key:"e",label:"2,800–3,200",color:"#84CC16"},
+  {key:"f",label:"0–2,800",color:"#16A34A"}
+];
+
 const WEEKDAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const MEDAL=["🥇","🥈","🥉"];
 
@@ -151,8 +304,27 @@ const CustomTip=({active,payload,label})=>{
 };
 const TierBar=(props)=>{const{x,y,width,height,value}=props;const t=getTier(value);return React.createElement('rect',{x,y,width,height:Math.max(height,0),fill:t?t.color:"#cbd5e1",rx:4});};
 
-const BIZ_TABS=["Overview","Volume","Partners","KPI Bands","Weekday vs Weekend","Daily Trends","Day of Week","Insights"];
-const CM_VIEWS=[{key:"home",icon:"⊞",label:"Overview"},{key:"daily",icon:"📅",label:"Daily"},{key:"cms",icon:"👥",label:"By CM"},{key:"compare",icon:"⚖️",label:"Compare"},{key:"boards",icon:"🏆",label:"Leaderboards"}];
+// ── Change #2: Business Funding tabs with icons ──
+const BIZ_TABS=[
+  {label:"Overview", Icon:IconOverview},
+  {label:"Volume", Icon:IconVolume},
+  {label:"Partners", Icon:IconPartners},
+  {label:"KPI Bands", Icon:IconKPI},
+  {label:"Weekday vs Weekend", Icon:IconWeekday},
+  {label:"Daily Trends", Icon:IconTrend},
+  {label:"Day of Week", Icon:IconDayOfWeek},
+  {label:"Insights", Icon:IconInsights},
+];
+
+// ── Change #3: CM tabs with icons (no emojis) ──
+const CM_VIEWS=[
+  {key:"home", Icon:IconGrid, label:"Overview"},
+  {key:"daily", Icon:IconCalendar, label:"Daily"},
+  {key:"cms", Icon:IconPeople, label:"By CM"},
+  {key:"compare", Icon:IconScale, label:"Compare"},
+  {key:"boards", Icon:IconTrophy, label:"Leaderboards"}
+];
+
 const INBOX_TABS=["Overview","Accounts","Campaign Managers","Groups","Inbox Managers","Email Types","Domains"];
 
 // ── Left Sidebar ───────────────────────────────────────────────────────────
@@ -167,17 +339,21 @@ function LeftSidebar({section,setSection,collapsed,setCollapsed}){
   const W=collapsed?60:220;
   return(
     <div style={{width:W,minWidth:W,flexShrink:0,background:"#ffffff",borderRight:`1px solid ${C.cardBorder}`,display:"flex",flexDirection:"column",transition:"width 0.22s ease",overflow:"hidden",boxShadow:"1px 0 4px rgba(0,0,0,0.05)",zIndex:30}}>
-      {/* Logo + toggle */}
-      <div style={{height:56,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"space-between",padding:collapsed?"0":"0 14px 0 18px",borderBottom:`1px solid ${C.cardBorder}`,flexShrink:0}}>
-        {!collapsed&&<span style={{fontWeight:900,fontSize:20,color:"#000000",letterSpacing:"-0.5px",whiteSpace:"nowrap"}}>Renaissance Portal</span>}
-        {collapsed&&<span style={{fontWeight:900,fontSize:18,color:"#000000",letterSpacing:"-0.5px"}}>RP</span>}
-        <button onClick={()=>setCollapsed(v=>!v)} style={{background:"none",border:"none",cursor:"pointer",padding:collapsed?"0":"4px",display:"flex",alignItems:"center",justifyContent:"center",color:C.textSecondary,borderRadius:6,flexShrink:0,marginLeft:collapsed?"0":"8px"}}>
-          {collapsed?<IconChevron size={16} color={C.textSecondary}/>:<IconChevron size={16} color={C.textSecondary} left/>}
-        </button>
+      {/* Logo */}
+      <div style={{height:56,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",padding:collapsed?"0":"0 18px",borderBottom:`1px solid ${C.cardBorder}`,flexShrink:0}}>
+        {!collapsed&&<span style={{fontWeight:900,fontSize:17,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif",letterSpacing:"-0.5px",whiteSpace:"nowrap"}}>Renaissance Portal</span>}
+        {collapsed&&<span style={{fontWeight:900,fontSize:15,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif"}}>RP</span>}
       </div>
 
-      {/* Nav items */}
-      <nav style={{flex:1,padding:"10px 8px",display:"flex",flexDirection:"column",gap:2}}>
+      {/* Nav items — collapse toggle at top, then nav */}
+      <nav style={{flex:1,padding:"8px 8px",display:"flex",flexDirection:"column",gap:2}}>
+        {/* Change #4: Collapse/expand toggle as icon at top of nav */}
+        <div style={{marginBottom:4}}>
+          <button onClick={()=>setCollapsed(v=>!v)} title={collapsed?"Expand sidebar":"Collapse sidebar"} style={{width:"100%",display:"flex",alignItems:"center",gap:collapsed?0:10,padding:collapsed?"9px 0":"8px 12px",justifyContent:collapsed?"center":"flex-start",borderRadius:10,border:"none",cursor:"pointer",background:"transparent",color:C.textMuted,outline:"none",transition:"background 0.15s"}}>
+            <IconPanelLeft size={18} color={C.textMuted}/>
+            {!collapsed&&<span style={{fontSize:12,fontWeight:500,color:C.textMuted,whiteSpace:"nowrap"}}>Collapse</span>}
+          </button>
+        </div>
         {NAV_SECTIONS.map(({key,label,Icon})=>{
           const active=section===key;
           return(
@@ -192,10 +368,15 @@ function LeftSidebar({section,setSection,collapsed,setCollapsed}){
         })}
       </nav>
 
-      {/* Updated badge at bottom */}
-      <div style={{padding:collapsed?"10px 0":"10px 14px",borderTop:`1px solid ${C.cardBorder}`,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",gap:6,flexShrink:0}}>
-        <span style={{width:7,height:7,background:"#16a34a",borderRadius:"50%",display:"inline-block",flexShrink:0}}/>
-        {!collapsed&&<span style={{fontSize:11,color:"#15803d",fontWeight:600,whiteSpace:"nowrap"}}>Updated Jan '26</span>}
+      {/* Change #6: History icon with hover tooltip instead of "Updated Jan '26" */}
+      <div style={{padding:collapsed?"10px 0":"10px 14px",borderTop:`1px solid ${C.cardBorder}`,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",flexShrink:0}}>
+        <div className="updated-wrap">
+          <div style={{display:"flex",alignItems:"center",gap:6,cursor:"default",padding:"4px 6px",borderRadius:8}}>
+            <IconHistory size={16} color="#15803d"/>
+            {!collapsed&&<span style={{fontSize:11,color:"#15803d",fontWeight:600,whiteSpace:"nowrap"}}>History</span>}
+          </div>
+          <span className="updated-tooltip">Last Updated: January 2026</span>
+        </div>
       </div>
     </div>
   );
@@ -244,7 +425,7 @@ function App(){
   const inboxPie=useMemo(()=>{const latest={};MONTHLY_CM.forEach(r=>{const k=r.year*100+MONTH_ORDER.indexOf(r.month);if(!latest[r.cm]||k>latest[r.cm].k)latest[r.cm]={k,v:r.inboxes};});return ALL_CMs.filter(cm=>selCMs.includes(cm)&&latest[cm]).map(cm=>({name:cm,value:latest[cm].v}));},[selCMs]);
   const periods=useMemo(()=>[...new Set(MONTHLY_CM.map(r=>`${r.year}|${r.month}`))].sort((a,b)=>{const[ay,am]=a.split("|");const[by,bm]=b.split("|");return(+ay*12+MONTH_ORDER.indexOf(am))-(+by*12+MONTH_ORDER.indexOf(bm));}),[]);
   const trendData=useMemo(()=>periods.filter(p=>{const[,mo]=p.split("|");return selMonths.includes(mo);}).map(p=>{const[yr,mo]=p.split("|");const rows=MONTHLY_CM.filter(r=>r.year===+yr&&r.month===mo&&selCMs.includes(r.cm));const obj={period:mo.slice(0,3)+"'"+(yr.slice(2))};rows.forEach(r=>obj[r.cm]=r[trendMetric]);return obj;}),[periods,selCMs,selMonths,trendMetric]);
-  const compareData=useMemo(()=>cmAgg.map(r=>({cm:r.cm,sent:compareMode==="Non AI"?r.nonAiSent:compareMode==="💻 AI"?r.aiSent:r.totalSent,booked:compareMode==="Non AI"?r.nonAiBooked:compareMode==="💻 AI"?r.aiBooked:r.totalBooked,ratio:compareMode==="Non AI"?r.nonAiSbRatio:compareMode==="💻 AI"?r.aiSbRatio:r.sbRatio})),[cmAgg,compareMode]);
+  const compareData=useMemo(()=>cmAgg.map(r=>({cm:r.cm,sent:compareMode==="Non AI"?r.nonAiSent:compareMode==="AI"?r.aiSent:r.totalSent,booked:compareMode==="Non AI"?r.nonAiBooked:compareMode==="AI"?r.aiBooked:r.totalBooked,ratio:compareMode==="Non AI"?r.nonAiSbRatio:compareMode==="AI"?r.aiSbRatio:r.sbRatio})),[cmAgg,compareMode]);
   const dailyFiltered=useMemo(()=>(dailyMonth==="All"?CM_DAILY:CM_DAILY.filter(r=>r.month===dailyMonth)).map(r=>({...r,sbRatio:ratio(r.totalSent,r.totalBooked)})),[dailyMonth]);
   const monthlyAgg=useMemo(()=>{const m={};CM_DAILY.forEach(r=>{if(!m[r.month])m[r.month]={period:r.month.slice(0,3),totalSent:0,totalBooked:0,aiBooked:0};m[r.month].totalSent+=r.totalSent;m[r.month].totalBooked+=r.totalBooked;m[r.month].aiBooked+=r.aiBooked;});return ALL_CM_MONTHS.map(mo=>({...m[mo],sbRatio:ratio(m[mo]?.totalSent,m[mo]?.totalBooked)}));},[]);
   const dailyKpi=useMemo(()=>{const rows=dailyFiltered.filter(r=>r.totalBooked>0);const ts=rows.reduce((a,r)=>a+r.totalSent,0),tb=rows.reduce((a,r)=>a+r.totalBooked,0),ai=rows.reduce((a,r)=>a+r.aiBooked,0);return{ts,tb,ai,r:ratio(ts,tb)};},[dailyFiltered]);
@@ -263,7 +444,6 @@ function App(){
     React.createElement('button',{onClick,style:{background:active?"linear-gradient(135deg,#3b82f6,#6366f1)":"#ffffff",border:active?"none":`1px solid ${C.cardBorder}`,borderRadius:9,padding:"7px 14px",cursor:"pointer",fontSize:11,fontWeight:600,color:active?"#fff":C.textSecondary,outline:"none",boxShadow:active?"0 2px 8px rgba(59,130,246,0.3)":"0 1px 2px rgba(0,0,0,0.04)",...style}},children)
   );
 
-  // ── Section renderers (identical logic, condensed) ─────────────────────
   const renderOverview=()=>(
     <div style={{display:"flex",flexDirection:"column",gap:14}}>
       <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
@@ -286,7 +466,8 @@ function App(){
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
         <Panel title="BUSINESS FUNDING — MONTHLY MEETINGS"><ResponsiveContainer width="100%" height={180}><AreaChart data={data}><defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.18}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" strokeWidth={2} fill="url(#og1)" name="Meetings"/></AreaChart></ResponsiveContainer></Panel>
-        <Panel title="CM DASHBOARD — DAILY TREND"><ResponsiveContainer width="100%" height={180}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="og2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#16a34a" stopOpacity={0.18}/><stop offset="95%" stopColor="#16a34a" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false} interval={8}/><YAxis tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#16a34a" strokeWidth={2} fill="url(#og2)" name="CM Meetings"/></AreaChart></ResponsiveContainer></Panel>
+        {/* Change #7: CM Dashboard trend — purple */}
+        <Panel title="CM DASHBOARD — DAILY TREND"><ResponsiveContainer width="100%" height={180}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="og2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#7c3aed" stopOpacity={0.18}/><stop offset="95%" stopColor="#7c3aed" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false} interval={8}/><YAxis tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#7c3aed" strokeWidth={2} fill="url(#og2)" name="CM Meetings"/></AreaChart></ResponsiveContainer></Panel>
         <Panel title="INBOX ACCOUNT STATUS"><ResponsiveContainer width="100%" height={180}><PieChart><Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="accounts" nameKey="status" paddingAngle={2}>{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:C.textLabel}}/></PieChart></ResponsiveContainer></Panel>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -314,7 +495,15 @@ function App(){
         ))}
       </div>
       <Card1 style={{padding:"14px 20px"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><span style={{fontSize:13,fontWeight:600,color:C.textSecondary}}>🎯 Progress to 10,000 meetings/month</span><span style={{fontSize:14,fontWeight:800,color:"#16a34a"}}>{last.booked.toLocaleString()} / 10,000 · {progress}%</span></div><div style={{background:"#f1f5f9",borderRadius:99,height:6,overflow:"hidden"}}><div style={{width:`${progress}%`,background:"linear-gradient(90deg,#4f46e5,#6366f1,#d97706)",height:"100%",borderRadius:99}}/></div></Card1>
-      <div style={{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,border:`1px solid ${C.cardBorder}`,flexWrap:"wrap",width:"fit-content"}}>{BIZ_TABS.map(t=><Btn key={t} active={bizTab===t} onClick={()=>setBizTab(t)}>{t}</Btn>)}</div>
+      {/* Change #2: Filters moved to top with icons */}
+      <div style={{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,border:`1px solid ${C.cardBorder}`,flexWrap:"wrap",width:"fit-content"}}>
+        {BIZ_TABS.map(({label,Icon})=>(
+          <button key={label} onClick={()=>setBizTab(label)} style={{background:bizTab===label?"linear-gradient(135deg,#3b82f6,#6366f1)":"#ffffff",border:bizTab===label?"none":`1px solid ${C.cardBorder}`,borderRadius:9,padding:"7px 13px",cursor:"pointer",fontSize:11,fontWeight:600,color:bizTab===label?"#fff":C.textSecondary,outline:"none",display:"flex",alignItems:"center",gap:5,boxShadow:bizTab===label?"0 2px 8px rgba(59,130,246,0.3)":"0 1px 2px rgba(0,0,0,0.04)"}}>
+            <Icon size={13} color={bizTab===label?"#fff":C.textSecondary}/>
+            {label}
+          </button>
+        ))}
+      </div>
       {bizTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:14}}>
           <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>MEETINGS BOOKED PER MONTH</div><ResponsiveContainer width="100%" height={200}><AreaChart data={data}><defs><linearGradient id="gm" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" strokeWidth={2.5} fill="url(#gm)" name="Meetings"/></AreaChart></ResponsiveContainer></Card1>
@@ -332,7 +521,7 @@ function App(){
       </div>)}
       {bizTab==="KPI Bands"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{KPI_BANDS.map(b=><div key={b.key} style={{display:"flex",alignItems:"center",gap:6,background:`${b.color}10`,borderRadius:8,padding:"5px 12px",border:`1px solid ${b.color}44`}}><div style={{width:8,height:8,borderRadius:2,background:b.color}}/><span style={{fontSize:11,color:C.textSecondary}}>{b.label}</span></div>)}</div>
-        <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>% OF DAYS IN EACH BAND</div><ResponsiveContainer width="100%" height={230}><BarChart data={kpiBandChart}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[`${v.toFixed(1)}%`,n]}/><Bar dataKey=">4500" stackId="a" fill="#dc2626"/><Bar dataKey="4000-4500" stackId="a" fill="#ea580c"/><Bar dataKey="3600-4000" stackId="a" fill="#d97706"/><Bar dataKey="3200-3600" stackId="a" fill="#0891b2"/><Bar dataKey="2800-3200" stackId="a" fill="#16a34a"/><Bar dataKey="0-2800" stackId="a" fill="#4f46e5" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></Card1>
+        <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>% OF DAYS IN EACH BAND</div><ResponsiveContainer width="100%" height={230}><BarChart data={kpiBandChart}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[`${v.toFixed(1)}%`,n]}/><Bar dataKey=">4500" stackId="a" fill="#DC2626"/><Bar dataKey="4000-4500" stackId="a" fill="#EA580C"/><Bar dataKey="3600-4000" stackId="a" fill="#F59E0B"/><Bar dataKey="3200-3600" stackId="a" fill="#EAB308"/><Bar dataKey="2800-3200" stackId="a" fill="#84CC16"/><Bar dataKey="0-2800" stackId="a" fill="#16A34A" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></Card1>
       </div>)}
       {bizTab==="Weekday vs Weekend"&&(<Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>WEEKDAY VS WEEKEND RATIO</div><ResponsiveContainer width="100%" height={230}><LineChart data={data.filter(d=>d.weekdayRatio||d.weekendRatio)}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[v.toLocaleString(),n]}/><Legend wrapperStyle={{fontSize:11,color:C.textLabel}}/><Line type="monotone" dataKey="weekdayRatio" stroke="#4f46e5" strokeWidth={2.5} dot={{r:4,fill:"#4f46e5",strokeWidth:0}} name="Weekday"/><Line type="monotone" dataKey="weekendRatio" stroke="#d97706" strokeWidth={2.5} dot={{r:4,fill:"#d97706",strokeWidth:0}} name="Weekend"/></LineChart></ResponsiveContainer></Card1>)}
       {bizTab==="Daily Trends"&&(<Card1><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}><div style={{fontSize:12,fontWeight:600,color:C.textLabel}}>DAILY MEETINGS + ROLLING AVERAGE</div><div style={{display:"flex",gap:4,background:"#f1f5f9",padding:3,borderRadius:8}}>{[7,14,30].map(n=><Btn key={n} active={rolling===n} onClick={()=>setRolling(n)}>{n}d avg</Btn>)}</div></div><ResponsiveContainer width="100%" height={250}><AreaChart data={rollingData}><defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.12}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} interval={9}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" fill="url(#gd)" strokeWidth={1.5} dot={false} name="Daily"/><Line type="monotone" dataKey="rolling" stroke="#d97706" strokeWidth={2.5} dot={false} name={`${rolling}d Avg`}/></AreaChart></ResponsiveContainer></Card1>)}
@@ -355,14 +544,22 @@ function App(){
         </div>
       )}
       <div style={{flex:1,overflowY:"auto",padding:"0 0 16px 0",display:"flex",flexDirection:"column",gap:13}}>
-        <div style={{display:"flex",gap:2,flexWrap:"wrap",paddingTop:4}}>{CM_VIEWS.map(({key,icon,label})=>(<button key={key} onClick={()=>setCmView(key)} style={{background:cmView===key?"#eff6ff":"transparent",border:cmView===key?"1px solid #bfdbfe":"1px solid transparent",borderRadius:10,padding:"6px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:6,color:cmView===key?"#1d4ed8":C.textSecondary,fontWeight:cmView===key?700:500,fontSize:12,outline:"none"}}><span style={{fontSize:13}}>{icon}</span>{label}</button>))}</div>
+        {/* Change #3: CM tabs with icons, no emojis */}
+        <div style={{display:"flex",gap:2,flexWrap:"wrap",paddingTop:4}}>
+          {CM_VIEWS.map(({key,Icon,label})=>(
+            <button key={key} onClick={()=>setCmView(key)} style={{background:cmView===key?"#eff6ff":"transparent",border:cmView===key?"1px solid #bfdbfe":"1px solid transparent",borderRadius:10,padding:"6px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:6,color:cmView===key?"#1d4ed8":C.textSecondary,fontWeight:cmView===key?700:500,fontSize:12,outline:"none"}}>
+              <Icon size={13} color={cmView===key?"#1d4ed8":C.textSecondary}/>
+              {label}
+            </button>
+          ))}
+        </div>
         {cmView==="home"&&(<>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"All-Time Meetings",value:correctAllTimeCMTotal.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"All-Time Emails",value:fmt(allTs),color:"#0891b2"},{icon:"🤖",label:"AI Meetings",value:allAi.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"Team S/B Ratio",value:allR?allR.toLocaleString():"—",color:getTier(allR)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"14px 16px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:20,marginBottom:5}}>{c.icon}</div><div style={{fontSize:22,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:10,color:C.textLabel,marginTop:3,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div></div>))}</div>
           <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
             <Panel title="MEETINGS BOOKED — DAILY"><ResponsiveContainer width="100%" height={190}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:9}} interval={8}/><YAxis tick={{fill:C.textMuted,fontSize:9}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#cg1)" name="Total"/><Area type="monotone" dataKey="aiBooked" stroke="#7c3aed" strokeWidth={1.5} fill="transparent" name="AI" strokeDasharray="4 2"/></AreaChart></ResponsiveContainer></Panel>
             <Panel title="MONTHLY S/B RATIO"><ResponsiveContainer width="100%" height={190}><BarChart data={monthlyAgg}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="period" tick={{fill:C.textMuted,fontSize:10}}/><YAxis tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><Tooltip content={<CustomTip/>}/><Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/></BarChart></ResponsiveContainer></Panel>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"🥇 ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"🤖 AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"🎯 BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const best=sorted[0]?.[key]||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=asc?(best/r[key])*100:(r[key]/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:12,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:10,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const best=sorted[0]?.[key]||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=asc?(best/r[key])*100:(r[key]/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:12,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:10,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
         </>)}
         {cmView==="daily"&&(<>
           <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}><span style={{fontSize:11,color:C.textLabel,fontWeight:700}}>MONTH:</span>{["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}</div>
@@ -383,12 +580,12 @@ function App(){
           <Panel title="TREND OVER TIME"><div style={{display:"flex",gap:5,marginBottom:8}}>{[{key:"totalBooked",label:"Meetings"},{key:"totalSent",label:"Emails"},{key:"inboxes",label:"Inboxes"}].map(o=><Btn key={o.key} active={trendMetric===o.key} onClick={()=>setTrendMetric(o.key)}>{o.label}</Btn>)}</div><ResponsiveContainer width="100%" height={180}><LineChart data={trendData} margin={{left:5,right:10}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="period" tick={{fill:C.textMuted,fontSize:9}}/><YAxis tickFormatter={v=>fmt(v)} tick={{fill:C.textMuted,fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:C.textLabel}}/>{selCMs.map(cm=><Line key={cm} type="monotone" dataKey={cm} stroke={CM_COLORS[ALL_CMs.indexOf(cm)%CM_COLORS.length]} strokeWidth={2} dot={{r:2}} connectNulls/>)}</LineChart></ResponsiveContainer></Panel>
         </>)}
         {cmView==="compare"&&(<>
-          <div style={{display:"flex",alignItems:"center",gap:7}}><span style={{fontSize:11,color:C.textLabel,fontWeight:700}}>MODE:</span>{["Non AI","💻 AI","All"].map(m=><Btn key={m} active={compareMode===m} onClick={()=>setCompareMode(m)}>{m}</Btn>)}</div>
+          <div style={{display:"flex",alignItems:"center",gap:7}}><span style={{fontSize:11,color:C.textLabel,fontWeight:700}}>MODE:</span>{["Non AI","AI","All"].map(m=><Btn key={m} active={compareMode===m} onClick={()=>setCompareMode(m)}>{m}</Btn>)}</div>
           <Panel title={`${compareMode.toUpperCase()} — EMAILS & MEETINGS`}><ResponsiveContainer width="100%" height={240}><BarChart data={compareData} margin={{left:0,right:10}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="cm" tick={{fill:C.textMuted,fontSize:10}}/><YAxis yAxisId="l" tickFormatter={v=>fmt(v)} tick={{fill:C.textMuted,fontSize:9}}/><YAxis yAxisId="r" orientation="right" tick={{fill:C.textMuted,fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:10,color:C.textLabel}}/><Bar yAxisId="l" dataKey="sent" name="Emails Sent" fill="#4f46e5" radius={[4,4,0,0]}/><Bar yAxisId="r" dataKey="booked" name="Meetings" fill="#16a34a" radius={[4,4,0,0]}/></BarChart></ResponsiveContainer></Panel>
           <Panel title="S/B RATIO COMPARISON"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}44`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:8,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={200}><BarChart data={[...compareData].filter(r=>r.ratio).sort((a,b)=>a.ratio-b.ratio)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={70}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="ratio" shape={<TierBar/>} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
         </>)}
         {cmView==="boards"&&(()=>{
-          const boards=[{title:"🥇 ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"🤖 AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"🎯 BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}];
+          const boards=[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}];
           return(<>
             <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{boards.map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const best=sorted[0]?.[key]||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{sorted.map((r,i)=>{const pct=asc?(best/r[key])*100:(r[key]/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:13,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:9,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
             <Panel title="ALL-TIME S/B RATIO"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}44`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:8,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={220}><BarChart data={[...allTimeCM].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
@@ -461,18 +658,10 @@ function App(){
   );
 
   return(
+    // Change #9: Removed top header bar entirely
     <div style={{fontFamily:"system-ui,sans-serif",background:C.bg,minHeight:"100vh",color:C.textPrimary,display:"flex",flexDirection:"row"}}>
       <LeftSidebar section={section} setSection={setSection} collapsed={collapsed} setCollapsed={setCollapsed}/>
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
-        {/* Top bar — page title only */}
-        <div style={{height:56,borderBottom:`1px solid ${C.cardBorder}`,background:"#ffffff",display:"flex",alignItems:"center",padding:"0 24px",flexShrink:0,boxShadow:"0 1px 3px rgba(0,0,0,0.05)"}}>
-          <span style={{fontSize:15,fontWeight:700,color:C.textPrimary}}>
-            {section==="overview"&&"Overview"}
-            {section==="business"&&"Business Funding"}
-            {section==="cm"&&"Campaign Management"}
-            {section==="inbox"&&"Accounts"}
-          </span>
-        </div>
         <div style={{flex:1,overflow:"hidden",display:"flex",flexDirection:"column"}}>
           {section==="overview"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderOverview()}</div>}
           {section==="business"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderBusiness()}</div>}
