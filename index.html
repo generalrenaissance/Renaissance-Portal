@@ -1055,7 +1055,7 @@ function App(){
           </div>
           <Panel title="EMAIL TYPE TABLE">
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Type","Accounts","% Share","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>
-              {(()=>{const total=od.emailTypes.reduce((s,r)=>s+r.accounts,0);return[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:r.color}}>{r.type}</td><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{total>0?((r.accounts/total)*100).toFixed(1):0}%</td><td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"9px 12px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.accounts/total)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);})()}
+              {(()=>{const total=od.emailTypes.reduce((s,r)=>s+r.accounts,0);return[...od.emailTypes].sort((a,b)=>b.accounts-a.accounts).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card,opacity:r.accounts>0?1:0.5}}><td style={{padding:"9px 12px",fontWeight:700,color:r.accounts>0?r.color:C.textMuted}}>{r.type}</td><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{total>0?((r.accounts/total)*100).toFixed(1):0}%</td><td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"9px 12px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.accounts/total)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);})()}
             </tbody></table>
           </Panel>
         </div>)}
@@ -1110,12 +1110,12 @@ function App(){
                 <MiniCard icon="🏆" label="Top Provider" value={topESP.provider} color="#d97706" sub={`${fmtFull(topESP.accounts)} accounts`}/>
                 <MiniCard icon="🌐" label="Total Domains" value={fmtFull(od.emailProviders.reduce((s,r)=>s+r.domains,0))} color="#7c3aed"/>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:activeProviders.length>1?"1fr 1fr":"1fr",gap:14}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
                 {od.emailProviders.map((p,i)=>(
-                  <div key={i} style={{background:p.accounts>0?`${p.color}0f`:"#f8fafc",border:`1px solid ${p.accounts>0?p.color+"44":C.cardBorder}`,borderRadius:16,padding:"24px 26px",opacity:p.accounts>0?1:0.5}}>
+                  <div key={i} style={{background:p.accounts>0?`${p.color}0f`:"#f8fafc",border:`1px solid ${p.accounts>0?p.color+"44":C.cardBorder}`,borderRadius:16,padding:"24px 26px",opacity:p.accounts>0?1:0.6}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
                       <span style={{fontSize:20,fontWeight:800,color:p.accounts>0?p.color:C.textMuted}}>{p.provider}</span>
-                      <span style={{fontSize:12,color:C.textMuted,background:"#f1f5f9",borderRadius:99,padding:"3px 10px",fontWeight:600}}>{p.accounts>0?((p.accounts/Math.max(totalESP,1))*100).toFixed(1)+"%":"No data"}</span>
+                      <span style={{fontSize:12,color:C.textMuted,background:"#f1f5f9",borderRadius:99,padding:"3px 10px",fontWeight:600}}>{totalESP>0?((p.accounts/totalESP)*100).toFixed(1)+"%":"0%"}</span>
                     </div>
                     <div style={{fontSize:32,fontWeight:800,color:p.accounts>0?C.textPrimary:C.textMuted,marginBottom:4}}>{fmtFull(p.accounts)}</div>
                     <div style={{fontSize:11,color:C.textMuted,marginBottom:12}}>accounts</div>
@@ -1129,33 +1129,31 @@ function App(){
                   </div>
                 ))}
               </div>
-              {activeProviders.length>0&&(
-                <Panel title="PROVIDER COMPARISON TABLE">
-                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-                    <thead><tr>{["Provider","Accounts","% Share","Domains","Tags","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead>
-                    <tbody>
-                      {[...od.emailProviders].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(
-                        <tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}>
-                          <td style={{padding:"9px 12px",fontWeight:700,color:r.accounts>0?r.color:C.textMuted}}>{r.provider}</td>
-                          <td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td>
-                          <td style={{padding:"9px 12px",color:C.textSecondary}}>{totalESP>0?((r.accounts/totalESP)*100).toFixed(1):0}%</td>
-                          <td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td>
-                          <td style={{padding:"9px 12px",color:C.textMuted}}>{r.tags||0}</td>
-                          <td style={{padding:"9px 12px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:totalESP>0?`${(r.accounts/totalESP)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td>
-                        </tr>
-                      ))}
-                      <tr style={{borderTop:`2px solid ${C.cardBorder}`,background:C.tableHead}}>
-                        <td style={{padding:"9px 12px",fontWeight:800,color:C.textPrimary}}>Total</td>
-                        <td style={{padding:"9px 12px",color:oc.primary,fontWeight:800}}>{fmtFull(totalESP)}</td>
-                        <td style={{padding:"9px 12px",color:C.textSecondary}}>100%</td>
-                        <td style={{padding:"9px 12px",color:"#7c3aed",fontWeight:800}}>{fmtFull(od.emailProviders.reduce((s,r)=>s+r.domains,0))}</td>
-                        <td style={{padding:"9px 12px",color:"#d97706",fontWeight:800}}>{od.emailProviders.reduce((s,r)=>s+(r.tags||0),0)}</td>
-                        <td/>
+              <Panel title="PROVIDER COMPARISON TABLE">
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+                  <thead><tr>{["Provider","Accounts","% Share","Domains","Tags","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead>
+                  <tbody>
+                    {[...od.emailProviders].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(
+                      <tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}>
+                        <td style={{padding:"9px 12px",fontWeight:700,color:r.accounts>0?r.color:C.textMuted}}>{r.provider}</td>
+                        <td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td>
+                        <td style={{padding:"9px 12px",color:C.textSecondary}}>{totalESP>0?((r.accounts/totalESP)*100).toFixed(1):0}%</td>
+                        <td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td>
+                        <td style={{padding:"9px 12px",color:C.textMuted}}>{r.tags||0}</td>
+                        <td style={{padding:"9px 12px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:totalESP>0?`${(r.accounts/totalESP)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td>
                       </tr>
-                    </tbody>
-                  </table>
-                </Panel>
-              )}
+                    ))}
+                    <tr style={{borderTop:`2px solid ${C.cardBorder}`,background:C.tableHead}}>
+                      <td style={{padding:"9px 12px",fontWeight:800,color:C.textPrimary}}>Total</td>
+                      <td style={{padding:"9px 12px",color:oc.primary,fontWeight:800}}>{fmtFull(totalESP)}</td>
+                      <td style={{padding:"9px 12px",color:C.textSecondary}}>100%</td>
+                      <td style={{padding:"9px 12px",color:"#7c3aed",fontWeight:800}}>{fmtFull(od.emailProviders.reduce((s,r)=>s+r.domains,0))}</td>
+                      <td style={{padding:"9px 12px",color:"#d97706",fontWeight:800}}>{od.emailProviders.reduce((s,r)=>s+(r.tags||0),0)}</td>
+                      <td/>
+                    </tr>
+                  </tbody>
+                </table>
+              </Panel>
             </>);
           })()}
         </div>)}
