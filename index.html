@@ -256,36 +256,170 @@ const MONTHLY_CM = [
   {year:2026,month:"January",cm:"Ido",inboxes:11134,nonAiSent:2703474,nonAiBooked:463,aiSent:5839,aiBooked:0,totalSent:2703474,totalBooked:463},{year:2026,month:"January",cm:"Carlos",inboxes:8951,nonAiSent:1648369,nonAiBooked:474,aiSent:3478,aiBooked:0,totalSent:1648369,totalBooked:474},{year:2026,month:"January",cm:"Eyver",inboxes:7285,nonAiSent:2060585,nonAiBooked:958,aiSent:2151,aiBooked:0,totalSent:1988185,totalBooked:925},{year:2026,month:"January",cm:"Leonardo",inboxes:4632,nonAiSent:1822817,nonAiBooked:424,aiSent:269507,aiBooked:62,totalSent:2053492,totalBooked:476},{year:2026,month:"January",cm:"Samuel",inboxes:4987,nonAiSent:2032424,nonAiBooked:365,aiSent:17613,aiBooked:1,totalSent:1989358,totalBooked:366},{year:2026,month:"January",cm:"Shaan",inboxes:6940,nonAiSent:1957682,nonAiBooked:372,aiSent:5263,aiBooked:0,totalSent:1957682,totalBooked:372},{year:2026,month:"January",cm:"Tomi",inboxes:5558,nonAiSent:1640851,nonAiBooked:410,aiSent:258354,aiBooked:54,totalSent:1826379,totalBooked:464},{year:2026,month:"January",cm:"Chuck",inboxes:9239,nonAiSent:2226449,nonAiBooked:305,aiSent:36580,aiBooked:1,totalSent:2185376,totalBooked:306},{year:2026,month:"January",cm:"Brendan",inboxes:4568,nonAiSent:2204942,nonAiBooked:468,aiSent:4711,aiBooked:0,totalSent:2149014,totalBooked:468},{year:2026,month:"January",cm:"Lautaro",inboxes:2488,nonAiSent:417559,nonAiBooked:40,aiSent:10439,aiBooked:0,totalSent:408559,totalBooked:38},{year:2026,month:"January",cm:"Alex",inboxes:2880,nonAiSent:182496,nonAiBooked:12,aiSent:15208,aiBooked:0,totalSent:182496,totalBooked:12},
 ];
 
-const ACCOUNT_STATUS=[
-  {status:"Active",accounts:48197,color:"#1e40af"},
-  {status:"Warmup",accounts:51340,color:"#0ea5e9"},
-  {status:"Sent Into Production",accounts:83080,color:"#06b6d4"},
-  {status:"Ramp Up",accounts:53221,color:"#3b82f6"},
-  {status:"Ready to Launch",accounts:2000,color:"#38bdf8"},
-  {status:"Off-Group",accounts:32077,color:"#0284c7"}
-];
-const DOMAIN_DATA={total:105078,used:76933,unused:27938,byTLD:[
-  {tld:".co",count:49571,color:"#1e3a8a"},
-  {tld:".info",count:51389,color:"#0369a1"},
-  {tld:".com",count:1449,color:"#0891b2"},
-  {tld:".xyz",count:1823,color:"#38bdf8"},
-  {tld:".org",count:743,color:"#1d4ed8"},
-  {tld:".space",count:100,color:"#3b82f6"},
-  {tld:".io",count:1,color:"#06b6d4"},
-  {tld:".net",count:1,color:"#0ea5e9"},
-  {tld:".agency",count:0,color:"#93c5fd"}
-],byRegistrar:[
-  // Change #1: Porkbun color changed to #f37777 (orangey-pink)
-  {registrar:"Porkbun",count:66801,accounts:8,color:"#f37777"},
-  {registrar:"Dynadot",count:19277,accounts:5,color:"#0369a1"},
-  {registrar:"Spaceship",count:19000,accounts:3,color:"#38bdf8"}
-]};
+// ── INBOX HUB DATA (March 2026) ────────────────────────────────────────────
+// Offer colour palette
+const OFFER_COLORS={Funding:{primary:"#2563eb",light:"#eff6ff",border:"#bfdbfe"},Section125:{primary:"#7c3aed",light:"#faf5ff",border:"#ddd6fe"},ERC:{primary:"#0891b2",light:"#ecfeff",border:"#a5f3fc"}};
 
-const CM_INBOX=[{cm:"Alex",accounts:9048,pct:6.49,dailyEmails:105220,groupA:362,groupB:313},{cm:"Andres",accounts:1500,pct:1.08,dailyEmails:22500,groupA:150,groupB:15},{cm:"Brendan",accounts:14060,pct:10.09,dailyEmails:211700,groupA:141,groupB:180},{cm:"Carlos",accounts:13277,pct:9.52,dailyEmails:170739,groupA:675,groupB:410},{cm:"Eyver",accounts:16544,pct:11.87,dailyEmails:265960,groupA:1166,groupB:650},{cm:"Ido",accounts:32837,pct:23.56,dailyEmails:244587,groupA:702,groupB:545},{cm:"Lautaro",accounts:9500,pct:6.82,dailyEmails:142500,groupA:75,groupB:25},{cm:"Leo",accounts:12969,pct:9.30,dailyEmails:185804,groupA:824,groupB:537},{cm:"Marcos",accounts:1500,pct:1.08,dailyEmails:15000,groupA:0,groupB:0},{cm:"Samuel",accounts:2800,pct:2.01,dailyEmails:42000,groupA:282,groupB:26},{cm:"Shaan",accounts:12900,pct:9.25,dailyEmails:133500,groupA:740,groupB:300},{cm:"Tomi",accounts:12460,pct:8.94,dailyEmails:157890,groupA:1055,groupB:550}];
-const GROUPS=[{group:"Equinox",A:5269,B:1700,total:6969},{group:"Koi & Destroy",A:3788,B:4972,total:8760},{group:"Prospect Power",A:3900,B:3000,total:6900},{group:"Renaissance 1",A:2500,B:2700,total:5200},{group:"Renaissance 2",A:5000,B:5000,total:10000},{group:"Renaissance 4",A:5560,B:7048,total:12608},{group:"The Dyad",A:5371,B:1406,total:6777},{group:"The Eagles",A:5200,B:5100,total:10300},{group:"The Gatekeepers",A:6060,B:8000,total:14060}];
-const INBOX_MANAGERS=[{manager:"Norman",accounts:24908,pct:28.06,color:"#1e40af"},{manager:"Ramir",accounts:15460,pct:17.42,color:"#0369a1"},{manager:"Monique",accounts:10760,pct:12.12,color:"#0891b2"},{manager:"Rob",accounts:10000,pct:11.26,color:"#38bdf8"},{manager:"Frank",accounts:8969,pct:10.10,color:"#1d4ed8"},{manager:"Nikko",accounts:8777,pct:9.89,color:"#3b82f6"},{manager:"Kenneth",accounts:8900,pct:10.03,color:"#0ea5e9"},{manager:"Jessica",accounts:1000,pct:1.13,color:"#06b6d4"}];
-const EMAIL_TYPES=[{type:"Reseller",accounts:111206,pct:38.56,color:"#1e3a8a"},{type:"Inboxing",accounts:52837,pct:18.32,color:"#0369a1"},{type:"MailIn",accounts:47850,pct:16.59,color:"#0891b2"},{type:"Cheap Inboxes",accounts:36520,pct:12.66,color:"#38bdf8"},{type:"Outreach Today",accounts:25000,pct:8.67,color:"#1d4ed8"},{type:"Maildoso",accounts:8000,pct:2.77,color:"#3b82f6"},{type:"Panel",accounts:4852,pct:1.68,color:"#0ea5e9"},{type:"Microsoft Panel",accounts:2100,pct:0.73,color:"#06b6d4"}];
-const EMAIL_PROVIDERS=[{provider:"Google",accounts:149058,pct:51.69,color:"#4285f4"},{provider:"Outlook",accounts:139307,pct:48.31,color:"#0078d4"}];
+const IH_DATA={
+  Funding:{
+    accountStatus:[
+      {status:"Active",accounts:59334,tags:129,domains:14734,color:"#1e40af"},
+      {status:"Sent Into Production",accounts:247480,tags:143,domains:10168,color:"#06b6d4"},
+      {status:"Ramp Up",accounts:41137,tags:56,domains:7151,color:"#3b82f6"},
+      {status:"Warmup",accounts:51440,tags:47,domains:3619,color:"#0ea5e9"},
+      {status:"Off-Group",accounts:32417,tags:71,domains:8104,color:"#0284c7"},
+      {status:"Ready to Launch",accounts:1200,tags:2,domains:300,color:"#38bdf8"},
+      {status:"Cancelled",accounts:1307,tags:1,domains:327,color:"#94a3b8"},
+    ],
+    groups:[
+      {group:"Group A",accounts:46532,tags:102,domains:11533,color:"#2563eb"},
+      {group:"Group B",accounts:41526,tags:89,domains:10382,color:"#db2777"},
+    ],
+    workspaces:[
+      {workspace:"Outlook 1",accounts:115700,tags:40,domains:2118,color:"#0078d4"},
+      {workspace:"Outlook 2",accounts:28037,tags:8,domains:1226,color:"#1d6fa8"},
+      {workspace:"Outlook 3",accounts:36520,tags:25,domains:899,color:"#106cbe"},
+      {workspace:"Renaissance 7",accounts:51700,tags:25,domains:1472,color:"#4f46e5"},
+      {workspace:"Renaissance 5",accounts:18608,tags:37,domains:4352,color:"#6366f1"},
+      {workspace:"The Eagles",accounts:18777,tags:36,domains:4294,color:"#8b5cf6"},
+      {workspace:"Prospect Power",accounts:18760,tags:45,domains:4290,color:"#7c3aed"},
+      {workspace:"Renaissance 1",accounts:14960,tags:30,domains:3740,color:"#0891b2"},
+      {workspace:"Koi and Destroy",accounts:14869,tags:35,domains:3567,color:"#059669"},
+      {workspace:"Renaissance 3",accounts:13984,tags:28,domains:3396,color:"#16a34a"},
+      {workspace:"Renaissance 2",accounts:13200,tags:26,domains:3250,color:"#d97706"},
+      {workspace:"The Gatekeepers",accounts:14300,tags:31,domains:3475,color:"#ea580c"},
+      {workspace:"Renaissance 4",accounts:12800,tags:11,domains:849,color:"#dc2626"},
+      {workspace:"The Dyad",accounts:12900,tags:26,domains:3225,color:"#db2777"},
+      {workspace:"Renaissance 6",accounts:10000,tags:20,domains:2500,color:"#9333ea"},
+      {workspace:"Warm Leads",accounts:4000,tags:8,domains:1000,color:"#ca8a04"},
+      {workspace:"Equinox",accounts:600,tags:1,domains:150,color:"#64748b"},
+      {workspace:"Automated Applications",accounts:0,tags:0,domains:0,color:"#475569"},
+    ],
+    campaignManagers:[
+      {cm:"Lautaro",accounts:32837,tags:39,domains:5076,color:"#4f46e5"},
+      {cm:"Marcos",accounts:12969,tags:32,domains:3242,color:"#059669"},
+      {cm:"Carlos",accounts:14060,tags:28,domains:3515,color:"#db2777"},
+      {cm:"Ido",accounts:14984,tags:30,domains:3746,color:"#ea580c"},
+      {cm:"Eyver",accounts:13277,tags:25,domains:3219,color:"#2563eb"},
+      {cm:"Tomi",accounts:12900,tags:26,domains:3225,color:"#7c3aed"},
+      {cm:"Leo",accounts:9500,tags:19,domains:2375,color:"#0891b2"},
+      {cm:"Andres",accounts:9048,tags:18,domains:2262,color:"#ca8a04"},
+      {cm:"Samuel",accounts:3060,tags:6,domains:765,color:"#dc2626"},
+      {cm:"Brendan",accounts:3200,tags:6,domains:800,color:"#0284c7"},
+      {cm:"Shaan",accounts:2800,tags:8,domains:700,color:"#16a34a"},
+      {cm:"Alex",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+    ],
+    inboxManagers:[
+      {manager:"Ramir",accounts:24908,tags:52,domains:6227,color:"#0369a1"},
+      {manager:"Rob",accounts:15460,tags:31,domains:3865,color:"#2563eb"},
+      {manager:"Nikko",accounts:10760,tags:29,domains:2690,color:"#38bdf8"},
+      {manager:"Jessica",accounts:8969,tags:24,domains:2242,color:"#06b6d4"},
+      {manager:"Monique",accounts:8900,tags:18,domains:2225,color:"#0891b2"},
+      {manager:"Norman",accounts:8777,tags:16,domains:2094,color:"#1e40af"},
+      {manager:"Kenneth",accounts:1000,tags:2,domains:250,color:"#0ea5e9"},
+      {manager:"Frank",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+    ],
+    emailTypes:[
+      {type:"Microsoft Panel",accounts:177000,tags:55,domains:1889,color:"#0078d4"},
+      {type:"Maildoso",accounts:52837,tags:18,domains:1626,color:"#0891b2"},
+      {type:"Panel",accounts:40000,tags:80,domains:8000,color:"#1e3a8a"},
+      {type:"Inboxing",accounts:36520,tags:25,domains:899,color:"#0369a1"},
+      {type:"MailIn",accounts:9800,tags:20,domains:2450,color:"#38bdf8"},
+      {type:"Reseller",accounts:6621,tags:10,domains:1655,color:"#3b82f6"},
+      {type:"Outreach Today",accounts:2100,tags:21,domains:525,color:"#1d4ed8"},
+      {type:"Cheap Inboxes",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+    ],
+    emailProviders:[
+      {provider:"Outlook",accounts:165858,tags:330,domains:39465,color:"#0078d4"},
+      {provider:"Google",accounts:0,tags:0,domains:0,color:"#4285f4"},
+    ],
+  },
+  Section125:{
+    accountStatus:[
+      {status:"Sent Into Production",accounts:15000,tags:30,domains:3000,color:"#06b6d4"},
+      {status:"Warmup",accounts:2000,tags:4,domains:400,color:"#0ea5e9"},
+      {status:"Cancelled",accounts:984,tags:1,domains:246,color:"#94a3b8"},
+      {status:"Active",accounts:0,tags:0,domains:0,color:"#1e40af"},
+      {status:"Off-Group",accounts:0,tags:0,domains:0,color:"#0284c7"},
+      {status:"Ramp Up",accounts:0,tags:0,domains:0,color:"#3b82f6"},
+      {status:"Ready to Launch",accounts:0,tags:0,domains:0,color:"#38bdf8"},
+    ],
+    groups:[
+      {group:"Group A",accounts:198,tags:0,domains:50,color:"#7c3aed"},
+      {group:"Group B",accounts:0,tags:0,domains:0,color:"#db2777"},
+    ],
+    workspaces:[
+      {workspace:"Section125 1",accounts:17484,tags:34,domains:3771,color:"#7c3aed"},
+      {workspace:"Section125 2",accounts:5000,tags:10,domains:1000,color:"#9333ea"},
+    ],
+    campaignManagers:[
+      {cm:"Ido",accounts:5484,tags:10,domains:1371,color:"#7c3aed"},
+    ],
+    inboxManagers:[
+      {manager:"Jamie",accounts:198,tags:0,domains:50,color:"#8b5cf6"},
+    ],
+    emailTypes:[
+      {type:"Outreach Today",accounts:17000,tags:34,domains:3400,color:"#7c3aed"},
+      {type:"Reseller",accounts:4500,tags:9,domains:1125,color:"#a78bfa"},
+      {type:"Panel",accounts:984,tags:1,domains:246,color:"#8b5cf6"},
+      {type:"Cheap Inboxes",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Inboxing",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Maildoso",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"MailIn",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Microsoft Panel",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+    ],
+    emailProviders:[
+      {provider:"Google",accounts:22484,tags:44,domains:4771,color:"#4285f4"},
+      {provider:"Outlook",accounts:0,tags:0,domains:0,color:"#0078d4"},
+    ],
+  },
+  ERC:{
+    accountStatus:[
+      {status:"Sent Into Production",accounts:158400,tags:160,domains:8,color:"#0891b2"},
+      {status:"Cancelled",accounts:0,tags:4,domains:0,color:"#94a3b8"},
+      {status:"Active",accounts:0,tags:0,domains:0,color:"#1e40af"},
+      {status:"Off-Group",accounts:0,tags:0,domains:0,color:"#0284c7"},
+      {status:"Ramp Up",accounts:0,tags:0,domains:0,color:"#3b82f6"},
+      {status:"Ready to Launch",accounts:0,tags:0,domains:0,color:"#38bdf8"},
+      {status:"Warmup",accounts:0,tags:0,domains:0,color:"#0ea5e9"},
+    ],
+    groups:[
+      {group:"Group A",accounts:0,tags:0,domains:0,color:"#0891b2"},
+      {group:"Group B",accounts:0,tags:0,domains:0,color:"#db2777"},
+    ],
+    workspaces:[
+      {workspace:"ERC 1",accounts:0,tags:0,domains:0,color:"#0891b2"},
+      {workspace:"ERC 2",accounts:0,tags:0,domains:0,color:"#06b6d4"},
+    ],
+    campaignManagers:[
+      {cm:"Ido",accounts:0,tags:0,domains:0,color:"#0891b2"},
+    ],
+    inboxManagers:[
+      {manager:"N/A",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+    ],
+    emailTypes:[
+      {type:"MailIn",accounts:158400,tags:160,domains:8,color:"#0891b2"},
+      {type:"Cheap Inboxes",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Inboxing",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Maildoso",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Microsoft Panel",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Outreach Today",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Panel",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+      {type:"Reseller",accounts:0,tags:0,domains:0,color:"#94a3b8"},
+    ],
+    emailProviders:[
+      {provider:"Outlook",accounts:158400,tags:160,domains:8,color:"#0078d4"},
+      {provider:"Google",accounts:0,tags:0,domains:0,color:"#4285f4"},
+    ],
+  },
+};
+
+// Keep legacy references used by overview/CM cards
+const ACCOUNT_STATUS=IH_DATA.Funding.accountStatus.map(r=>({...r}));
+const INBOX_MANAGERS=IH_DATA.Funding.inboxManagers.map(r=>({...r,pct:0}));
+const CM_INBOX=IH_DATA.Funding.campaignManagers.map(r=>({cm:r.cm,accounts:r.accounts,pct:0,dailyEmails:Math.round(r.accounts*8),groupA:0,groupB:0}));
+const totalCMAccountsLegacy=CM_INBOX.reduce((s,r)=>s+r.accounts,0);
+const totalDailyEmailsLegacy=CM_INBOX.reduce((s,r)=>s+r.dailyEmails,0);
 
 const MONTH_ORDER=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const ALL_CM_MONTHS=["October","November","December","January"];
@@ -370,15 +504,20 @@ const CM_VIEWS=[
   {key:"boards", Icon:IconTrophy, label:"Leaderboards"}
 ];
 
-// Change #4: Inbox tabs with icons
+// Offer tabs
+const OFFER_TABS=["Funding","Section 125","ERC"];
+const OFFER_KEYS={"Funding":"Funding","Section 125":"Section125","ERC":"ERC"};
+
+// Inbox sub-tabs with icons
 const INBOX_TABS_DEF=[
   {label:"Overview", Icon:IconOverviewTab},
-  {label:"Accounts", Icon:IconAccount},
-  {label:"Campaign Managers", Icon:IconCM},
+  {label:"Account Status", Icon:IconAccount},
   {label:"Groups", Icon:IconGroup},
+  {label:"Workspaces", Icon:IconDomain},
+  {label:"Campaign Managers", Icon:IconCM},
   {label:"Inbox Managers", Icon:IconManager},
   {label:"Email Types", Icon:IconEmail},
-  {label:"Domains", Icon:IconDomain},
+  {label:"Email Service Provider", Icon:IconEmail},
 ];
 
 // ── Left Sidebar ───────────────────────────────────────────────────────────
@@ -444,6 +583,7 @@ function App(){
   const [compareMode,setCompareMode]=useState("All");
   const [trendMetric,setTrendMetric]=useState("totalBooked");
   const [inboxTab,setInboxTab]=useState("Overview");
+  const [offerTab,setOfferTab]=useState("Funding");
 
   const data=monthlyData,daily=dailyRaw;
   const totalEmails=data.reduce((s,r)=>s+r.emailsSent,0);
@@ -487,10 +627,10 @@ function App(){
   const dailyKpi=useMemo(()=>{const rows=dailyFiltered.filter(r=>r.totalBooked>0);const ts=rows.reduce((a,r)=>a+r.totalSent,0),tb=rows.reduce((a,r)=>a+r.totalBooked,0),ai=rows.reduce((a,r)=>a+r.aiBooked,0);return{ts,tb,ai,r:ratio(ts,tb)};},[dailyFiltered]);
   const cmTb=cmAgg.reduce((a,r)=>a+r.totalBooked,0),cmTs=cmAgg.reduce((a,r)=>a+r.totalSent,0),cmAi=cmAgg.reduce((a,r)=>a+r.aiBooked,0),teamR=ratio(cmTs,cmTb),totalInboxes=inboxPie.reduce((a,r)=>a+r.value,0);
   const allTs=CM_DAILY.reduce((a,r)=>a+r.totalSent,0),allTb2=CM_DAILY.reduce((a,r)=>a+r.totalBooked,0),allAi=CM_DAILY.reduce((a,r)=>a+r.aiBooked,0),allR=ratio(allTs,allTb2);
-  const activeAccts=ACCOUNT_STATUS.find(r=>r.status==="Active")?.accounts||0;
-  const warmupAccts=ACCOUNT_STATUS.find(r=>r.status==="Warmup")?.accounts||0;
-  const totalDailyEmails=CM_INBOX.reduce((s,r)=>s+r.dailyEmails,0);
-  const totalCMAccounts=CM_INBOX.reduce((s,r)=>s+r.accounts,0);
+  const activeAccts=IH_DATA.Funding.accountStatus.find(r=>r.status==="Active")?.accounts||0;
+  const warmupAccts=IH_DATA.Funding.accountStatus.find(r=>r.status==="Warmup")?.accounts||0;
+  const totalDailyEmails=totalDailyEmailsLegacy;
+  const totalCMAccounts=totalCMAccountsLegacy;
 
   const toggleCM=cm=>setSelCMs(s=>s.includes(cm)?s.filter(x=>x!==cm):[...s,cm]);
   const toggleMonth=m=>setSelMonths(s=>s.includes(m)?s.filter(x=>x!==m):[...s,m]);
@@ -699,76 +839,329 @@ function App(){
     </div>
   );
 
-  const renderInbox=()=>(
-    <div style={{display:"flex",flexDirection:"column",gap:12}}>
-      {/* Change #4: Accounts tabs with icons */}
-      <div style={{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,border:`1px solid ${C.cardBorder}`,flexWrap:"wrap",width:"fit-content"}}>
-        {INBOX_TABS_DEF.map(({label,Icon})=>(
-          <button key={label} onClick={()=>setInboxTab(label)} style={{background:inboxTab===label?"linear-gradient(135deg,#3b82f6,#6366f1)":"#ffffff",border:inboxTab===label?"none":`1px solid ${C.cardBorder}`,borderRadius:9,padding:"7px 13px",cursor:"pointer",fontSize:11,fontWeight:600,color:inboxTab===label?"#fff":C.textSecondary,outline:"none",display:"flex",alignItems:"center",gap:5,boxShadow:inboxTab===label?"0 2px 8px rgba(59,130,246,0.3)":"0 1px 2px rgba(0,0,0,0.04)"}}>
-            <Icon size={13} color={inboxTab===label?"#fff":C.textSecondary}/>
-            {label}
-          </button>
-        ))}
-      </div>
-      {inboxTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>{[{icon:"📬",label:"Total Accounts",value:fmtFull(269915),color:"#4f46e5",sub:"Grand Total"},{icon:"✅",label:"Active Accounts",value:fmtFull(activeAccts),color:"#16a34a",sub:`${((activeAccts/269915)*100).toFixed(1)}% of total`},{icon:"🔥",label:"Daily Emails Sent",value:fmt(totalDailyEmails),color:"#d97706",sub:"Across all CMs"},{icon:"🌡️",label:"In Warmup",value:fmtFull(warmupAccts),color:"#4f46e5",sub:"Being warmed up"}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:16,padding:"18px 20px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:22,marginBottom:8}}>{c.icon}</div><div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div><div style={{fontSize:11,color:C.textMuted,marginTop:2}}>{c.sub}</div></div>))}</div>
-        <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
-          <Panel title="ACCOUNT STATUS BREAKDOWN"><ResponsiveContainer width="100%" height={220}><BarChart data={ACCOUNT_STATUS} layout="vertical" margin={{left:10,right:60}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="status" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={120}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="EMAIL PROVIDER SPLIT"><div style={{display:"flex",flexDirection:"column",gap:12,marginTop:8}}>{EMAIL_PROVIDERS.map((p,i)=>(<div key={i}><div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:13,fontWeight:700,color:C.textPrimary}}>{p.provider}</span><span style={{fontSize:13,fontWeight:800,color:p.color}}>{p.pct}%</span></div><div style={{height:10,background:"#e2e8f0",borderRadius:99,overflow:"hidden"}}><div style={{width:`${p.pct}%`,height:"100%",background:p.color,borderRadius:99}}/></div><div style={{fontSize:11,color:C.textMuted,marginTop:4}}>{fmtFull(p.accounts)} accounts</div></div>))}<div style={{marginTop:8,padding:"12px 14px",background:"#f8fafc",borderRadius:10,border:`1px solid ${C.cardBorder}`}}><div style={{fontSize:11,color:C.textLabel,marginBottom:4}}>Total Monitored</div><div style={{fontSize:20,fontWeight:800,color:C.textPrimary}}>288,365</div></div></div></Panel>
+  const renderInbox=()=>{
+    const offerKey=OFFER_KEYS[offerTab];
+    const od=IH_DATA[offerKey];
+    const oc=OFFER_COLORS[offerKey];
+    const totalAccts=od.accountStatus.reduce((s,r)=>s+r.accounts,0);
+    const totalDoms=od.accountStatus.reduce((s,r)=>s+r.domains,0);
+    const activeA=(od.accountStatus.find(r=>r.status==="Active")||{accounts:0}).accounts;
+    const sipA=(od.accountStatus.find(r=>r.status==="Sent Into Production")||{accounts:0}).accounts;
+    const warmA=(od.accountStatus.find(r=>r.status==="Warmup")||{accounts:0}).accounts;
+    const topCM=[...od.campaignManagers].sort((a,b)=>b.accounts-a.accounts)[0]||{cm:"—",accounts:0};
+    const topWS=[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.accounts-a.accounts)[0]||{workspace:"—",accounts:0};
+    const totalWS=od.workspaces.reduce((s,r)=>s+r.accounts,0);
+    const totalETAccts=od.emailTypes.reduce((s,r)=>s+r.accounts,0);
+    const topET=[...od.emailTypes].sort((a,b)=>b.accounts-a.accounts)[0]||{type:"—",accounts:0};
+
+    const OfferPill=({label})=>{
+      const active=offerTab===label;
+      const key=OFFER_KEYS[label]||label;
+      const col=OFFER_COLORS[key]||OFFER_COLORS.Funding;
+      return(
+        <button onClick={()=>{setOfferTab(label);setInboxTab("Overview");}} style={{background:active?col.primary:"#ffffff",border:active?"none":`1px solid ${C.cardBorder}`,borderRadius:10,padding:"8px 18px",cursor:"pointer",fontSize:12,fontWeight:700,color:active?"#fff":C.textSecondary,outline:"none",boxShadow:active?`0 2px 10px ${col.primary}55`:"0 1px 2px rgba(0,0,0,0.04)",transition:"all 0.15s",display:"flex",alignItems:"center",gap:6}}>
+          <span style={{width:8,height:8,borderRadius:"50%",background:active?"rgba(255,255,255,0.7)":col.primary,display:"inline-block"}}/>
+          {label}
+        </button>
+      );
+    };
+
+    return(
+      <div style={{display:"flex",flexDirection:"column",gap:14}}>
+        {/* Offer selector */}
+        <div style={{display:"flex",gap:6,background:"#f1f5f9",padding:5,borderRadius:14,border:`1px solid ${C.cardBorder}`,width:"fit-content"}}>
+          {OFFER_TABS.map(t=><OfferPill key={t} label={t}/>)}
         </div>
-        <Panel title="ACCOUNT PIPELINE OVERVIEW"><div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>{ACCOUNT_STATUS.map((s,i)=>(<div key={i} style={{textAlign:"center",background:`${s.color}12`,border:`1px solid ${s.color}44`,borderRadius:12,padding:"14px 10px"}}><div style={{fontSize:22,fontWeight:800,color:s.color,marginBottom:4}}>{fmt(s.accounts)}</div><div style={{fontSize:9,color:C.textSecondary,textTransform:"uppercase",letterSpacing:.8,marginBottom:6,lineHeight:1.3}}>{s.status}</div><div style={{fontSize:11,fontWeight:700,color:s.color}}>{((s.accounts/269915)*100).toFixed(1)}%</div></div>))}</div></Panel>
-      </div>)}
-      {inboxTab==="Accounts"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <Panel title="ACCOUNT STATUS — PIE"><ResponsiveContainer width="100%" height={260}><PieChart><Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={55} outerRadius={100} dataKey="accounts" paddingAngle={3} nameKey="status">{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={10} wrapperStyle={{fontSize:11,color:C.textLabel}}/></PieChart></ResponsiveContainer></Panel>
-          <Panel title="EMAIL TYPE DISTRIBUTION"><ResponsiveContainer width="100%" height={260}><PieChart><Pie data={EMAIL_TYPES} cx="50%" cy="50%" innerRadius={55} outerRadius={100} dataKey="accounts" paddingAngle={3} nameKey="type">{EMAIL_TYPES.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={10} wrapperStyle={{fontSize:11,color:C.textLabel}}/></PieChart></ResponsiveContainer></Panel>
+
+        {/* Sub-tab bar */}
+        <div style={{display:"flex",gap:4,background:"#f1f5f9",padding:4,borderRadius:12,border:`1px solid ${C.cardBorder}`,flexWrap:"wrap",width:"fit-content"}}>
+          {INBOX_TABS_DEF.map(({label,Icon})=>(
+            <button key={label} onClick={()=>setInboxTab(label)} style={{background:inboxTab===label?`linear-gradient(135deg,${oc.primary},${oc.primary}cc)`:"#ffffff",border:inboxTab===label?"none":`1px solid ${C.cardBorder}`,borderRadius:9,padding:"7px 13px",cursor:"pointer",fontSize:11,fontWeight:600,color:inboxTab===label?"#fff":C.textSecondary,outline:"none",display:"flex",alignItems:"center",gap:5,boxShadow:inboxTab===label?`0 2px 8px ${oc.primary}44`:"0 1px 2px rgba(0,0,0,0.04)"}}>
+              <Icon size={13} color={inboxTab===label?"#fff":C.textSecondary}/>
+              {label}
+            </button>
+          ))}
         </div>
-        <Panel title="EMAIL TYPE FULL BREAKDOWN"><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Type","Accounts","Share","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{[...EMAIL_TYPES].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(<tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:600}}>{r.type}</td><td style={{padding:"9px 12px",color:r.color,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{r.pct}%</td><td style={{padding:"9px 12px",minWidth:120}}><div style={{height:6,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${r.pct/40*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>))}</tbody></table></Panel>
-      </div>)}
-      {inboxTab==="Campaign Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}><MiniCard icon="👥" label="Total CM Accounts" value={fmtFull(totalCMAccounts)} color="#4f46e5"/><MiniCard icon="📧" label="Total Daily Emails" value={fmt(totalDailyEmails)} color="#0891b2"/><MiniCard icon="🏆" label="Largest CM" value="Ido" color="#d97706" sub="32,837 accounts · 23.56%"/><MiniCard icon="📈" label="Most Daily Volume" value="Eyver" color="#16a34a" sub="265,960 emails/day"/></div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
-          {/* Change #2: Accounts + Daily Email Volume bar graphs use different blues */}
-          <Panel title="ACCOUNTS BY CM"><ResponsiveContainer width="100%" height={260}><BarChart data={[...CM_INBOX].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:70}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={65}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{CM_INBOX.map((_,i)=><Cell key={i} fill="#2563eb"/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="DAILY EMAIL VOLUME"><ResponsiveContainer width="100%" height={260}><BarChart data={[...CM_INBOX].sort((a,b)=>b.dailyEmails-a.dailyEmails)} layout="vertical" margin={{left:10,right:55}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={60}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Daily Emails"]}/><Bar dataKey="dailyEmails" radius={[0,4,4,0]}>{CM_INBOX.map((_,i)=><Cell key={i} fill="#7dd3fc"/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-        </div>
-        <Panel title="CM FULL TABLE"><div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["CM","Accounts","%","Daily Emails","Group A","Group B","Group Total"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",whiteSpace:"nowrap",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{[...CM_INBOX].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(<tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:C.textPrimary}}>{r.cm}</td><td style={{padding:"9px 12px",color:"#2563eb",fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{r.pct}%</td><td style={{padding:"9px 12px",color:"#0891b2"}}>{fmtFull(r.dailyEmails)}</td><td style={{padding:"9px 12px",color:"#4f46e5"}}>{r.groupA.toLocaleString()}</td><td style={{padding:"9px 12px",color:"#db2777"}}>{r.groupB.toLocaleString()}</td><td style={{padding:"9px 12px",color:"#d97706",fontWeight:700}}>{(r.groupA+r.groupB).toLocaleString()}</td></tr>))}<tr style={{borderTop:`2px solid ${C.cardBorder}`,background:C.tableHead}}><td style={{padding:"9px 12px",fontWeight:800,color:C.textPrimary}}>Grand Total</td><td style={{padding:"9px 12px",color:"#4f46e5",fontWeight:800}}>{fmtFull(totalCMAccounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>100%</td><td style={{padding:"9px 12px",color:"#0891b2",fontWeight:800}}>{fmtFull(totalDailyEmails)}</td><td style={{padding:"9px 12px",color:"#4f46e5",fontWeight:800}}>{CM_INBOX.reduce((s,r)=>s+r.groupA,0).toLocaleString()}</td><td style={{padding:"9px 12px",color:"#db2777",fontWeight:800}}>{CM_INBOX.reduce((s,r)=>s+r.groupB,0).toLocaleString()}</td><td style={{padding:"9px 12px",color:"#d97706",fontWeight:800}}>{CM_INBOX.reduce((s,r)=>s+r.groupA+r.groupB,0).toLocaleString()}</td></tr></tbody></table></div></Panel>
-      </div>)}
-      {inboxTab==="Groups"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}><MiniCard icon="🏢" label="Total Groups" value="9" color="#4f46e5"/><MiniCard icon="🅰️" label="Group A Total" value={fmtFull(42648)} color="#4f46e5"/><MiniCard icon="🅱️" label="Group B Total" value={fmtFull(38926)} color="#db2777"/><MiniCard icon="📊" label="Combined Total" value={fmtFull(81574)} color="#16a34a"/></div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
-          <Panel title="GROUP A vs GROUP B"><ResponsiveContainer width="100%" height={280}><BarChart data={[...GROUPS].sort((a,b)=>b.total-a.total)} barGap={4}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="group" tick={{fill:C.textMuted,fontSize:9}} interval={0} angle={-20} textAnchor="end" height={50}/><YAxis tick={{fill:C.textMuted,fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:10,color:C.textLabel}}/><Bar dataKey="A" name="Group A" fill="#4f46e5" radius={[3,3,0,0]} barSize={18}/><Bar dataKey="B" name="Group B" fill="#db2777" radius={[3,3,0,0]} barSize={18}/></BarChart></ResponsiveContainer></Panel>
-          <Panel title="GROUP TOTALS"><div style={{display:"flex",flexDirection:"column",gap:7}}>{[...GROUPS].sort((a,b)=>b.total-a.total).map((g,i)=>{const pct=(g.total/14060)*100;return(<div key={g.group}><div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{g.group}</span><span style={{fontSize:11,fontWeight:800,color:"#d97706"}}>{fmtFull(g.total)}</span></div><div style={{height:4,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${pct}%`,height:"100%",background:"linear-gradient(90deg,#4f46e5,#db2777)",borderRadius:99}}/></div></div>);})}</div></Panel>
-        </div>
-      </div>)}
-      {inboxTab==="Inbox Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}><MiniCard icon="🧑‍💼" label="Inbox Managers" value="8" color="#4f46e5"/><MiniCard icon="📬" label="Total Managed" value={fmtFull(88774)} color="#16a34a"/><MiniCard icon="🏆" label="Largest Manager" value="Norman" color="#d97706" sub="24,908 · 28.06%"/><MiniCard icon="📊" label="Avg per Manager" value={fmtFull(Math.round(88774/8))} color="#0891b2" sub="accounts"/></div>
-        <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
-          <Panel title="ACCOUNTS BY INBOX MANAGER"><ResponsiveContainer width="100%" height={270}><BarChart data={[...INBOX_MANAGERS].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:70}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="manager" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{INBOX_MANAGERS.map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="SHARE DISTRIBUTION"><ResponsiveContainer width="100%" height={270}><PieChart><Pie data={INBOX_MANAGERS} cx="50%" cy="50%" innerRadius={50} outerRadius={95} dataKey="accounts" nameKey="manager" paddingAngle={2}>{INBOX_MANAGERS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={9} wrapperStyle={{fontSize:10,color:C.textLabel}}/></PieChart></ResponsiveContainer></Panel>
-        </div>
-      </div>)}
-      {inboxTab==="Email Types"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}><MiniCard icon="📧" label="Email Types" value="8" color="#4f46e5"/><MiniCard icon="🔝" label="Top Type" value="Reseller" color="#4f46e5" sub="111,206 · 38.56%"/><MiniCard icon="🌐" label="Google Accounts" value={fmtFull(149058)} color="#4285f4" sub="51.69%"/><MiniCard icon="🪟" label="Outlook Accounts" value={fmtFull(139307)} color="#0078d4" sub="48.31%"/></div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-          <Panel title="EMAIL TYPE BREAKDOWN"><ResponsiveContainer width="100%" height={280}><BarChart data={[...EMAIL_TYPES].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="type" type="category" tick={{fill:C.textSecondary,fontSize:9}} width={90}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmt(v)}}>{EMAIL_TYPES.map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer></Panel>
-          <Panel title="EMAIL PROVIDER COMPARISON"><div style={{display:"flex",flexDirection:"column",gap:16,paddingTop:8}}>{EMAIL_PROVIDERS.map((p,i)=>(<div key={i} style={{background:`${p.color}0f`,border:`1px solid ${p.color}44`,borderRadius:14,padding:"20px 22px"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><span style={{fontSize:16,fontWeight:800,color:p.color}}>{p.provider}</span><span style={{fontSize:24,fontWeight:800,color:C.textPrimary}}>{p.pct}%</span></div><div style={{height:8,background:"#e2e8f0",borderRadius:99,marginBottom:10}}><div style={{width:`${p.pct}%`,height:"100%",background:p.color,borderRadius:99}}/></div><div style={{fontSize:22,fontWeight:800,color:p.color}}>{fmtFull(p.accounts)}</div><div style={{fontSize:11,color:C.textMuted}}>total accounts</div></div>))}</div></Panel>
-        </div>
-      </div>)}
-      {inboxTab==="Domains"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}><MiniCard icon="🌐" label="Total Domains" value={fmtFull(DOMAIN_DATA.total)} color="#4f46e5"/><MiniCard icon="✅" label="Used Domains" value={fmtFull(DOMAIN_DATA.used)} color="#16a34a" sub={`${((DOMAIN_DATA.used/DOMAIN_DATA.total)*100).toFixed(1)}% utilization`}/><MiniCard icon="🔒" label="Unused Domains" value={fmtFull(DOMAIN_DATA.unused)} color="#d97706" sub="Available capacity"/><MiniCard icon="🏢" label="Registrar Accounts" value={`${DOMAIN_DATA.byRegistrar.reduce((s,r)=>s+r.accounts,0)}`} color="#7c3aed" sub="Across 3 registrars"/></div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
-          <Panel title="DOMAIN UTILIZATION">
-            <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>{[{label:"Used",value:DOMAIN_DATA.used,color:"#16a34a"},{label:"Unused",value:DOMAIN_DATA.unused,color:"#d97706"}].map((r,i)=>(<div key={i}><div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}><span style={{fontSize:12,color:C.textPrimary,fontWeight:600}}>{r.label}</span><span style={{fontSize:12,fontWeight:800,color:r.color}}>{fmtFull(r.value)} ({((r.value/DOMAIN_DATA.total)*100).toFixed(1)}%)</span></div><div style={{height:8,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.value/DOMAIN_DATA.total)*100}%`,height:"100%",background:r.color,borderRadius:99}}/></div></div>))}</div>
-            <ResponsiveContainer width="100%" height={180}><BarChart data={DOMAIN_DATA.byTLD.filter(d=>d.count>0).sort((a,b)=>b.count-a.count)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="tld" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={45}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Domains"]}/><Bar dataKey="count" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{DOMAIN_DATA.byTLD.filter(d=>d.count>0).sort((a,b)=>b.count-a.count).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+
+        {/* ── OVERVIEW ── */}
+        {inboxTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            {[
+              {icon:"📬",label:"Total Accounts",value:fmtFull(totalAccts),color:oc.primary,gradient:`linear-gradient(135deg,${oc.light},${oc.border}55)`,border:oc.border},
+              {icon:"✅",label:"Active Accounts",value:fmtFull(activeA),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"#bbf7d0"},
+              {icon:"🚀",label:"Sent Into Production",value:fmtFull(sipA),color:"#0891b2",gradient:"linear-gradient(135deg,#ecfeff,#cffafe)",border:"#a5f3fc"},
+              {icon:"🌐",label:"Total Domains",value:fmtFull(totalDoms),color:"#7c3aed",gradient:"linear-gradient(135deg,#faf5ff,#ede9fe)",border:"#ddd6fe"},
+            ].map((c,i)=>(
+              <div key={i} style={{borderRadius:16,padding:"18px 20px",background:c.gradient,border:`1px solid ${c.border}`,boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
+                <div style={{fontSize:22,marginBottom:6}}>{c.icon}</div>
+                <div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div>
+                <div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            {[
+              {icon:"🌡️",label:"In Warmup",value:fmtFull(warmA),color:"#f59e0b"},
+              {icon:"🏢",label:"Workspaces",value:String(od.workspaces.filter(w=>w.accounts>0).length),color:oc.primary},
+              {icon:"👑",label:"Top CM",value:topCM.cm,color:"#d97706",sub:`${fmtFull(topCM.accounts)} accounts`},
+              {icon:"🔝",label:"Top Workspace",value:topWS.workspace,color:"#16a34a",sub:`${fmtFull(topWS.accounts)} accounts`},
+            ].map((c,i)=>(
+              <div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"13px 16px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+                <div style={{fontSize:16,marginBottom:4}}>{c.icon}</div>
+                <div style={{fontSize:17,fontWeight:800,color:c.color,lineHeight:1.2}}>{c.value}</div>
+                <div style={{fontSize:9,color:C.textLabel,marginTop:2,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div>
+                {c.sub&&<div style={{fontSize:10,color:C.textMuted,marginTop:2}}>{c.sub}</div>}
+              </div>
+            ))}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:14}}>
+            <Panel title="ACCOUNT STATUS BREAKDOWN">
+              <ResponsiveContainer width="100%" height={240}><BarChart data={od.accountStatus.filter(r=>r.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:70}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="status" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={130}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{od.accountStatus.filter(r=>r.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+            </Panel>
+            <Panel title="EMAIL PROVIDER SPLIT">
+              <div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:6}}>
+                {od.emailProviders.filter(p=>p.accounts>0).map((p,i)=>(
+                  <div key={i} style={{background:`${p.color}0f`,border:`1px solid ${p.color}44`,borderRadius:12,padding:"16px 18px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><span style={{fontSize:15,fontWeight:800,color:p.color}}>{p.provider}</span><span style={{fontSize:22,fontWeight:800,color:C.textPrimary}}>{fmtFull(p.accounts)}</span></div>
+                    <div style={{height:7,background:"#e2e8f0",borderRadius:99}}><div style={{width:"100%",height:"100%",background:p.color,borderRadius:99}}/></div>
+                    <div style={{fontSize:10,color:C.textMuted,marginTop:6}}>{fmtFull(p.domains)} domains</div>
+                  </div>
+                ))}
+                {od.groups.filter(g=>g.accounts>0).map((g,i)=>(
+                  <div key={i} style={{background:`${g.color}0f`,border:`1px solid ${g.color}44`,borderRadius:12,padding:"14px 16px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontSize:13,fontWeight:700,color:g.color}}>{g.group}</span><span style={{fontSize:18,fontWeight:800,color:C.textPrimary}}>{fmtFull(g.accounts)}</span></div>
+                    <div style={{fontSize:10,color:C.textMuted,marginTop:4}}>{fmtFull(g.domains)} domains</div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </div>
+          <Panel title="STATUS PIPELINE">
+            <div style={{display:"grid",gridTemplateColumns:`repeat(${Math.min(od.accountStatus.filter(r=>r.accounts>0).length,6)},1fr)`,gap:8}}>
+              {od.accountStatus.filter(r=>r.accounts>0).map((s,i)=>(
+                <div key={i} style={{textAlign:"center",background:`${s.color}12`,border:`1px solid ${s.color}44`,borderRadius:12,padding:"14px 10px"}}>
+                  <div style={{fontSize:20,fontWeight:800,color:s.color,marginBottom:4}}>{fmt(s.accounts)}</div>
+                  <div style={{fontSize:9,color:C.textSecondary,textTransform:"uppercase",letterSpacing:.7,marginBottom:4,lineHeight:1.3}}>{s.status}</div>
+                  <div style={{fontSize:10,fontWeight:700,color:s.color}}>{totalAccts>0?((s.accounts/totalAccts)*100).toFixed(1):0}%</div>
+                </div>
+              ))}
+            </div>
           </Panel>
-          {/* Change #1: Porkbun color #f37777 applied in registrar cards */}
-          <Panel title="BY REGISTRAR"><div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:4}}>{DOMAIN_DATA.byRegistrar.map((r,i)=>(<div key={i} style={{background:`${r.color}18`,border:`1px solid ${r.color}66`,borderRadius:12,padding:"14px 16px"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><span style={{fontSize:14,fontWeight:800,color:r.color}}>{r.registrar}</span><span style={{fontSize:11,color:C.textMuted}}>{r.accounts} accounts</span></div><div style={{fontSize:26,fontWeight:800,color:C.textPrimary,marginBottom:6}}>{fmtFull(r.count)}</div><div style={{height:6,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.count/DOMAIN_DATA.total)*100}%`,height:"100%",background:r.color,borderRadius:99}}/></div><div style={{fontSize:10,color:C.textMuted,marginTop:6}}>{((r.count/DOMAIN_DATA.total)*100).toFixed(1)}% of total</div></div>))}</div></Panel>
-        </div>
-        <Panel title="DOMAIN BREAKDOWN TABLE"><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["TLD","Count","Share","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{[...DOMAIN_DATA.byTLD].sort((a,b)=>b.count-a.count).map((r,i)=>(<tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:600}}>{r.tld}</td><td style={{padding:"9px 12px",color:r.color,fontWeight:700}}>{fmtFull(r.count)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{r.count>0?((r.count/DOMAIN_DATA.total)*100).toFixed(2)+"%":"—"}</td><td style={{padding:"9px 12px",minWidth:120}}><div style={{height:6,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.count/51389)*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>))}</tbody></table></Panel>
-      </div>)}
-    </div>
-  );
+        </div>)}
+
+        {/* ── ACCOUNT STATUS ── */}
+        {inboxTab==="Account Status"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <MiniCard icon="📊" label="Total Accounts" value={fmtFull(totalAccts)} color={oc.primary}/>
+            <MiniCard icon="🌐" label="Total Domains" value={fmtFull(totalDoms)} color="#7c3aed"/>
+            <MiniCard icon="✅" label="Active" value={fmtFull(activeA)} color="#16a34a" sub={`${totalAccts>0?((activeA/totalAccts)*100).toFixed(1):0}% of total`}/>
+            <MiniCard icon="🚀" label="In Production" value={fmtFull(sipA)} color="#0891b2" sub={`${totalAccts>0?((sipA/totalAccts)*100).toFixed(1):0}% of total`}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
+            <Panel title="ACCOUNTS BY STATUS">
+              <ResponsiveContainer width="100%" height={300}><BarChart data={[...od.accountStatus].sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:80}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="status" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={130}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>v>0?fmtFull(v):""}}>{[...od.accountStatus].sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+            </Panel>
+            <Panel title="DOMAINS BY STATUS">
+              <ResponsiveContainer width="100%" height={300}><PieChart><Pie data={od.accountStatus.filter(r=>r.domains>0)} cx="50%" cy="50%" innerRadius={55} outerRadius={100} dataKey="domains" nameKey="status" paddingAngle={3}>{od.accountStatus.filter(r=>r.domains>0).map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" domains",n]}/><Legend iconSize={10} wrapperStyle={{fontSize:10,color:C.textLabel}}/></PieChart></ResponsiveContainer>
+            </Panel>
+          </div>
+          <Panel title="FULL STATUS TABLE">
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Status","Accounts","% of Total","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{[...od.accountStatus].sort((a,b)=>b.accounts-a.accounts).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:r.color}}>{r.status}</td><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{totalAccts>0?((r.accounts/totalAccts)*100).toFixed(1):0}%</td><td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"9px 12px",minWidth:120}}><div style={{height:6,background:"#e2e8f0",borderRadius:99}}><div style={{width:totalAccts>0?`${(r.accounts/totalAccts)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99}}/></div></td></tr>)}</tbody></table>
+          </Panel>
+        </div>)}
+
+        {/* ── WORKSPACES ── */}
+        {inboxTab==="Workspaces"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <MiniCard icon="🏢" label="Total Workspaces" value={String(od.workspaces.filter(w=>w.accounts>0).length)} color={oc.primary}/>
+            <MiniCard icon="📊" label="Total Accounts" value={fmtFull(totalWS)} color="#0891b2"/>
+            <MiniCard icon="🏆" label="Top Workspace" value={topWS.workspace} color="#d97706" sub={`${fmtFull(topWS.accounts)} accounts`}/>
+            <MiniCard icon="🅰️🅱️" label="Group A / B" value={`${fmtFull(od.groups[0]?.accounts||0)} / ${fmtFull(od.groups[1]?.accounts||0)}`} color="#7c3aed"/>
+          </div>
+          <Panel title="ACCOUNTS BY WORKSPACE">
+            <ResponsiveContainer width="100%" height={Math.max(300, od.workspaces.filter(w=>w.accounts>0).length*28)}><BarChart data={[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:85}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="workspace" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={130}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+          </Panel>
+          <Panel title="WORKSPACE TABLE">
+            <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Workspace","Accounts","% of Total","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:r.color}}>{r.workspace}</td><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{totalWS>0?((r.accounts/totalWS)*100).toFixed(1):0}%</td><td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"9px 12px",minWidth:100}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:totalWS>0?`${(r.accounts/totalWS)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>)}</tbody></table></div>
+          </Panel>
+        </div>)}
+
+        {/* ── CAMPAIGN MANAGERS ── */}
+        {inboxTab==="Campaign Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <MiniCard icon="👥" label="Campaign Managers" value={String(od.campaignManagers.filter(c=>c.accounts>0).length)} color={oc.primary}/>
+            <MiniCard icon="📊" label="Total Accounts" value={fmtFull(od.campaignManagers.reduce((s,r)=>s+r.accounts,0))} color="#0891b2"/>
+            <MiniCard icon="🏆" label="Top CM" value={topCM.cm} color="#d97706" sub={`${fmtFull(topCM.accounts)} accounts`}/>
+            <MiniCard icon="🌐" label="Total Domains" value={fmtFull(od.campaignManagers.reduce((s,r)=>s+r.domains,0))} color="#7c3aed"/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
+            <Panel title="ACCOUNTS BY CM">
+              <ResponsiveContainer width="100%" height={280}><BarChart data={[...od.campaignManagers].filter(c=>c.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={70}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{[...od.campaignManagers].filter(c=>c.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+            </Panel>
+            <Panel title="CM SHARE — PIE">
+              <ResponsiveContainer width="100%" height={280}><PieChart><Pie data={od.campaignManagers.filter(c=>c.accounts>0)} cx="50%" cy="50%" innerRadius={50} outerRadius={95} dataKey="accounts" nameKey="cm" paddingAngle={3}>{od.campaignManagers.filter(c=>c.accounts>0).map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:C.textLabel}}/></PieChart></ResponsiveContainer>
+            </Panel>
+          </div>
+          <Panel title="CM FULL TABLE">
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["CM","Accounts","% Share","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>
+              {(()=>{const total=od.campaignManagers.reduce((s,r)=>s+r.accounts,0);return[...od.campaignManagers].sort((a,b)=>b.accounts-a.accounts).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:r.color}}>{r.cm}</td><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{total>0?((r.accounts/total)*100).toFixed(1):0}%</td><td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"9px 12px",minWidth:100}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.accounts/total)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);})()}
+              <tr style={{borderTop:`2px solid ${C.cardBorder}`,background:C.tableHead}}><td style={{padding:"9px 12px",fontWeight:800,color:C.textPrimary}}>Total</td><td style={{padding:"9px 12px",color:oc.primary,fontWeight:800}}>{fmtFull(od.campaignManagers.reduce((s,r)=>s+r.accounts,0))}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>100%</td><td style={{padding:"9px 12px",color:"#7c3aed",fontWeight:800}}>{fmtFull(od.campaignManagers.reduce((s,r)=>s+r.domains,0))}</td><td/></tr>
+            </tbody></table>
+          </Panel>
+        </div>)}
+
+        {/* ── INBOX MANAGERS ── */}
+        {inboxTab==="Inbox Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <MiniCard icon="🧑‍💼" label="Inbox Managers" value={String(od.inboxManagers.filter(m=>m.accounts>0).length)} color={oc.primary}/>
+            <MiniCard icon="📊" label="Total Accounts" value={fmtFull(od.inboxManagers.reduce((s,r)=>s+r.accounts,0))} color="#0891b2"/>
+            {(()=>{const top=[...od.inboxManagers].sort((a,b)=>b.accounts-a.accounts)[0]||{manager:"—",accounts:0};return<MiniCard icon="🏆" label="Top Manager" value={top.manager} color="#d97706" sub={`${fmtFull(top.accounts)} accounts`}/>;})()}
+            <MiniCard icon="🌐" label="Total Domains" value={fmtFull(od.inboxManagers.reduce((s,r)=>s+r.domains,0))} color="#7c3aed"/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
+            <Panel title="ACCOUNTS BY INBOX MANAGER">
+              <ResponsiveContainer width="100%" height={270}><BarChart data={[...od.inboxManagers].filter(m=>m.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="manager" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={70}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{[...od.inboxManagers].filter(m=>m.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+            </Panel>
+            <Panel title="SHARE DISTRIBUTION">
+              <ResponsiveContainer width="100%" height={270}><PieChart><Pie data={od.inboxManagers.filter(m=>m.accounts>0)} cx="50%" cy="50%" innerRadius={50} outerRadius={95} dataKey="accounts" nameKey="manager" paddingAngle={2}>{od.inboxManagers.filter(m=>m.accounts>0).map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={9} wrapperStyle={{fontSize:10,color:C.textLabel}}/></PieChart></ResponsiveContainer>
+            </Panel>
+          </div>
+        </div>)}
+
+        {/* ── EMAIL TYPES ── */}
+        {inboxTab==="Email Types"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <MiniCard icon="📧" label="Email Types" value={String(od.emailTypes.filter(e=>e.accounts>0).length)} color={oc.primary}/>
+            <MiniCard icon="📊" label="Total Accounts" value={fmtFull(totalETAccts)} color="#0891b2"/>
+            <MiniCard icon="🔝" label="Top Type" value={topET.type} color="#d97706" sub={`${fmtFull(topET.accounts)} accounts`}/>
+            <MiniCard icon="🌐" label="Provider" value={od.emailProviders.filter(p=>p.accounts>0).map(p=>p.provider).join(" + ")||"—"} color="#7c3aed"/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+            <Panel title="EMAIL TYPE BREAKDOWN">
+              <ResponsiveContainer width="100%" height={300}><BarChart data={[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="type" type="category" tick={{fill:C.textSecondary,fontSize:9}} width={110}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmt(v)}}>{[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+            </Panel>
+            <Panel title="EMAIL PROVIDER">
+              <div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:6}}>
+                {od.emailProviders.filter(p=>p.accounts>0).map((p,i)=>(
+                  <div key={i} style={{background:`${p.color}0f`,border:`1px solid ${p.color}44`,borderRadius:14,padding:"20px 22px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><span style={{fontSize:16,fontWeight:800,color:p.color}}>{p.provider}</span><span style={{fontSize:24,fontWeight:800,color:C.textPrimary}}>{fmtFull(p.accounts)}</span></div>
+                    <div style={{height:8,background:"#e2e8f0",borderRadius:99,marginBottom:8}}><div style={{width:"100%",height:"100%",background:p.color,borderRadius:99}}/></div>
+                    <div style={{fontSize:11,color:C.textMuted}}>{fmtFull(p.domains)} domains</div>
+                  </div>
+                ))}
+                {od.emailProviders.filter(p=>p.accounts>0).length===0&&<div style={{color:C.textMuted,fontSize:12,padding:"20px 0",textAlign:"center"}}>No provider data</div>}
+              </div>
+            </Panel>
+          </div>
+          <Panel title="EMAIL TYPE TABLE">
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Type","Accounts","% Share","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>
+              {(()=>{const total=od.emailTypes.reduce((s,r)=>s+r.accounts,0);return[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:r.color}}>{r.type}</td><td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td><td style={{padding:"9px 12px",color:C.textSecondary}}>{total>0?((r.accounts/total)*100).toFixed(1):0}%</td><td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"9px 12px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.accounts/total)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);})()}
+            </tbody></table>
+          </Panel>
+        </div>)}
+
+        {/* ── GROUPS ── */}
+        {inboxTab==="Groups"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <MiniCard icon="🅰️" label="Group A" value={fmtFull(od.groups[0]?.accounts||0)} color="#2563eb" sub={`${fmtFull(od.groups[0]?.domains||0)} domains`}/>
+            <MiniCard icon="🅱️" label="Group B" value={fmtFull(od.groups[1]?.accounts||0)} color="#db2777" sub={`${fmtFull(od.groups[1]?.domains||0)} domains`}/>
+            <MiniCard icon="📊" label="Combined" value={fmtFull((od.groups[0]?.accounts||0)+(od.groups[1]?.accounts||0))} color="#16a34a"/>
+            <MiniCard icon="🏷️" label="Tag Values" value={String((od.groups[0]?.tags||0)+(od.groups[1]?.tags||0))} color="#d97706"/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
+            <Panel title="GROUP A vs GROUP B">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={od.groups.filter(g=>g.accounts>0||g.tags>0)} barGap={4} margin={{left:10,right:20}}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/>
+                  <XAxis dataKey="group" tick={{fill:C.textMuted,fontSize:11}}/>
+                  <YAxis tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/>
+                  <Tooltip content={<CustomTip/>}/>
+                  <Legend iconSize={8} wrapperStyle={{fontSize:10,color:C.textLabel}}/>
+                  <Bar dataKey="accounts" name="Accounts" fill="#2563eb" radius={[4,4,0,0]} barSize={40}/>
+                  <Bar dataKey="domains" name="Domains" fill="#db2777" radius={[4,4,0,0]} barSize={40}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </Panel>
+            <Panel title="GROUP BREAKDOWN">
+              <div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:6}}>
+                {od.groups.map((g,i)=>(
+                  <div key={i} style={{background:`${g.color}0f`,border:`1px solid ${g.color}44`,borderRadius:12,padding:"16px 18px"}}>
+                    <div style={{fontSize:15,fontWeight:800,color:g.color,marginBottom:8}}>{g.group}</div>
+                    <div style={{fontSize:24,fontWeight:800,color:C.textPrimary}}>{fmtFull(g.accounts)}</div>
+                    <div style={{fontSize:10,color:C.textMuted,marginTop:2}}>accounts</div>
+                    <div style={{marginTop:8,fontSize:12,color:C.textSecondary}}>{fmtFull(g.domains)} domains · {g.tags} tags</div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </div>
+        </div>)}
+
+        {/* ── EMAIL SERVICE PROVIDER ── */}
+        {inboxTab==="Email Service Provider"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          {(()=>{
+            const activeProviders=od.emailProviders.filter(p=>p.accounts>0);
+            const totalESP=od.emailProviders.reduce((s,r)=>s+r.accounts,0);
+            const topESP=activeProviders[0]||{provider:"—",accounts:0};
+            return(<>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+                <MiniCard icon="📡" label="Providers Active" value={String(activeProviders.length)} color={oc.primary}/>
+                <MiniCard icon="📊" label="Total Accounts" value={fmtFull(totalESP)} color="#0891b2"/>
+                <MiniCard icon="🏆" label="Top Provider" value={topESP.provider} color="#d97706" sub={`${fmtFull(topESP.accounts)} accounts`}/>
+                <MiniCard icon="🌐" label="Total Domains" value={fmtFull(od.emailProviders.reduce((s,r)=>s+r.domains,0))} color="#7c3aed"/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:activeProviders.length>1?"1fr 1fr":"1fr",gap:14}}>
+                {od.emailProviders.map((p,i)=>(
+                  <div key={i} style={{background:p.accounts>0?`${p.color}0f`:"#f8fafc",border:`1px solid ${p.accounts>0?p.color+"44":C.cardBorder}`,borderRadius:16,padding:"24px 26px",opacity:p.accounts>0?1:0.5}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                      <span style={{fontSize:20,fontWeight:800,color:p.accounts>0?p.color:C.textMuted}}>{p.provider}</span>
+                      <span style={{fontSize:12,color:C.textMuted,background:"#f1f5f9",borderRadius:99,padding:"3px 10px",fontWeight:600}}>{p.accounts>0?((p.accounts/Math.max(totalESP,1))*100).toFixed(1)+"%":"No data"}</span>
+                    </div>
+                    <div style={{fontSize:32,fontWeight:800,color:p.accounts>0?C.textPrimary:C.textMuted,marginBottom:4}}>{fmtFull(p.accounts)}</div>
+                    <div style={{fontSize:11,color:C.textMuted,marginBottom:12}}>accounts</div>
+                    <div style={{height:8,background:"#e2e8f0",borderRadius:99,marginBottom:10}}>
+                      <div style={{width:totalESP>0?`${(p.accounts/totalESP)*100}%`:"0%",height:"100%",background:p.color,borderRadius:99,transition:"width 0.4s"}}/>
+                    </div>
+                    <div style={{display:"flex",gap:16}}>
+                      <div><div style={{fontSize:13,fontWeight:700,color:p.accounts>0?p.color:C.textMuted}}>{fmtFull(p.domains)}</div><div style={{fontSize:10,color:C.textMuted}}>domains</div></div>
+                      <div><div style={{fontSize:13,fontWeight:700,color:p.accounts>0?p.color:C.textMuted}}>{p.tags||0}</div><div style={{fontSize:10,color:C.textMuted}}>tags</div></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {activeProviders.length>0&&(
+                <Panel title="PROVIDER COMPARISON TABLE">
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+                    <thead><tr>{["Provider","Accounts","% Share","Domains","Tags","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead>
+                    <tbody>
+                      {[...od.emailProviders].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(
+                        <tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}>
+                          <td style={{padding:"9px 12px",fontWeight:700,color:r.accounts>0?r.color:C.textMuted}}>{r.provider}</td>
+                          <td style={{padding:"9px 12px",color:C.textPrimary,fontWeight:700}}>{fmtFull(r.accounts)}</td>
+                          <td style={{padding:"9px 12px",color:C.textSecondary}}>{totalESP>0?((r.accounts/totalESP)*100).toFixed(1):0}%</td>
+                          <td style={{padding:"9px 12px",color:C.textMuted}}>{fmtFull(r.domains)}</td>
+                          <td style={{padding:"9px 12px",color:C.textMuted}}>{r.tags||0}</td>
+                          <td style={{padding:"9px 12px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:totalESP>0?`${(r.accounts/totalESP)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td>
+                        </tr>
+                      ))}
+                      <tr style={{borderTop:`2px solid ${C.cardBorder}`,background:C.tableHead}}>
+                        <td style={{padding:"9px 12px",fontWeight:800,color:C.textPrimary}}>Total</td>
+                        <td style={{padding:"9px 12px",color:oc.primary,fontWeight:800}}>{fmtFull(totalESP)}</td>
+                        <td style={{padding:"9px 12px",color:C.textSecondary}}>100%</td>
+                        <td style={{padding:"9px 12px",color:"#7c3aed",fontWeight:800}}>{fmtFull(od.emailProviders.reduce((s,r)=>s+r.domains,0))}</td>
+                        <td style={{padding:"9px 12px",color:"#d97706",fontWeight:800}}>{od.emailProviders.reduce((s,r)=>s+(r.tags||0),0)}</td>
+                        <td/>
+                      </tr>
+                    </tbody>
+                  </table>
+                </Panel>
+              )}
+            </>);
+          })()}
+        </div>)}
+      </div>
+    );
+  };
 
   return(
     <div style={{fontFamily:"system-ui,sans-serif",background:C.bg,minHeight:"100vh",color:C.textPrimary,display:"flex",flexDirection:"row"}}>
@@ -776,6 +1169,7 @@ function App(){
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
         <div style={{flex:1,overflow:"hidden",display:"flex",flexDirection:"column"}}>
           {section==="overview"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderOverview()}</div>}
+
           {section==="business"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderBusiness()}</div>}
           {section==="cm"&&<div style={{flex:1,display:"flex",overflow:"hidden"}}><div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",padding:"16px 20px",gap:12}}>{renderCM()}</div></div>}
           {section==="inbox"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderInbox()}</div>}
