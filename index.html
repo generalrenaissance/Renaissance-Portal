@@ -755,7 +755,7 @@ function App(){
     });
   },[]);
 
-  const jan26=daily.filter(d=>d.month==="Jan '26");
+  const jan26=daily.filter(d=>d.month==="Jan '26"||d.month==="Feb '26");
   const ytdBooked=jan26.reduce((s,d)=>s+d.booked,0);
   const ytdSent=jan26.reduce((s,d)=>s+d.sent,0);
   const allBizBooked=daily.reduce((s,d)=>s+d.booked,0);
@@ -768,8 +768,8 @@ function App(){
   const allTimeCM=useMemo(()=>{const m={};MONTHLY_CM.forEach(r=>{if(!m[r.cm])m[r.cm]={cm:r.cm,allTimeBooked:0,allTimeAiBooked:0,totalSent:0};m[r.cm].allTimeBooked+=r.totalBooked;m[r.cm].allTimeAiBooked+=r.aiBooked;m[r.cm].totalSent+=r.totalSent;});return Object.values(m).map(r=>({...r,sbRatio:ratio(r.totalSent,r.allTimeBooked)}));},[]);
   const correctAllTimeCMTotal=useMemo(()=>MONTHLY_CM.reduce((s,r)=>s+r.totalBooked,0),[]);
   const inboxPie=useMemo(()=>{const latest={};MONTHLY_CM.forEach(r=>{const k=r.year*100+MONTH_ORDER.indexOf(r.month);if(!latest[r.cm]||k>latest[r.cm].k)latest[r.cm]={k,v:r.inboxes};});return ALL_CMs.filter(cm=>selCMs.includes(cm)&&latest[cm]).map(cm=>({name:cm,value:latest[cm].v}));},[selCMs]);
-  const periods=useMemo(()=>[...new Set(MONTHLY_CM.map(r=>`${r.year}|${r.month}`))].sort((a,b)=>{const[ay,am]=a.split("|");const[by,bm]=b.split("|");return(+ay*12+MONTH_ORDER.indexOf(am))-(+by*12+MONTH_ORDER.indexOf(bm));}),[]);
-  const trendData=useMemo(()=>periods.filter(p=>{const[,mo]=p.split("|");return selMonths.includes(mo);}).map(p=>{const[yr,mo]=p.split("|");const rows=MONTHLY_CM.filter(r=>r.year===+yr&&r.month===mo&&selCMs.includes(r.cm));const obj={period:mo.slice(0,3)+"'"+(yr.slice(2))};rows.forEach(r=>obj[r.cm]=r[trendMetric]);return obj;}),[periods,selCMs,selMonths,trendMetric]);
+  const periods=useMemo(()=>[...new Set(MONTHLY_CM.map(r=>`${r.year}|${r.month}`))].filter(Boolean).sort((a,b)=>{const[ay,am]=(a||"").split("|");const[by,bm]=(b||"").split("|");return(+ay*12+MONTH_ORDER.indexOf(am))-(+by*12+MONTH_ORDER.indexOf(bm));}),[]);
+  const trendData=useMemo(()=>(periods||[]).filter(p=>{if(!p)return false;const[,mo]=p.split("|");return selMonths.includes(mo);}).map(p=>{const[yr,mo]=(p||"").split("|");const rows=MONTHLY_CM.filter(r=>r.year===+yr&&r.month===mo&&selCMs.includes(r.cm));const obj={period:mo.slice(0,3)+"'"+(yr.slice(2))};rows.forEach(r=>obj[r.cm]=r[trendMetric]);return obj;}),[periods,selCMs,selMonths,trendMetric]);
   const compareData=useMemo(()=>cmAgg.map(r=>({cm:r.cm,sent:compareMode==="Non AI"?r.nonAiSent:compareMode==="AI"?r.aiSent:r.totalSent,booked:compareMode==="Non AI"?r.nonAiBooked:compareMode==="AI"?r.aiBooked:r.totalBooked,ratio:compareMode==="Non AI"?r.nonAiSbRatio:compareMode==="AI"?r.aiSbRatio:r.sbRatio})),[cmAgg,compareMode]);
   const dailyFiltered=useMemo(()=>(dailyMonth==="All"?CM_DAILY:CM_DAILY.filter(r=>r.month===dailyMonth)).map(r=>({...r,sbRatio:ratio(r.totalSent,r.totalBooked)})),[dailyMonth]);
   const monthlyAgg=useMemo(()=>{const m={};CM_DAILY.forEach(r=>{if(!m[r.month])m[r.month]={period:r.month.slice(0,3),totalSent:0,totalBooked:0,aiBooked:0};m[r.month].totalSent+=r.totalSent;m[r.month].totalBooked+=r.totalBooked;m[r.month].aiBooked+=r.aiBooked;});return ALL_CM_MONTHS.map(mo=>({...m[mo],sbRatio:ratio(m[mo]?.totalSent,m[mo]?.totalBooked)}));},[]);
@@ -851,7 +851,7 @@ function App(){
         ))}
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:10}}>
-        {[{label:"YTD Meetings",value:ytdBooked.toLocaleString(),color:"#4f46e5"},{label:"YTD Emails",value:fmt(ytdSent),color:"#0891b2"},{label:"All-Time Meetings",value:allBizBooked.toLocaleString(),color:"#d97706"},{label:"Best Day Ever",value:`${bestDay} Booked`,color:"#dc2626"},{label:"Goal Progress",value:`${progress}%`,color:"#16a34a"},{label:"Avg Daily (Feb)",value:`${last.avgDailyMeetings} Meetings`,color:"#7c3aed"}].map((s,i)=>(
+        {[{label:"YTD Meetings ('26)",value:ytdBooked.toLocaleString(),color:"#4f46e5"},{label:"YTD Emails ('26)",value:fmt(ytdSent),color:"#0891b2"},{label:"All-Time Meetings",value:allBizBooked.toLocaleString(),color:"#d97706"},{label:"Best Day Ever",value:`${bestDay} Booked`,color:"#dc2626"},{label:"Goal Progress",value:`${progress}%`,color:"#16a34a"},{label:"Avg Daily (Feb)",value:`${last.avgDailyMeetings} Meetings`,color:"#7c3aed"}].map((s,i)=>(
           <Card1 key={i} style={{padding:"12px 14px"}}><div style={{fontSize:9,color:C.textMuted,textTransform:"uppercase",letterSpacing:1.2,marginBottom:5}}>{s.label}</div><div style={{fontSize:18,fontWeight:800,color:s.color}}>{s.value}</div></Card1>
         ))}
       </div>
