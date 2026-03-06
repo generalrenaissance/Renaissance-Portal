@@ -562,6 +562,11 @@ const IH_DATA={
     ],
   },
 }
+const MONTH_ORDER=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const ALL_CM_MONTHS=["November","December","January","February"];
+const ALL_CMs=[...new Set(MONTHLY_CM.map(r=>r.cm))].sort();
+const CM_COLORS=["#4f46e5","#0891b2","#059669","#d97706","#dc2626","#db2777","#7c3aed","#0369a1","#16a34a","#ea580c","#0284c7","#ca8a04","#1e40af","#9333ea"];
+
 // Offer tabs
 const OFFER_TABS=["Funding","Section 125","ERC"];
 const OFFER_KEYS={"Funding":"Funding","Section 125":"Section125","ERC":"ERC"};
@@ -576,6 +581,37 @@ const INBOX_TABS_DEF=[
   {label:"Inbox Managers", Icon:IconManager},
   {label:"Email Types", Icon:IconEmail},
   {label:"Email Service Provider", Icon:IconEmail},
+];
+
+const WEEKDAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const MEDAL=["🥇","🥈","🥉"];
+const TIERS=[
+  {label:">4,500",min:4500,max:Infinity,color:"#dc2626",glow:"#fef2f2"},
+  {label:"4,000–4,500",min:4000,max:4500,color:"#ea580c",glow:"#fff7ed"},
+  {label:"3,600–4,000",min:3600,max:4000,color:"#f59e0b",glow:"#fffbeb"},
+  {label:"3,200–3,600",min:3200,max:3600,color:"#eab308",glow:"#fefce8"},
+  {label:"2,800–3,200",min:2800,max:3200,color:"#84cc16",glow:"#f7fee7"},
+  {label:"0–2,800",min:0,max:2800,color:"#16a34a",glow:"#f0fdf4"},
+];
+const getTier=(v)=>TIERS.find(t=>v>=t.min&&v<t.max)||TIERS[TIERS.length-1];
+const TierBar=({x,y,width,height,value})=>{const t=getTier(value||0);return<rect x={x} y={y} width={width} height={height} fill={t.color} rx={3}/>;};
+const TierPill=({value,sm})=>{const t=getTier(value||0);return<span style={{background:t.glow,color:t.color,border:`1px solid ${t.color}44`,borderRadius:sm?5:8,padding:sm?"2px 6px":"3px 10px",fontSize:sm?9:11,fontWeight:700,whiteSpace:"nowrap"}}>{(value||0).toLocaleString()}</span>;};
+const KPI_BANDS=[
+  {key:">4500",label:">4,500",color:"#DC2626"},
+  {key:"4000-4500",label:"4,000–4,500",color:"#EA580C"},
+  {key:"3600-4000",label:"3,600–4,000",color:"#F59E0B"},
+  {key:"3200-3600",label:"3,200–3,600",color:"#EAB308"},
+  {key:"2800-3200",label:"2,800–3,200",color:"#84CC16"},
+  {key:"0-2800",label:"0–2,800",color:"#16A34A"},
+];
+const BIZ_TABS=[
+  {label:"Overview", Icon:IconOverviewTab},
+  {label:"Volume", Icon:IconVolume},
+  {label:"Partners", Icon:IconPartners},
+  {label:"KPI Bands", Icon:IconKPI},
+  {label:"Daily Trends", Icon:IconTrend},
+  {label:"Day of Week", Icon:IconDayOfWeek},
+  {label:"Insights", Icon:IconInsights},
 ];
 
 // ── Left Sidebar ───────────────────────────────────────────────────────────
