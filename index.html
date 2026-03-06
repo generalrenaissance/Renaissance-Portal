@@ -748,8 +748,8 @@ function App(){
   const allTs=CM_DAILY.reduce((a,r)=>a+r.totalSent,0),allTb2=CM_DAILY.reduce((a,r)=>a+r.totalBooked,0),allAi=CM_DAILY.reduce((a,r)=>a+r.aiBooked,0),allR=ratio(allTs,allTb2);
   const activeAccts=IH_DATA.Funding.accountStatus.find(r=>r.status==="Active")?.accounts||0;
   const warmupAccts=IH_DATA.Funding.accountStatus.find(r=>r.status==="Warmup")?.accounts||0;
-  const totalDailyEmails=totalDailyEmailsLegacy;
-  const totalCMAccounts=totalCMAccountsLegacy;
+  const totalDailyEmails=allTs;
+  const totalCMAccounts=IH_DATA.Funding.campaignManagers.reduce((s,r)=>s+r.accounts,0);
 
   const toggleCM=cm=>setSelCMs(s=>s.includes(cm)?s.filter(x=>x!==cm):[...s,cm]);
   const toggleMonth=m=>setSelMonths(s=>s.includes(m)?s.filter(x=>x!==m):[...s,m]);
