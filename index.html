@@ -567,6 +567,31 @@ const ALL_CM_MONTHS=["November","December","January","February"];
 const ALL_CMs=[...new Set(MONTHLY_CM.map(r=>r.cm))].sort();
 const CM_COLORS=["#4f46e5","#0891b2","#059669","#d97706","#dc2626","#db2777","#7c3aed","#0369a1","#16a34a","#ea580c","#0284c7","#ca8a04","#1e40af","#9333ea"];
 
+// ── Utilities ───────────────────────────────────────────────────────────────
+const ratio=(s,b)=>b>0?Math.round(s/b):0;
+const fmt=(n)=>{if(!n&&n!==0)return"–";if(n>=1e9)return(n/1e9).toFixed(1)+"B";if(n>=1e6)return(n/1e6).toFixed(1)+"M";if(n>=1e3)return(n/1e3).toFixed(1)+"K";return n.toString();};
+const fmtFull=(n)=>n?n.toLocaleString():"0";
+
+// ── Design tokens ────────────────────────────────────────────────────────────
+const C={
+  bg:"#f8fafc",card:"#ffffff",cardBorder:"#e2e8f0",
+  textPrimary:"#0f172a",textSecondary:"#475569",textMuted:"#94a3b8",textLabel:"#334155",
+  gridLine:"#f1f5f9",tableHead:"#f8fafc",tableAlt:"#fafbfc",tableBorder:"#f1f5f9",
+};
+const TIP1={background:"#1e293b",border:"none",borderRadius:10,color:"#f8fafc",fontSize:11};
+
+// ── Shared components ────────────────────────────────────────────────────────
+const CustomTip=({active,payload,label})=>{
+  if(!active||!payload?.length)return null;
+  return(<div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:10,padding:"10px 14px",boxShadow:"0 4px 12px rgba(0,0,0,0.1)",fontSize:11}}>
+    {label&&<div style={{fontWeight:700,color:C.textPrimary,marginBottom:6}}>{label}</div>}
+    {payload.map((p,i)=><div key={i} style={{color:p.color||C.textSecondary,marginBottom:2}}><span style={{fontWeight:600}}>{p.name}: </span>{typeof p.value==="number"?p.value.toLocaleString():p.value}</div>)}
+  </div>);
+};
+const Card1=({children,style={}})=>(<div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:16,padding:18,boxShadow:"0 1px 4px rgba(0,0,0,0.06)",...style}}>{children}</div>);
+const Panel=({title,children,style={}})=>(<Card1 style={style}>{title&&<div style={{fontSize:12,fontWeight:700,color:C.textLabel,marginBottom:14,textTransform:"uppercase",letterSpacing:0.5}}>{title}</div>}{children}</Card1>);
+const MiniCard=({icon,label,value,color,sub,style={}})=>(<div style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"14px 16px",boxShadow:"0 1px 3px rgba(0,0,0,0.05)",...style}}><div style={{fontSize:18,marginBottom:6}}>{icon}</div><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:1,marginBottom:4}}>{label}</div><div style={{fontSize:18,fontWeight:800,color:color||C.textPrimary,lineHeight:1.2}}>{value}</div>{sub&&<div style={{fontSize:10,color:C.textMuted,marginTop:4}}>{sub}</div>}</div>);
+
 // Offer tabs
 const OFFER_TABS=["Funding","Section 125","ERC"];
 const OFFER_KEYS={"Funding":"Funding","Section 125":"Section125","ERC":"ERC"};
