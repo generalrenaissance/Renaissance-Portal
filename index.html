@@ -892,7 +892,7 @@ function App(){
                 <YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} domain={[0,100]}/>
                 <Tooltip contentStyle={TIP1} formatter={(v)=>[`${v.toFixed(1)}%`,"Best Tier"]}/>
                 <Line type="monotone" dataKey="0-2800" stroke="#16A34A" strokeWidth={2.5} dot={{r:4,fill:"#16A34A"}} name="Best Tier %"/>
-                <ReferenceLine y={20} stroke="#16A34A" strokeDasharray="4 2" strokeOpacity={0.4}/>
+                
               </LineChart>
             </ResponsiveContainer>
           </Card1>
@@ -906,7 +906,7 @@ function App(){
                 <YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} domain={[0,100]}/>
                 <Tooltip contentStyle={TIP1} formatter={(v)=>[`${v.toFixed(1)}%`,"Worst Tier"]}/>
                 <Line type="monotone" dataKey=">4500" stroke="#DC2626" strokeWidth={2.5} dot={{r:4,fill:"#DC2626"}} name="Worst Tier %"/>
-                <ReferenceLine y={20} stroke="#DC2626" strokeDasharray="4 2" strokeOpacity={0.4}/>
+                
               </LineChart>
             </ResponsiveContainer>
           </Card1>
