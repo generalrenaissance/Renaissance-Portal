@@ -28,7 +28,7 @@ body{background:#f0f4f8}
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo } = React;
-const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, ScatterChart, Scatter } = window.Recharts;
+const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, ScatterChart, Scatter, ComposedChart } = window.Recharts;
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 const IconHome = ({size=20,color="currentColor"}) => (
@@ -881,11 +881,41 @@ function App(){
       {bizTab==="KPI Bands"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{KPI_BANDS.map(b=><div key={b.key} style={{display:"flex",alignItems:"center",gap:6,background:`${b.color}10`,borderRadius:8,padding:"5px 12px",border:`1px solid ${b.color}44`}}><div style={{width:8,height:8,borderRadius:2,background:b.color}}/><span style={{fontSize:11,color:C.textSecondary}}>{b.label}</span></div>)}</div>
         <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>% OF DAYS IN EACH BAND</div><ResponsiveContainer width="100%" height={230}><BarChart data={kpiBandChart}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[`${v.toFixed(1)}%`,n]}/><Bar dataKey=">4500" stackId="a" fill="#DC2626"/><Bar dataKey="4000-4500" stackId="a" fill="#EA580C"/><Bar dataKey="3600-4000" stackId="a" fill="#F59E0B"/><Bar dataKey="3200-3600" stackId="a" fill="#EAB308"/><Bar dataKey="2800-3200" stackId="a" fill="#84CC16"/><Bar dataKey="0-2800" stackId="a" fill="#16A34A" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></Card1>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+          <Card1>
+            <div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:4}}>BEST TIER % OVER TIME</div>
+            <div style={{fontSize:10,color:C.textMuted,marginBottom:14}}>% of days with S/B ratio &lt; 2,800 (most efficient)</div>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={kpiBandChart}>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/>
+                <XAxis dataKey="month" tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false}/>
+                <YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} domain={[0,100]}/>
+                <Tooltip contentStyle={TIP1} formatter={(v)=>[`${v.toFixed(1)}%`,"Best Tier"]}/>
+                <Line type="monotone" dataKey="0-2800" stroke="#16A34A" strokeWidth={2.5} dot={{r:4,fill:"#16A34A"}} name="Best Tier %"/>
+                <ReferenceLine y={20} stroke="#16A34A" strokeDasharray="4 2" strokeOpacity={0.4}/>
+              </LineChart>
+            </ResponsiveContainer>
+          </Card1>
+          <Card1>
+            <div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:4}}>WORST TIER % OVER TIME</div>
+            <div style={{fontSize:10,color:C.textMuted,marginBottom:14}}>% of days with S/B ratio &gt; 4,500 (least efficient)</div>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={kpiBandChart}>
+                <CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/>
+                <XAxis dataKey="month" tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false}/>
+                <YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} domain={[0,100]}/>
+                <Tooltip contentStyle={TIP1} formatter={(v)=>[`${v.toFixed(1)}%`,"Worst Tier"]}/>
+                <Line type="monotone" dataKey=">4500" stroke="#DC2626" strokeWidth={2.5} dot={{r:4,fill:"#DC2626"}} name="Worst Tier %"/>
+                <ReferenceLine y={20} stroke="#DC2626" strokeDasharray="4 2" strokeOpacity={0.4}/>
+              </LineChart>
+            </ResponsiveContainer>
+          </Card1>
+        </div>
 
       </div>)}
       {bizTab==="Daily Trends"&&(<Card1>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div style={{fontSize:12,fontWeight:600,color:C.textLabel}}>DAILY MEETINGS BOOKED</div>
+            <div style={{fontSize:12,fontWeight:600,color:C.textLabel}}>DAILY MEETINGS BOOKED AND EMAILS SENT</div>
             <div style={{display:"flex",gap:5}}>
               <Btn active={selBizMonths.length===BIZ_MONTHS_DT.length} onClick={()=>setSelBizMonths(BIZ_MONTHS_DT)}>All</Btn>
               <Btn active={selBizMonths.length===0} onClick={()=>setSelBizMonths([])}>Clear</Btn>
@@ -894,7 +924,7 @@ function App(){
           <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:14}}>
             {BIZ_MONTHS_DT.map(m=><Btn key={m} active={selBizMonths.includes(m)} onClick={()=>setSelBizMonths(s=>s.includes(m)?s.filter(x=>x!==m):[...s,m])}>{m}</Btn>)}
           </div>
-          <ResponsiveContainer width="100%" height={280}><AreaChart data={dailyRaw.filter(r=>selBizMonths.includes(r.month))}><defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.12}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} interval={9}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" fill="url(#gd)" strokeWidth={1.5} dot={false} name="Daily Meetings"/></AreaChart></ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={300}><ComposedChart data={dailyRaw.filter(r=>selBizMonths.includes(r.month))}><defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.12}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} interval={9}/><YAxis yAxisId="left" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis yAxisId="right" orientation="right" tickFormatter={v=>fmt(v)} tick={{fontSize:9,fill:"#16a34a"}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>n==="Emails Sent"?[fmt(v),n]:[v.toLocaleString(),n]}/><Legend wrapperStyle={{fontSize:11}}/><Area yAxisId="left" type="monotone" dataKey="booked" stroke="#4f46e5" fill="url(#gd)" strokeWidth={1.5} dot={false} name="Meetings Booked"/><Line yAxisId="right" type="monotone" dataKey="sent" stroke="#16a34a" strokeWidth={1.5} dot={false} name="Emails Sent"/></ComposedChart></ResponsiveContainer>
         </Card1>)}
       {/* Change #8 + #11: Day of Week now includes weekend data AND Weekday vs Weekend graph */}
       {bizTab==="Day of Week"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
