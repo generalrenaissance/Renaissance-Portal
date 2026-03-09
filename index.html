@@ -701,6 +701,8 @@ function App(){
   const [section,setSection]=useState("overview");
   const [collapsed,setCollapsed]=useState(false);
   const [bizTab,setBizTab]=useState("Overview");
+  const BIZ_MONTHS_DT=["Jul '25","Aug '25","Sep '25","Oct '25","Nov '25","Dec '25","Jan '26","Feb '26"];
+  const [selBizMonths,setSelBizMonths]=useState(["Jul '25","Aug '25","Sep '25","Oct '25","Nov '25","Dec '25","Jan '26","Feb '26"]);
   const [rolling,setRolling]=useState(7);
   const [cmView,setCmView]=useState("home");
   const [selMonths,setSelMonths]=useState(ALL_CM_MONTHS);
@@ -881,12 +883,7 @@ function App(){
         <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>% OF DAYS IN EACH BAND</div><ResponsiveContainer width="100%" height={230}><BarChart data={kpiBandChart}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[`${v.toFixed(1)}%`,n]}/><Bar dataKey=">4500" stackId="a" fill="#DC2626"/><Bar dataKey="4000-4500" stackId="a" fill="#EA580C"/><Bar dataKey="3600-4000" stackId="a" fill="#F59E0B"/><Bar dataKey="3200-3600" stackId="a" fill="#EAB308"/><Bar dataKey="2800-3200" stackId="a" fill="#84CC16"/><Bar dataKey="0-2800" stackId="a" fill="#16A34A" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></Card1>
 
       </div>)}
-      {bizTab==="Daily Trends"&&(()=>{
-        const BIZ_MONTHS_DT=["Jul '25","Aug '25","Sep '25","Oct '25","Nov '25","Dec '25","Jan '26","Feb '26"];
-        const [selBizMonths,setSelBizMonths]=React.useState(BIZ_MONTHS_DT);
-        const toggleBizMonth=m=>setSelBizMonths(s=>s.includes(m)?s.filter(x=>x!==m):[...s,m]);
-        const filteredDailyBiz=dailyRaw.filter(r=>selBizMonths.includes(r.month));
-        return(<Card1>
+      {bizTab==="Daily Trends"&&(<Card1>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
             <div style={{fontSize:12,fontWeight:600,color:C.textLabel}}>DAILY MEETINGS BOOKED</div>
             <div style={{display:"flex",gap:5}}>
@@ -895,11 +892,10 @@ function App(){
             </div>
           </div>
           <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:14}}>
-            {BIZ_MONTHS_DT.map(m=><Btn key={m} active={selBizMonths.includes(m)} onClick={()=>toggleBizMonth(m)}>{m}</Btn>)}
+            {BIZ_MONTHS_DT.map(m=><Btn key={m} active={selBizMonths.includes(m)} onClick={()=>setSelBizMonths(s=>s.includes(m)?s.filter(x=>x!==m):[...s,m])}>{m}</Btn>)}
           </div>
-          <ResponsiveContainer width="100%" height={280}><AreaChart data={filteredDailyBiz}><defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.12}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} interval={9}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" fill="url(#gd)" strokeWidth={1.5} dot={false} name="Daily Meetings"/></AreaChart></ResponsiveContainer>
-        </Card1>);
-      })()}
+          <ResponsiveContainer width="100%" height={280}><AreaChart data={dailyRaw.filter(r=>selBizMonths.includes(r.month))}><defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.12}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:9,fill:C.textMuted}} axisLine={false} tickLine={false} interval={9}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" fill="url(#gd)" strokeWidth={1.5} dot={false} name="Daily Meetings"/></AreaChart></ResponsiveContainer>
+        </Card1>)}
       {/* Change #8 + #11: Day of Week now includes weekend data AND Weekday vs Weekend graph */}
       {bizTab==="Day of Week"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
@@ -933,13 +929,13 @@ function App(){
         const insights=[
           {icon:"🚀",color:"#16a34a",title:`Email volume scaled ${(last.emailsSent/first.emailsSent).toFixed(1)}x`,body:`Grew from ${fmt(first.emailsSent)} emails/month in ${first.month} to ${fmt(last.emailsSent)} in ${last.month} — a ${emailGrowth}% increase across 8 months.`},
           {icon:"📈",color:"#4f46e5",title:`${totalMeetings.toLocaleString()} total meetings booked`,body:`Average of ${avgMonthly.toLocaleString()} meetings/month. Peak was January at 4,466 meetings. February held at 3,601 despite a 4-day system outage Feb 2–5.`},
-          {icon:"⚡",color:"#d97706",title:"Feb '26: highest ever S/B ratio at 4,917",body:`83.3% of February sending days hit the >4,500 KPI tier — the strongest conversion distribution on record. This suggests improved lead quality and targeting.`},
+          {icon:"⚠️",color:"#dc2626",title:"Feb '26: worst ever S/B ratio at 4,917",body:`A higher S/B ratio means more emails needed per meeting — 4,917 is the least efficient month on record. 83.3% of days were in the >4,500 tier. This signals a conversion challenge that needs addressing.`},
           {icon:"📅",color:"#0891b2",title:`Peak single day: ${peakDay.booked} meetings on ${peakDay.date}`,body:`${peakDay.month} produced the highest single-day meeting count. Weekend days average ${Math.round(avgWeekend)} meetings vs ${Math.round(avgWeekday)} on weekdays.`},
           {icon:"💰",color:"#7c3aed",title:"Llama Funding debuts with 592 meetings in Feb",body:`New partner Llama Funding launched in February 2026 and immediately became the top-performing partner that month, surpassing GoQualifi (657) and BigThink (683) on a per-ratio basis.`},
           {icon:"🤝",color:"#db2777",title:"Partner revenue diversification growing",body:`The network expanded from 2 active partners (Jul '25) to 4 by Feb '26. BigThink grew from 383 to 683 meetings month-over-month in Feb — a 78% jump.`},
           {icon:"📉",color:"#dc2626",title:`Feb vs Jan: ${Math.abs(momChange)}% ${momChange<0?"decrease":"increase"} in meetings`,body:`January's record 4,466 meetings was followed by 3,601 in February (${Math.abs(momChange)}% MoM drop), but this was heavily impacted by the 4-day system outage — adjusted daily rate was comparable.`},
           {icon:"🎯",color:"#059669",title:`${Math.round((totalSentAll/1e6)).toLocaleString()}M total emails sent all-time`,body:`${fmt(totalSentAll)} emails sent since July 2025. At the current Feb '26 conversion rate of 1 meeting per 4,917 emails, each percentage point improvement in ratio yields ~${Math.round(last.emailsSent/last.ratio*0.01*100)} extra meetings/month.`},
-          {icon:"🏁",color:"#16a34a",title:`Goal tracker: ${progress}% to 10,000 meetings/month`,body:`At February's conversion ratio of ${last.ratio.toLocaleString()}, reaching 10,000 meetings/month would require ~${(10000*last.ratio/1e6).toFixed(1)}M emails/month — about ${((10000*last.ratio-last.emailsSent)/1e6).toFixed(1)}M more than current volume.`},
+          {icon:"🏁",color:"#16a34a",title:`Goal tracker: ${progress}% to 10,000 meetings/month`,body:`At February's S/B ratio of ${last.ratio.toLocaleString()} (emails per meeting), reaching 10,000 meetings/month requires ~${(10000*last.ratio/1e6).toFixed(1)}M emails/month. Improving the ratio to 3,500 would only require ${(10000*3500/1e6).toFixed(1)}M emails — a ${Math.round((10000*last.ratio-10000*3500)/1e6*100)/100}M saving.`},
           {icon:"📊",color:"#0369a1",title:"Weekday vs weekend sending patterns",body:`Weekdays drive ${Math.round(avgWeekday)} avg meetings/day vs ${Math.round(avgWeekend)} on weekends. Friday is historically the strongest weekday. Weekend volume is significant and should not be overlooked.`},
         ];
         return(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
