@@ -1031,15 +1031,19 @@ function App(){
     const od=IH_DATA[offerKey];
     const oc=OFFER_COLORS[offerKey];
     const totalAccts=od.accountStatus.reduce((s,r)=>s+r.accounts,0);
+    const totalSV=od.accountStatus.reduce((s,r)=>s+r.sendingVolume,0);
     const totalDoms=od.accountStatus.reduce((s,r)=>s+r.domains,0);
     const activeA=(od.accountStatus.find(r=>r.status==="Active")||{accounts:0}).accounts;
+    const activeSV=(od.accountStatus.find(r=>r.status==="Active")||{sendingVolume:0}).sendingVolume;
     const sipA=(od.accountStatus.find(r=>r.status==="Sent Into Production")||{accounts:0}).accounts;
+    const sipSV=(od.accountStatus.find(r=>r.status==="Sent Into Production")||{sendingVolume:0}).sendingVolume;
     const warmA=(od.accountStatus.find(r=>r.status==="Warmup")||{accounts:0}).accounts;
-    const topCM=[...od.campaignManagers].sort((a,b)=>b.accounts-a.accounts)[0]||{cm:"—",accounts:0};
-    const topWS=[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.accounts-a.accounts)[0]||{workspace:"—",accounts:0};
-    const totalWS=od.workspaces.reduce((s,r)=>s+r.accounts,0);
+    const warmSV=(od.accountStatus.find(r=>r.status==="Warmup")||{sendingVolume:0}).sendingVolume;
+    const topCM=[...od.campaignManagers].sort((a,b)=>b.sendingVolume-a.sendingVolume)[0]||{cm:"—",sendingVolume:0,accounts:0};
+    const topWS=[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.sendingVolume-a.sendingVolume)[0]||{workspace:"—",sendingVolume:0,accounts:0};
+    const totalWS=od.workspaces.reduce((s,r)=>s+r.sendingVolume,0);
     const totalETAccts=od.emailTypes.reduce((s,r)=>s+r.accounts,0);
-    const topET=[...od.emailTypes].sort((a,b)=>b.accounts-a.accounts)[0]||{type:"—",accounts:0};
+    const topET=[...od.emailTypes].sort((a,b)=>b.sendingVolume-a.sendingVolume)[0]||{type:"—",sendingVolume:0,accounts:0};
 
     const OfferPill=({label})=>{
       const active=offerTab===label;
@@ -1074,24 +1078,25 @@ function App(){
         {inboxTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             {[
-              {icon:"📬",label:"Total Accounts",value:fmtFull(totalAccts),color:oc.primary,gradient:`linear-gradient(135deg,${oc.light},${oc.border}55)`,border:oc.border},
-              {icon:"✅",label:"Active Accounts",value:fmtFull(activeA),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"#bbf7d0"},
-              {icon:"🚀",label:"Sent Into Production",value:fmtFull(sipA),color:"#0891b2",gradient:"linear-gradient(135deg,#ecfeff,#cffafe)",border:"#a5f3fc"},
-              {icon:"🌐",label:"Total Domains",value:fmtFull(totalDoms),color:"#7c3aed",gradient:"linear-gradient(135deg,#faf5ff,#ede9fe)",border:"#ddd6fe"},
+              {icon:"📤",label:"Total Sending Volume",value:fmtFull(totalSV),color:oc.primary,gradient:`linear-gradient(135deg,${oc.light},${oc.border}55)`,border:oc.border,sub:`${fmtFull(totalAccts)} accounts`},
+              {icon:"✅",label:"Active Sending Vol",value:fmtFull(activeSV),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"#bbf7d0",sub:`${fmtFull(activeA)} accounts`},
+              {icon:"🚀",label:"In Production Sending Vol",value:fmtFull(sipSV),color:"#0891b2",gradient:"linear-gradient(135deg,#ecfeff,#cffafe)",border:"#a5f3fc",sub:`${fmtFull(sipA)} accounts`},
+              {icon:"🌐",label:"Total Domains",value:fmtFull(totalDoms),color:"#7c3aed",gradient:"linear-gradient(135deg,#faf5ff,#ede9fe)",border:"#ddd6fe",sub:`${fmtFull(totalAccts)} total accts`},
             ].map((c,i)=>(
               <div key={i} style={{borderRadius:16,padding:"18px 20px",background:c.gradient,border:`1px solid ${c.border}`,boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
                 <div style={{fontSize:22,marginBottom:6}}>{c.icon}</div>
                 <div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div>
                 <div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div>
+                {c.sub&&<div style={{fontSize:10,color:C.textMuted,marginTop:3}}>{c.sub}</div>}
               </div>
             ))}
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             {[
-              {icon:"🌡️",label:"In Warmup",value:fmtFull(warmA),color:"#f59e0b"},
-              {icon:"🏢",label:"Workspaces",value:String(od.workspaces.filter(w=>w.accounts>0).length),color:oc.primary},
-              {icon:"👑",label:"Top CM",value:topCM.cm,color:"#d97706",sub:`${fmtFull(topCM.accounts)} accounts`},
-              {icon:"🔝",label:"Top Workspace",value:topWS.workspace,color:"#16a34a",sub:`${fmtFull(topWS.accounts)} accounts`},
+              {icon:"🌡️",label:"Warmup Sending Vol",value:fmtFull(warmSV),color:"#f59e0b",sub:`${fmtFull(warmA)} accounts`},
+              {icon:"🏢",label:"Workspaces Active",value:String(od.workspaces.filter(w=>w.sendingVolume>0).length),color:oc.primary,sub:`of ${od.workspaces.length} total`},
+              {icon:"👑",label:"Top CM by Vol",value:topCM.cm,color:"#d97706",sub:`${fmtFull(topCM.sendingVolume)} sending vol`},
+              {icon:"🔝",label:"Top Workspace by Vol",value:topWS.workspace,color:"#16a34a",sub:`${fmtFull(topWS.sendingVolume)} sending vol`},
             ].map((c,i)=>(
               <div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"13px 16px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
                 <div style={{fontSize:16,marginBottom:4}}>{c.icon}</div>
@@ -1102,8 +1107,8 @@ function App(){
             ))}
           </div>
           <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:14}}>
-            <Panel title="ACCOUNT STATUS BREAKDOWN">
-              <ResponsiveContainer width="100%" height={240}><BarChart data={od.accountStatus.filter(r=>r.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:70}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="status" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={130}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{od.accountStatus.filter(r=>r.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+            <Panel title="SENDING VOLUME BY STATUS">
+              <ResponsiveContainer width="100%" height={240}><BarChart data={od.accountStatus.filter(r=>r.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:70}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="status" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={130}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Sending Volume"]}/><Bar dataKey="sendingVolume" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{od.accountStatus.filter(r=>r.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
             </Panel>
             <Panel title="EMAIL PROVIDER SPLIT">
               <div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:6}}>
@@ -1129,7 +1134,7 @@ function App(){
                 <div key={i} style={{textAlign:"center",background:`${s.color}12`,border:`1px solid ${s.color}44`,borderRadius:12,padding:"14px 10px"}}>
                   <div style={{fontSize:20,fontWeight:800,color:s.color,marginBottom:4}}>{fmt(s.accounts)}</div>
                   <div style={{fontSize:9,color:C.textSecondary,textTransform:"uppercase",letterSpacing:.7,marginBottom:4,lineHeight:1.3}}>{s.status}</div>
-                  <div style={{fontSize:10,fontWeight:700,color:s.color}}>{totalAccts>0?((s.accounts/totalAccts)*100).toFixed(1):0}%</div>
+                  <div style={{fontSize:10,fontWeight:700,color:s.color}}>{totalSV>0?((s.sendingVolume/totalSV)*100).toFixed(1):0}%</div>
                 </div>
               ))}
             </div>
@@ -1207,7 +1212,7 @@ function App(){
           </div>
           <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
             <Panel title="ACCOUNTS BY INBOX MANAGER">
-              <ResponsiveContainer width="100%" height={270}><BarChart data={[...od.inboxManagers].filter(m=>m.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="manager" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={70}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{[...od.inboxManagers].filter(m=>m.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={270}><BarChart data={[...od.inboxManagers].filter(m=>m.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="manager" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={70}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Sending Volume"]}/><Bar dataKey="sendingVolume" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmtFull(v)}}>{[...od.inboxManagers].filter(m=>m.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
             </Panel>
             <Panel title="SHARE DISTRIBUTION">
               <ResponsiveContainer width="100%" height={270}><PieChart><Pie data={od.inboxManagers.filter(m=>m.accounts>0)} cx="50%" cy="50%" innerRadius={50} outerRadius={95} dataKey="accounts" nameKey="manager" paddingAngle={2}>{od.inboxManagers.filter(m=>m.accounts>0).map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" accounts",n]}/><Legend iconSize={9} wrapperStyle={{fontSize:10,color:C.textLabel}}/></PieChart></ResponsiveContainer>
@@ -1225,7 +1230,7 @@ function App(){
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
             <Panel title="EMAIL TYPE BREAKDOWN">
-              <ResponsiveContainer width="100%" height={300}><BarChart data={[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="type" type="category" tick={{fill:C.textSecondary,fontSize:9}} width={110}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Accounts"]}/><Bar dataKey="accounts" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmt(v)}}>{[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={300}><BarChart data={[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="type" type="category" tick={{fill:C.textSecondary,fontSize:9}} width={110}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Sending Volume"]}/><Bar dataKey="sendingVolume" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>fmt(v)}}>{[...od.emailTypes].filter(e=>e.accounts>0).sort((a,b)=>b.accounts-a.accounts).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
             </Panel>
             <Panel title="EMAIL PROVIDER">
               <div style={{display:"flex",flexDirection:"column",gap:14,paddingTop:6}}>
