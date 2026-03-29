@@ -760,48 +760,131 @@ function App(){
     React.createElement('button',{onClick,style:{background:active?"linear-gradient(135deg,#3b82f6,#6366f1)":"#ffffff",border:active?"none":`1px solid ${C.cardBorder}`,borderRadius:9,padding:"7px 14px",cursor:"pointer",fontSize:11,fontWeight:600,color:active?"#fff":C.textSecondary,outline:"none",boxShadow:active?"0 2px 8px rgba(59,130,246,0.3)":"0 1px 2px rgba(0,0,0,0.04)",...style}},children)
   );
 
-  const renderOverview=()=>(
-    <div style={{display:"flex",flexDirection:"column",gap:14}}>
-      {/* Change #10: Main scorecards with subtle gradients inspired by ref image */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-        {[
-          {icon:"📨",label:"Total Emails (Business Funding)",value:fmt(totalEmails),color:"#4f46e5",gradient:"linear-gradient(135deg,#eff6ff 0%,#e0e7ff 100%)",borderColor:"#c7d2fe"},
-          {icon:"📅",label:"Business Funding Meetings",value:totalBooked.toLocaleString(),color:"#0891b2",gradient:"linear-gradient(135deg,#ecfeff 0%,#cffafe 100%)",borderColor:"#a5f3fc"},
-          {icon:"📅",label:"CM All-Time Meetings",value:correctAllTimeCMTotal.toLocaleString(),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%)",borderColor:"#bbf7d0"},
-          {icon:"📬",label:"Active Inboxes",value:fmtFull(activeAccts),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%)",borderColor:"#bbf7d0"}
-        ].map((c,i)=>(
-          <div key={i} style={{borderRadius:16,padding:"18px 20px",border:`1px solid ${c.borderColor}`,background:c.gradient,boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
-            <div style={{fontSize:22,marginBottom:6}}>{c.icon}</div>
-            <div style={{fontSize:24,fontWeight:800,color:c.color}}>{c.value}</div>
-            <div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>{c.label}</div>
-          </div>
-        ))}
+  const renderOverview=()=>{
+    // Partner revenue model: GoQualifi=PPA $150, BigThink=PPA $150 + 10% rev share, GreenBridge=50/50 rev share, Llama=PPA $150
+    const PPA=150;
+    const partners=[
+      {key:"GoQualifi",name:"GoQualifi",color:"#e84393",bg:"#fdf2f8",border:"#f9a8d4",model:"PPA",revPerMtg:PPA},
+      {key:"BigThink",name:"Big Think",color:"#d97706",bg:"#fffbeb",border:"#fde68a",model:"PPA + 10%",revPerMtg:PPA},
+      {key:"GreenBridge",name:"GreenBridge",color:"#16a34a",bg:"#f0fdf4",border:"#86efac",model:"50/50 Rev Share",revPerMtg:null},
+      {key:"LlamaFunding",name:"Llama Funding",color:"#7c3aed",bg:"#faf5ff",border:"#c4b5fd",model:"PPA",revPerMtg:PPA},
+    ];
+    const mtd=last; // Feb '26 = current month
+    const goalMtgs=4000, goalKpi=4500;
+    const daysInMonth=28, daysPassed=28, daysLeft=0;
+    const mtgPerDayNeeded=daysPassed>=daysInMonth?0:Math.ceil((goalMtgs-mtd.booked)/Math.max(daysLeft,1));
+    const topCMsMonth=[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked).slice(0,3);
+    const peakDayObj=dailyRaw.reduce((b,r)=>r.booked>b.booked?r:b,{booked:0,date:"",month:""});
+
+    return(
+    <div style={{display:"flex",flexDirection:"column",gap:16}}>
+
+      {/* ── Row 1: Active Inboxes + Record Day + Goal Tracker ── */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12}}>
+        <div style={{borderRadius:16,padding:"18px 20px",background:"linear-gradient(135deg,#eff6ff,#e0e7ff)",border:"1px solid #c7d2fe",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
+          <div style={{fontSize:20,marginBottom:6}}>📬</div>
+          <div style={{fontSize:26,fontWeight:800,color:"#4f46e5"}}>{fmtFull(activeAccts)}</div>
+          <div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>Active Inboxes</div>
+          <div style={{fontSize:10,color:C.textMuted,marginTop:2}}>{fmtFull(warmupAccts)} in warmup</div>
+        </div>
+        <div style={{borderRadius:16,padding:"18px 20px",background:"linear-gradient(135deg,#fff7ed,#fef3c7)",border:"1px solid #fde68a",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
+          <div style={{fontSize:20,marginBottom:6}}>🏆</div>
+          <div style={{fontSize:26,fontWeight:800,color:"#d97706"}}>{peakDayObj.booked}</div>
+          <div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>Record Day (Meetings)</div>
+          <div style={{fontSize:10,color:C.textMuted,marginTop:2}}>{peakDayObj.date} · {peakDayObj.month}</div>
+        </div>
+        <div style={{borderRadius:16,padding:"18px 20px",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"1px solid #86efac",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
+          <div style={{fontSize:20,marginBottom:6}}>🎯</div>
+          <div style={{fontSize:26,fontWeight:800,color:"#16a34a"}}>{mtd.booked.toLocaleString()}<span style={{fontSize:14,fontWeight:500,color:C.textMuted}}>/{goalMtgs.toLocaleString()}</span></div>
+          <div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>MTD Meetings · Goal {goalMtgs.toLocaleString()}</div>
+          <div style={{height:5,background:"#dcfce7",borderRadius:99,marginTop:8,overflow:"hidden"}}><div style={{width:`${Math.min((mtd.booked/goalMtgs)*100,100)}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
+          <div style={{fontSize:10,color:C.textMuted,marginTop:4}}>{((mtd.booked/goalMtgs)*100).toFixed(1)}% achieved · {daysLeft>0?`${mtgPerDayNeeded}/day needed`:"Month complete"}</div>
+        </div>
+        <div style={{borderRadius:16,padding:"18px 20px",background:"linear-gradient(135deg,#ecfeff,#cffafe)",border:"1px solid #a5f3fc",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
+          <div style={{fontSize:20,marginBottom:6}}>📊</div>
+          <div style={{fontSize:26,fontWeight:800,color:"#0891b2"}}>{mtd.ratio.toLocaleString()}</div>
+          <div style={{fontSize:10,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>MTD S/B Ratio · Goal &lt;{goalKpi.toLocaleString()}</div>
+          <div style={{fontSize:10,color:mtd.ratio>goalKpi?"#dc2626":"#16a34a",marginTop:4,fontWeight:700}}>{mtd.ratio>goalKpi?"⚠️ Above target":"✅ On target"}</div>
+        </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
-        {[
-          {icon:"🔥",label:"Total Daily Emails",value:fmt(totalDailyEmails),color:"#d97706",gradient:"linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%)",borderColor:"#fde68a"},
-          {icon:"📊",label:"Total Accounts",value:fmtFull(269915),color:"#7c3aed",gradient:"linear-gradient(135deg,#faf5ff 0%,#ede9fe 100%)",borderColor:"#ddd6fe"},
-          {icon:"🌡️",label:"In Warmup",value:fmtFull(warmupAccts),color:"#4f46e5",gradient:"linear-gradient(135deg,#eff6ff 0%,#e0e7ff 100%)",borderColor:"#c7d2fe"},
-          {icon:"🚀",label:"Sent Into Production",value:fmtFull(252480),color:"#0891b2",gradient:"linear-gradient(135deg,#ecfeff 0%,#cffafe 100%)",borderColor:"#a5f3fc"}
-        ].map((c,i)=>(
-          <div key={i} style={{background:c.gradient,border:`1px solid ${c.borderColor}`,borderRadius:14,padding:"13px 16px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
-            <div style={{fontSize:16,marginBottom:4}}>{c.icon}</div>
-            <div style={{fontSize:18,fontWeight:800,color:c.color}}>{c.value}</div>
-            <div style={{fontSize:9,color:C.textLabel,marginTop:2,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div>
-          </div>
-        ))}
-      </div>
+
+      {/* ── Row 2: Offer Snapshots ── */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
-        <Panel title="BUSINESS FUNDING — MONTHLY MEETINGS"><ResponsiveContainer width="100%" height={180}><AreaChart data={data}><defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.18}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" strokeWidth={2} fill="url(#og1)" name="Meetings"/></AreaChart></ResponsiveContainer></Panel>
-        <Panel title="MEETINGS BOOKED — DAILY TREND"><ResponsiveContainer width="100%" height={180}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="og2" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#7c3aed" stopOpacity={0.18}/><stop offset="95%" stopColor="#7c3aed" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false} interval={8}/><YAxis tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#7c3aed" strokeWidth={2} fill="url(#og2)" name="CM Meetings"/></AreaChart></ResponsiveContainer></Panel>
-        <Panel title="INBOX ACCOUNT STATUS"><ResponsiveContainer width="100%" height={180}><PieChart><Pie data={ACCOUNT_STATUS} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="accounts" nameKey="status" paddingAngle={2}>{ACCOUNT_STATUS.map((r,i)=><Cell key={i} fill={r.color} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:9,color:C.textLabel}}/></PieChart></ResponsiveContainer></Panel>
+        {[
+          {offer:"Business Funding",icon:"💼",color:"#4f46e5",bg:"#eff6ff",border:"#c7d2fe",
+           allTime:totalBooked,mtd:mtd.booked,emails:fmt(last.emailsSent),kpi:mtd.ratio,kpiColor:mtd.ratio>4500?"#dc2626":"#16a34a"},
+          {offer:"Section 125",icon:"🏥",color:"#7c3aed",bg:"#faf5ff",border:"#ddd6fe",
+           allTime:"N/A",mtd:"Active",emails:"224K sent",kpi:"—",kpiColor:C.textMuted},
+          {offer:"ERC",icon:"💊",color:"#0891b2",bg:"#ecfeff",border:"#a5f3fc",
+           allTime:"N/A",mtd:"Active",emails:"198K sent",kpi:"—",kpiColor:C.textMuted},
+        ].map((o,i)=>(
+          <div key={i} style={{borderRadius:16,padding:"18px 20px",background:o.bg,border:`1px solid ${o.border}`,boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+              <span style={{fontSize:18}}>{o.icon}</span>
+              <span style={{fontSize:13,fontWeight:700,color:o.color}}>{o.offer}</span>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+              <div><div style={{fontSize:9,color:C.textMuted,textTransform:"uppercase",letterSpacing:1}}>All-Time Meetings</div><div style={{fontSize:16,fontWeight:800,color:C.textPrimary}}>{typeof o.allTime==="number"?o.allTime.toLocaleString():o.allTime}</div></div>
+              <div><div style={{fontSize:9,color:C.textMuted,textTransform:"uppercase",letterSpacing:1}}>MTD Meetings</div><div style={{fontSize:16,fontWeight:800,color:o.color}}>{typeof o.mtd==="number"?o.mtd.toLocaleString():o.mtd}</div></div>
+              <div><div style={{fontSize:9,color:C.textMuted,textTransform:"uppercase",letterSpacing:1}}>MTD Emails</div><div style={{fontSize:13,fontWeight:600,color:C.textSecondary}}>{o.emails}</div></div>
+              <div><div style={{fontSize:9,color:C.textMuted,textTransform:"uppercase",letterSpacing:1}}>S/B Ratio</div><div style={{fontSize:13,fontWeight:700,color:o.kpiColor}}>{typeof o.kpi==="number"?o.kpi.toLocaleString():o.kpi}</div></div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {/* ── Row 3: Partner Summary ── */}
+      <Panel title="PARTNER SUMMARY — MTD & ALL-TIME">
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:4}}>
+          {partners.map(p=>{
+            const allTimeMtgs=data.reduce((s,d)=>s+(d[p.key]||0),0);
+            const mtdMtgs=mtd[p.key]||0;
+            const allTimeRev=p.revPerMtg?allTimeMtgs*p.revPerMtg:null;
+            const mtdRev=p.revPerMtg?mtdMtgs*p.revPerMtg:null;
+            return(
+              <div key={p.key} style={{background:p.bg,border:`1px solid ${p.border}`,borderRadius:14,padding:"14px 16px"}}>
+                <div style={{fontSize:12,fontWeight:700,color:p.color,marginBottom:10}}>{p.name}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
+                  <div><div style={{fontSize:8,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>All-Time Mtgs</div><div style={{fontSize:15,fontWeight:800,color:C.textPrimary}}>{allTimeMtgs.toLocaleString()}</div></div>
+                  <div><div style={{fontSize:8,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>MTD Mtgs</div><div style={{fontSize:15,fontWeight:800,color:p.color}}>{mtdMtgs.toLocaleString()}</div></div>
+                  {allTimeRev&&<div><div style={{fontSize:8,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>All-Time Rev</div><div style={{fontSize:13,fontWeight:700,color:"#16a34a"}}>${(allTimeRev/1000).toFixed(0)}K</div></div>}
+                  {mtdRev&&<div><div style={{fontSize:8,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>MTD Rev</div><div style={{fontSize:13,fontWeight:700,color:"#16a34a"}}>${mtdRev.toLocaleString()}</div></div>}
+                  {p.revPerMtg&&<div style={{gridColumn:"1/-1"}}><div style={{fontSize:8,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>Rev / Meeting</div><div style={{fontSize:12,fontWeight:600,color:C.textSecondary}}>${p.revPerMtg} (PPA)</div></div>}
+                  {!p.revPerMtg&&<div style={{gridColumn:"1/-1"}}><div style={{fontSize:8,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>Model</div><div style={{fontSize:11,fontWeight:600,color:C.textSecondary}}>{p.model}</div></div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Panel>
+
+      {/* ── Row 4: Top 3 CMs This Month + Charts ── */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-        <Panel title="TOP CMs ALL-TIME"><div style={{display:"flex",flexDirection:"column",gap:7}}>{[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked).slice(0,5).map((r,i)=>{const best=[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)[0]?.allTimeBooked||1;const pct=(r.allTimeBooked/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:7}}><span style={{fontSize:13,width:20}}>{i<3?MEDAL[i]:`#${i+1}`}</span><span style={{fontSize:12,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div><span style={{fontSize:11,fontWeight:800,color:"#16a34a"}}>{r.allTimeBooked.toLocaleString()}</span></div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:27}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:"#16a34a"}}/></div></div>);})}</div></Panel>
-        <Panel title="INBOX MANAGERS WORKLOAD"><div style={{display:"flex",flexDirection:"column",gap:6}}>{[...INBOX_MANAGERS].sort((a,b)=>b.accounts-a.accounts).slice(0,5).map((r,i)=>(<div key={r.manager}><div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.manager}</span><span style={{fontSize:11,fontWeight:800,color:r.color}}>{fmtFull(r.accounts)}</span></div><div style={{height:4,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${r.pct/28.06*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></div>))}</div></Panel>
+        <Panel title="TOP 3 CMs — ALL-TIME MEETINGS">
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {topCMsMonth.map((r,i)=>{
+              const best=topCMsMonth[0]?.allTimeBooked||1;
+              const pct=(r.allTimeBooked/best)*100;
+              return(
+                <div key={r.cm}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:18}}>{MEDAL[i]}</span><span style={{fontSize:13,fontWeight:700,color:C.textPrimary}}>{r.cm}</span></div>
+                    <span style={{fontSize:13,fontWeight:800,color:"#16a34a"}}>{r.allTimeBooked.toLocaleString()}</span>
+                  </div>
+                  <div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${pct}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
+                </div>
+              );
+            })}
+          </div>
+        </Panel>
+        <Panel title="BUSINESS FUNDING — MEETINGS TREND">
+          <ResponsiveContainer width="100%" height={160}><AreaChart data={data}><defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.18}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:8,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" strokeWidth={2} fill="url(#og1)" name="Meetings"/></AreaChart></ResponsiveContainer>
+        </Panel>
       </div>
+
     </div>
-  );
+    );
+  };
 
   const renderBusiness=()=>(
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
@@ -850,19 +933,19 @@ function App(){
       {bizTab==="Partners"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
         <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>MEETINGS BY PARTNER</div><ResponsiveContainer width="100%" height={230}><BarChart data={partnerData} barGap={4}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Legend wrapperStyle={{fontSize:11,color:C.textLabel}}/>
           {/* Change #7: Partner colors updated */}
-          <Bar dataKey="GoQualifi" fill="#e199ac" radius={[3,3,0,0]}/>
-          <Bar dataKey="BigThink" fill="#f3d76c" radius={[3,3,0,0]} name="Big Think"/>
-          <Bar dataKey="GreenBridge" fill="#dced8e" radius={[3,3,0,0]} name="GreenBridge"/>
-          <Bar dataKey="LlamaFunding" fill="#c4b5fd" radius={[3,3,0,0]} name="Llama Funding"/>
+          <Bar dataKey="GoQualifi" fill="#e11d48" radius={[3,3,0,0]}/>
+          <Bar dataKey="BigThink" fill="#f59e0b" radius={[3,3,0,0]} name="Big Think"/>
+          <Bar dataKey="GreenBridge" fill="#16a34a" radius={[3,3,0,0]} name="GreenBridge"/>
+          <Bar dataKey="LlamaFunding" fill="#7c3aed" radius={[3,3,0,0]} name="Llama Funding"/>
         </BarChart></ResponsiveContainer></Card1>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[
-          {key:"GreenBridge",name:"GreenBridge Capital",model:"50/50 Rev Share",color:"#dced8e",textColor:"#5a8a0a",note:"Anchor partner."},
-          {key:"BigThink",name:"Big Think Capital",model:"PPA + 10% Rev Share",color:"#f3d76c",textColor:"#9a6c00",note:"Fastest growing."},
-          {key:"GoQualifi",name:"GoQualifi",model:"PPA",color:"#e199ac",textColor:"#8b2252",note:"Consistent PPA."},
-          {key:"LlamaFunding",name:"Llama Funding",model:"PPA",color:"#c4b5fd",textColor:"#5b21b6",note:"New partner Feb '26."}
+          {key:"GreenBridge",name:"GreenBridge Capital",model:"50/50 Rev Share",color:"#dced8e",textColor:"#16a34a",note:"Anchor partner."},
+          {key:"BigThink",name:"Big Think Capital",model:"PPA + 10% Rev Share",color:"#f3d76c",textColor:"#b45309",note:"Fastest growing."},
+          {key:"GoQualifi",name:"GoQualifi",model:"PPA",color:"#e199ac",textColor:"#e11d48",note:"Consistent PPA."},
+          {key:"LlamaFunding",name:"Llama Funding",model:"PPA",color:"#c4b5fd",textColor:"#7c3aed",note:"New partner Feb '26."}
         ].map((p,i)=>{const latest=[...partnerData].reverse().find(d=>d[p.key]);return(<div key={i} style={{borderRadius:16,padding:20,border:`1px solid ${C.cardBorder}`,background:C.card,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:11,fontWeight:700,color:p.textColor,marginBottom:10,textTransform:"uppercase"}}>{p.name}</div><div style={{fontSize:32,fontWeight:800,color:C.textPrimary}}>{latest?.[p.key]?.toLocaleString()||"–"}</div><div style={{fontSize:10,color:C.textMuted,marginBottom:8}}>{latest?.month}</div><div style={{fontSize:11,color:C.textSecondary}}>Model: {p.model}</div><div style={{fontSize:11,color:C.textLabel,marginTop:4}}>{p.note}</div></div>);})}</div>
-        <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>BOOKINGS TREND BY PARTNER</div><ResponsiveContainer width="100%" height={200}><LineChart data={partnerData}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Legend wrapperStyle={{fontSize:11}}/><Line type="monotone" dataKey="GoQualifi" stroke="#e199ac" strokeWidth={2.5} dot={{r:3}} connectNulls/><Line type="monotone" dataKey="BigThink" stroke="#d4a017" strokeWidth={2.5} dot={{r:3}} name="Big Think" connectNulls/><Line type="monotone" dataKey="GreenBridge" stroke="#7aad0a" strokeWidth={2.5} dot={{r:3}} name="GreenBridge" connectNulls/><Line type="monotone" dataKey="LlamaFunding" stroke="#7c3aed" strokeWidth={2.5} dot={{r:3}} name="Llama Funding" connectNulls/></LineChart></ResponsiveContainer></Card1>
-        <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>SENDING VOLUME TREND BY PARTNER</div><ResponsiveContainer width="100%" height={200}><LineChart data={data.filter(d=>d.GoQualifi||d.BigThink||d.GreenBridge||d.LlamaFunding).map(d=>({month:d.month,GoQualifi:d.GoQualifi?d.emailsSent:null,BigThink:d.BigThink?d.emailsSent:null,GreenBridge:d.GreenBridge?d.emailsSent:null,LlamaFunding:d.LlamaFunding?d.emailsSent:null}))}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tickFormatter={v=>fmt(v)} tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[fmt(v),n]}/><Legend wrapperStyle={{fontSize:11}}/><Line type="monotone" dataKey="GoQualifi" stroke="#e199ac" strokeWidth={2.5} dot={{r:3}} connectNulls/><Line type="monotone" dataKey="BigThink" stroke="#d4a017" strokeWidth={2.5} dot={{r:3}} name="Big Think" connectNulls/><Line type="monotone" dataKey="GreenBridge" stroke="#7aad0a" strokeWidth={2.5} dot={{r:3}} name="GreenBridge" connectNulls/><Line type="monotone" dataKey="LlamaFunding" stroke="#7c3aed" strokeWidth={2.5} dot={{r:3}} name="Llama Funding" connectNulls/></LineChart></ResponsiveContainer></Card1>
+        <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>BOOKINGS TREND BY PARTNER</div><ResponsiveContainer width="100%" height={200}><LineChart data={partnerData}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Legend wrapperStyle={{fontSize:11}}/><Line type="monotone" dataKey="GoQualifi" stroke="#e11d48" strokeWidth={2.5} dot={{r:3}} connectNulls/><Line type="monotone" dataKey="BigThink" stroke="#d4a017" strokeWidth={2.5} dot={{r:3}} name="Big Think" connectNulls/><Line type="monotone" dataKey="GreenBridge" stroke="#7aad0a" strokeWidth={2.5} dot={{r:3}} name="GreenBridge" connectNulls/><Line type="monotone" dataKey="LlamaFunding" stroke="#7c3aed" strokeWidth={2.5} dot={{r:3}} name="Llama Funding" connectNulls/></LineChart></ResponsiveContainer></Card1>
+        
       </div>)}
       {bizTab==="KPI Bands"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{KPI_BANDS.map(b=><div key={b.key} style={{display:"flex",alignItems:"center",gap:6,background:`${b.color}10`,borderRadius:8,padding:"5px 12px",border:`1px solid ${b.color}44`}}><div style={{width:8,height:8,borderRadius:2,background:b.color}}/><span style={{fontSize:11,color:C.textSecondary}}>{b.label}</span></div>)}</div>
@@ -927,7 +1010,7 @@ function App(){
         </div>
         {/* Change #8: Weekday vs Weekend chart now lives here */}
         <Card1><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>WEEKDAY VS WEEKEND RATIO BY MONTH</div><ResponsiveContainer width="100%" height={220}><LineChart data={data.filter(d=>d.weekdayRatio||d.weekendRatio)}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[v.toLocaleString(),n]}/><Legend wrapperStyle={{fontSize:11,color:C.textLabel}}/><Line type="monotone" dataKey="weekdayRatio" stroke="#4f46e5" strokeWidth={2.5} dot={{r:4,fill:"#4f46e5",strokeWidth:0}} name="Weekday Ratio"/><Line type="monotone" dataKey="weekendRatio" stroke="#f59e0b" strokeWidth={2.5} dot={{r:4,fill:"#f59e0b",strokeWidth:0}} name="Weekend Ratio"/></LineChart></ResponsiveContainer></Card1>
-        <Card1 style={{gridColumn:"1/-1"}}><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>DAY OF WEEK BREAKDOWN TABLE</div><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Day","Type","Data Points","Avg Meetings","Avg Ratio","Total Meetings"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{dowStats.map((r,i)=>{const isWeekend=r.fullDay==="Saturday"||r.fullDay==="Sunday";return(<tr key={r.day} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:C.textPrimary}}>{r.fullDay}</td><td style={{padding:"9px 12px"}}><span style={{fontSize:10,fontWeight:700,color:isWeekend?"#f59e0b":"#4f46e5",background:isWeekend?"#fef3c7":"#eff6ff",padding:"2px 8px",borderRadius:6}}>{isWeekend?"Weekend":"Weekday"}</span></td><td style={{padding:"9px 12px",color:C.textSecondary}}>{r.days}</td><td style={{padding:"9px 12px",color:"#4f46e5",fontWeight:700}}>{r.avgBooked}</td><td style={{padding:"9px 12px",color:"#d97706"}}>{r.avgRatio>0?r.avgRatio.toLocaleString():"—"}</td><td style={{padding:"9px 12px",color:"#16a34a",fontWeight:700}}>{r.totalBooked.toLocaleString()}</td></tr>);})}</tbody></table></Card1>
+        <Card1 style={{gridColumn:"1/-1"}}><div style={{fontSize:12,fontWeight:600,color:C.textLabel,marginBottom:14}}>DAY OF WEEK BREAKDOWN TABLE</div><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr>{["Day","Type","Avg Meetings","Avg Ratio","Total Meetings"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{dowStats.map((r,i)=>{const isWeekend=r.fullDay==="Saturday"||r.fullDay==="Sunday";return(<tr key={r.day} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"9px 12px",fontWeight:700,color:C.textPrimary}}>{r.fullDay}</td><td style={{padding:"9px 12px"}}><span style={{fontSize:10,fontWeight:700,color:isWeekend?"#f59e0b":"#4f46e5",background:isWeekend?"#fef3c7":"#eff6ff",padding:"2px 8px",borderRadius:6}}>{isWeekend?"Weekend":"Weekday"}</span></td><td style={{padding:"9px 12px",color:"#4f46e5",fontWeight:700}}>{r.avgBooked}</td><td style={{padding:"9px 12px",color:"#d97706"}}>{r.avgRatio>0?r.avgRatio.toLocaleString():"—"}</td><td style={{padding:"9px 12px",color:"#16a34a",fontWeight:700}}>{r.totalBooked.toLocaleString()}</td></tr>);})}</tbody></table></Card1>
       </div>)}
       {bizTab==="Insights"&&(()=>{
         const totalMeetings=data.reduce((s,r)=>s+r.booked,0);
@@ -1079,7 +1162,7 @@ function App(){
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             {[
               {icon:"📤",label:"Total Sending Volume",value:fmtFull(totalSV),color:oc.primary,gradient:`linear-gradient(135deg,${oc.light},${oc.border}55)`,border:oc.border,sub:`${fmtFull(totalAccts)} accounts`},
-              {icon:"✅",label:"Active Sending Vol",value:fmtFull(activeSV),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"#bbf7d0",sub:`${fmtFull(activeA)} accounts`},
+              {icon:"✅",label:"Active Accounts Sending",value:fmtFull(activeSV),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"#bbf7d0",sub:`${fmtFull(activeA)} accounts`},
               {icon:"🚀",label:"In Production Sending Vol",value:fmtFull(sipSV),color:"#0891b2",gradient:"linear-gradient(135deg,#ecfeff,#cffafe)",border:"#a5f3fc",sub:`${fmtFull(sipA)} accounts`},
               {icon:"🌐",label:"Total Domains",value:fmtFull(totalDoms),color:"#7c3aed",gradient:"linear-gradient(135deg,#faf5ff,#ede9fe)",border:"#ddd6fe",sub:`${fmtFull(totalAccts)} total accts`},
             ].map((c,i)=>(
@@ -1146,8 +1229,8 @@ function App(){
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="📤" label="Total Sending Vol" value={fmtFull(od.accountStatus.reduce((s,r)=>s+r.sendingVolume,0))} color={oc.primary}/>
             <MiniCard icon="🌐" label="Total Domains" value={fmtFull(totalDoms)} color="#7c3aed"/>
-            <MiniCard icon="✅" label="Active Sending Vol" value={fmtFull(od.accountStatus.find(r=>r.status==="Active")?.sendingVolume||0)} color="#16a34a" sub={`${fmtFull(activeA)} accounts`}/>
-            <MiniCard icon="🚀" label="In Production Accts" value={fmtFull(sipA)} color="#0891b2" sub={`${totalAccts>0?((sipA/totalAccts)*100).toFixed(1):0}% of total`}/>
+            <MiniCard icon="✅" label="Active Accts Sending" value={fmtFull(od.accountStatus.find(r=>r.status==="Active")?.sendingVolume||0)} color="#16a34a" sub={`${fmtFull(activeA)} accounts`}/>
+            <MiniCard icon="🚀" label="In Production Accts" value={fmtFull(sipA)} color="#0891b2" sub={`${fmtFull(od.accountStatus.find(r=>r.status==="Sent Into Production")?.sendingVolume||0)} sending vol`}/>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
             <Panel title="SENDING VOLUME BY STATUS">
