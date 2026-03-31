@@ -19,7 +19,8 @@ body{background:#f0f4f8}
 .nav-item-wrap:hover .nav-tooltip{display:block;}
 /* Change #6: History tooltip goes to the RIGHT */
 .history-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;}
-.history-wrap .history-tooltip{display:none;position:fixed;left:168px;bottom:52px;background:#1e293b;color:#fff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:9999;}
+.history-wrap{position:relative;}
+.history-wrap .history-tooltip{display:none;position:absolute;left:0;bottom:calc(100% + 8px);background:#1e293b;color:#fff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:9999;}
 .history-wrap .history-tooltip::before{content:'';position:absolute;bottom:-8px;left:14px;border:5px solid transparent;border-top-color:#1e293b;}
 .history-wrap:hover .history-tooltip{display:block;}
 </style>
@@ -565,7 +566,7 @@ const IH_DATA={
 const MONTH_ORDER=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const ALL_CM_MONTHS=["November","December","January","February"];
 const ALL_CMs=[...new Set(MONTHLY_CM.map(r=>r.cm))].sort();
-const CM_COLORS=["#4f46e5","#0891b2","#059669","#d97706","#dc2626","#db2777","#7c3aed","#0369a1","#16a34a","#ea580c","#0284c7","#ca8a04","#1e40af","#9333ea"];
+const CM_COLORS=["#2563eb","#4f46e5","#0891b2","#7c3aed","#1d4ed8","#6366f1","#0369a1","#8b5cf6","#0284c7","#3b82f6","#6d28d9","#1e40af","#9333ea","#475569","#64748b","#94a3b8","#78716c","#57534e"];
 
 // Utilities
 const ratio=(s,b)=>b>0?Math.round(s/b):0;
@@ -591,7 +592,7 @@ const INBOX_TABS_DEF=[
   {label:"Campaign Managers", Icon:IconCM},
   {label:"Inbox Managers", Icon:IconManager},
   {label:"Email Types", Icon:IconEmail},
-  {label:"Email Service Provider", Icon:IconEmail},
+  {label:"Email Provider", Icon:IconEmail},
 ];
 
 const WEEKDAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
@@ -754,7 +755,7 @@ function App(){
 
   const toggleCM=cm=>setSelCMs(s=>s.includes(cm)?s.filter(x=>x!==cm):[...s,cm]);
   const toggleMonth=m=>setSelMonths(s=>s.includes(m)?s.filter(x=>x!==m):[...s,m]);
-  const showCMSide=["cms","compare","boards"].includes(cmView);
+  const showCMSide=["cms","compare"].includes(cmView);
 
   const Btn=({active,onClick,children,style={}})=>(
     React.createElement('button',{onClick,style:{background:active?"linear-gradient(135deg,#3b82f6,#6366f1)":"#ffffff",border:active?"none":`1px solid ${C.cardBorder}`,borderRadius:9,padding:"7px 14px",cursor:"pointer",fontSize:11,fontWeight:600,color:active?"#fff":C.textSecondary,outline:"none",boxShadow:active?"0 2px 8px rgba(59,130,246,0.3)":"0 1px 2px rgba(0,0,0,0.04)",...style}},children)
@@ -862,9 +863,8 @@ function App(){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <Panel title="TOP 3 CMs — ALL-TIME MEETINGS">
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {topCMsMonth.map((r,i)=>{
-              const best=topCMsMonth[0]?.allTimeBooked||1;
-              const pct=(r.allTimeBooked/best)*100;
+            {(()=>{const totalAllTime=topCMsMonth.reduce((s,r)=>s+r.allTimeBooked,0)||1;return topCMsMonth.map((r,i)=>{
+              const pct=(r.allTimeBooked/totalAllTime)*100;
               return(
                 <div key={r.cm}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
@@ -874,7 +874,7 @@ function App(){
                   <div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${pct}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
                 </div>
               );
-            })}
+            });})()}
           </div>
         </Panel>
         <Panel title="BUSINESS FUNDING — MEETINGS TREND">
@@ -1069,7 +1069,7 @@ function App(){
             <Panel title="MEETINGS BOOKED — DAILY"><ResponsiveContainer width="100%" height={190}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:9}} interval={8}/><YAxis tick={{fill:C.textMuted,fontSize:9}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#cg1)" name="Total"/><Area type="monotone" dataKey="aiBooked" stroke="#7c3aed" strokeWidth={1.5} fill="transparent" name="AI" strokeDasharray="4 2"/></AreaChart></ResponsiveContainer></Panel>
             <Panel title="MONTHLY S/B RATIO"><ResponsiveContainer width="100%" height={190}><BarChart data={monthlyAgg}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="period" tick={{fill:C.textMuted,fontSize:10}}/><YAxis tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><Tooltip content={<CustomTip/>}/><Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/></BarChart></ResponsiveContainer></Panel>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const best=sorted[0]?.[key]||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=asc?(best/r[key])*100:(r[key]/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:12,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:10,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:12,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:10,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
         </>)}
         {cmView==="daily"&&(<>
           <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}><span style={{fontSize:11,color:C.textLabel,fontWeight:700}}>MONTH:</span>{["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}</div>
@@ -1100,7 +1100,7 @@ function App(){
         {cmView==="boards"&&(()=>{
           const boards=[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}];
           return(<>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{boards.map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const best=sorted[0]?.[key]||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{sorted.map((r,i)=>{const pct=asc?(best/r[key])*100:(r[key]/best)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:13,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:9,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{boards.map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:13,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:9,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:11,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:11,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
             <Panel title="ALL-TIME S/B RATIO"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}44`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:8,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={220}><BarChart data={[...allTimeCM].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:65}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:9}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:10}} width={68}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:"right",fill:C.textMuted,fontSize:9,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
             <Panel title="ALL-TIME MEETINGS — TOTAL vs AI"><ResponsiveContainer width="100%" height={210}><BarChart data={[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)} margin={{left:0,right:10}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="cm" tick={{fill:C.textMuted,fontSize:10}}/><YAxis tick={{fill:C.textMuted,fontSize:9}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:10,color:C.textLabel}}/><Bar dataKey="allTimeBooked" name="All-Time" radius={[4,4,0,0]}>{allTimeCM.map((r,i)=><Cell key={i} fill={CM_COLORS[ALL_CMs.indexOf(r.cm)%CM_COLORS.length]}/>)}</Bar><Bar dataKey="allTimeAiBooked" name="AI" fill="#7c3aed" radius={[4,4,0,0]} opacity={.85}/></BarChart></ResponsiveContainer></Panel>
           </>);
@@ -1364,7 +1364,7 @@ function App(){
                     <div style={{fontSize:15,fontWeight:800,color:g.color,marginBottom:8}}>{g.group}</div>
                     <div style={{fontSize:24,fontWeight:800,color:C.textPrimary}}>{fmtFull(g.accounts)}</div>
                     <div style={{fontSize:10,color:C.textMuted,marginTop:2}}>accounts</div>
-                    <div style={{marginTop:8,fontSize:12,color:C.textSecondary}}>{fmtFull(g.domains)} domains · {g.tags} tags</div>
+                    <div style={{marginTop:8,fontSize:12,color:C.textSecondary}}>{fmtFull(g.domains)} domains · {g.tags} tag values</div>
                   </div>
                 ))}
               </div>
@@ -1373,7 +1373,7 @@ function App(){
         </div>)}
 
         {/* ── EMAIL SERVICE PROVIDER ── */}
-        {inboxTab==="Email Service Provider"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
+        {inboxTab==="Email Provider"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           {(()=>{
             const activeProviders=od.emailProviders.filter(p=>p.accounts>0);
             const totalESP=od.emailProviders.reduce((s,r)=>s+r.accounts,0);
@@ -1406,7 +1406,7 @@ function App(){
               </div>
               <Panel title="PROVIDER COMPARISON TABLE">
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-                  <thead><tr>{["Provider","Accounts","% Share","Domains","Tags","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead>
+                  <thead><tr>{["Provider","Accounts","% Share","Domains","Tag Values","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"9px 12px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:10,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead>
                   <tbody>
                     {[...od.emailProviders].sort((a,b)=>b.accounts-a.accounts).map((r,i)=>(
                       <tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}>
