@@ -566,7 +566,7 @@ const IH_DATA={
 const MONTH_ORDER=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const ALL_CM_MONTHS=["November","December","January","February"];
 const ALL_CMs=[...new Set(MONTHLY_CM.map(r=>r.cm))].sort();
-const CM_COLORS=["#2563eb","#4f46e5","#0891b2","#7c3aed","#1d4ed8","#6366f1","#0369a1","#8b5cf6","#0284c7","#3b82f6","#6d28d9","#1e40af","#9333ea","#475569","#64748b","#94a3b8","#78716c","#57534e"];
+const CM_COLORS=["#2563eb","#7c3aed","#0891b2","#6d28d9","#78716c","#1d4ed8","#0369a1","#8b5cf6","#475569","#0284c7","#57534e","#4f46e5","#64748b"];
 
 // Utilities
 const ratio=(s,b)=>b>0?Math.round(s/b):0;
@@ -642,11 +642,11 @@ const NAV_SECTIONS=[
 ];
 
 function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setGlobalOffer}){
-  const W=collapsed?60:220;
+  const W=collapsed?64:260;
   return(
     <div style={{width:W,minWidth:W,flexShrink:0,background:"#ffffff",borderRight:`1px solid ${C.cardBorder}`,display:"flex",flexDirection:"column",transition:"width 0.22s ease",overflow:"hidden",boxShadow:"1px 0 4px rgba(0,0,0,0.05)",zIndex:30}}>
       <div style={{height:56,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",padding:collapsed?"0":"0 18px",borderBottom:`1px solid ${C.cardBorder}`,flexShrink:0}}>
-        {!collapsed&&<span style={{fontWeight:900,fontSize:22,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif",letterSpacing:"-0.5px",whiteSpace:"nowrap"}}>Renaissance Portal</span>}
+        {!collapsed&&<span style={{fontWeight:900,fontSize:22,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif",letterSpacing:"-0.5px",whiteSpace:"nowrap",fontSize:16}}>Renaissance Portal</span>}
         {collapsed&&<span style={{fontWeight:900,fontSize:20,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif"}}>RP</span>}
       </div>
       <nav style={{flex:1,padding:"8px 8px",display:"flex",flexDirection:"column",gap:2}}>
@@ -656,27 +656,22 @@ function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setG
             {!collapsed&&<span style={{fontSize:16,fontWeight:500,color:C.textMuted,whiteSpace:"nowrap"}}>Collapse</span>}
           </button>
         </div>
-        {/* Offer selector */}
-        {!collapsed&&(<div style={{marginBottom:6,padding:"0 4px"}}>
-          <div style={{fontSize:9,fontWeight:800,color:C.textMuted,letterSpacing:1.5,textTransform:"uppercase",marginBottom:5}}>Offer</div>
-          <div style={{display:"flex",flexDirection:"column",gap:2}}>
-            {["Funding","Section 125","ERC"].map(o=>(
-              <button key={o} onClick={()=>setGlobalOffer(o)} style={{width:"100%",textAlign:"left",padding:"6px 10px",borderRadius:8,border:globalOffer===o?"none":"1px solid transparent",background:globalOffer===o?"linear-gradient(135deg,#3b82f6,#6366f1)":"transparent",color:globalOffer===o?"#fff":C.textSecondary,fontSize:12,fontWeight:globalOffer===o?700:500,cursor:"pointer",outline:"none"}}>
-                {o}
-              </button>
-            ))}
+        {/* Offer dropdown */}
+        <div style={{padding:collapsed?"4px":"0 8px",marginBottom:8}}>
+          {!collapsed&&<div style={{fontSize:9,fontWeight:800,color:C.textMuted,letterSpacing:1.5,textTransform:"uppercase",marginBottom:4,paddingLeft:4}}>Offer</div>}
+          <div style={{position:"relative"}}>
+            {!collapsed?(<select value={globalOffer} onChange={e=>setGlobalOffer(e.target.value)} style={{width:"100%",padding:"8px 12px",borderRadius:10,border:`1px solid ${C.cardBorder}`,background:"linear-gradient(135deg,#3b82f6,#6366f1)",color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",outline:"none",appearance:"none",WebkitAppearance:"none",backgroundImage:"url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")",backgroundRepeat:"no-repeat",backgroundPosition:"right 10px center"}}>
+              {["Funding","Section 125","ERC"].map(o=><option key={o} value={o} style={{background:"#1e293b",color:"#fff"}}>{o}</option>)}
+            </select>):(<button onClick={()=>setGlobalOffer(g=>g==="Funding"?"Section 125":g==="Section 125"?"ERC":"Funding")} title={`Offer: ${globalOffer}`} style={{width:"100%",height:36,borderRadius:8,border:"1px solid #bfdbfe",background:"linear-gradient(135deg,#3b82f6,#6366f1)",color:"#fff",fontSize:11,fontWeight:800,cursor:"pointer",outline:"none"}}>{globalOffer.split(" ")[0][0]}</button>)}
           </div>
-        </div>)}
-        {collapsed&&(<div style={{marginBottom:6,display:"flex",justifyContent:"center"}}>
-          <button onClick={()=>setGlobalOffer(g=>g==="Funding"?"Section 125":g==="Section 125"?"ERC":"Funding")} title={`Offer: ${globalOffer}`} style={{width:32,height:32,borderRadius:8,border:"1px solid #e2e8f0",background:"#eff6ff",color:"#3b82f6",fontSize:10,fontWeight:800,cursor:"pointer",outline:"none"}}>{globalOffer[0]}</button>
-        </div>)}
+        </div>
         {NAV_SECTIONS.map(({key,label,Icon})=>{
           const active=section===key;
           return(
             <div key={key} className="nav-item-wrap">
               <button onClick={()=>setSection(key)} style={{width:"100%",display:"flex",alignItems:"center",gap:collapsed?0:11,padding:collapsed?"10px 0":"12px 16px",justifyContent:collapsed?"center":"flex-start",borderRadius:10,border:"none",cursor:"pointer",background:active?"#eff6ff":"transparent",color:active?"#1d4ed8":C.textSecondary,fontWeight:active?700:500,fontSize:17,outline:"none",transition:"background 0.15s"}}>
                 <Icon size={19} color={active?"#1d4ed8":C.textSecondary}/>
-                {!collapsed&&<span style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{label}</span>}
+                {!collapsed&&<span style={{whiteSpace:"nowrap",whiteSpace:"nowrap"}}>{label}</span>}
               </button>
               {collapsed&&<span className="nav-tooltip">{label}</span>}
             </div>
@@ -897,7 +892,11 @@ function App(){
           </div>
         </Panel>
         <Panel title="BUSINESS FUNDING — MEETINGS TREND">
-          <ResponsiveContainer width="100%" height={208}><AreaChart data={data}><defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.18}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Area type="monotone" dataKey="booked" stroke="#4f46e5" strokeWidth={2} fill="url(#og1)" name="Meetings"/></AreaChart></ResponsiveContainer>
+          <div style={{display:"flex",gap:6,marginBottom:10}}>
+            <Btn active={showBarM} onClick={()=>setShowBarM(v=>!v)}>Bar</Btn>
+            <Btn active={showLineM} onClick={()=>setShowLineM(v=>!v)}>Line</Btn>
+          </div>
+          <ResponsiveContainer width="100%" height={208}><ComposedChart data={data}><defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={0.18}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:10,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/>{showBarM&&<Bar dataKey="booked" fill="#4f46e5" fillOpacity={0.7} radius={[4,4,0,0]} name="Meetings"/>}{showLineM&&<Line type="monotone" dataKey="booked" stroke="#4f46e5" strokeWidth={2} fill="url(#og1)" name="Meetings"/></ComposedChart></ResponsiveContainer>
         </Panel>
       </div>
 
@@ -1094,8 +1093,8 @@ function App(){
           <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}><span style={{fontSize:14,color:C.textLabel,fontWeight:700}}>MONTH:</span>{["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}</div>
           {/* Change #5: 🤖 replaced with 💻 */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"Meetings",value:dailyKpi.tb.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"Emails",value:fmt(dailyKpi.ts),color:"#0891b2"},{icon:"💻",label:"AI Meetings",value:dailyKpi.ai.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"S/B Ratio",value:dailyKpi.r?dailyKpi.r.toLocaleString():"—",color:getTier(dailyKpi.r)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"18px 21px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:23,marginBottom:5}}>{c.icon}</div><div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:13,color:C.textLabel,marginTop:3,textTransform:"uppercase"}}>{c.label}</div></div>))}</div>
-          <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
-            <Panel title="DAILY MEETINGS"><ResponsiveContainer width="100%" height={247}><AreaChart data={dailyFiltered.filter(r=>r.totalBooked>0)}><defs><linearGradient id="ddg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:10}} interval={0} angle={-45} textAnchor="end" height={65}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#ddg1)" name="Total"/></AreaChart></ResponsiveContainer></Panel>
+          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+            <Panel title="DAILY MEETINGS"><ResponsiveContainer width="100%" height={260}><AreaChart data={dailyFiltered.filter(r=>r.totalBooked>0)}><defs><linearGradient id="ddg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:10}} interval={(i,v)=>{const d=v.split(" ");return d[1]==="1"||d[1]==="15"||["28","29","30","31"].includes(d[1]);}} tickFormatter={v=>v}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#ddg1)" name="Total"/></AreaChart></ResponsiveContainer></Panel>
             <Panel title="S/B RATIO"><div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:7}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:7,height:7,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:10,color:C.textMuted}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={202}><BarChart data={dailyFiltered.filter(r=>r.sbRatio&&r.totalBooked>2)}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:10}} interval={0} angle={-45} textAnchor="end" height={65}/><YAxis tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>v.toLocaleString()}/><Tooltip content={<CustomTip/>}/><Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/></BarChart></ResponsiveContainer></Panel>
           </div>
           <Panel title="DAILY TABLE"><div style={{overflowX:"auto",maxHeight:320,overflowY:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:14}}><thead style={{position:"sticky",top:0,background:C.tableHead,zIndex:5}}><tr>{["Date","Day","Inboxes","Non-AI Sent","Non-AI Booked","AI Sent","AI Booked","Total Sent","Total Booked","S/B"].map(h=><th key={h} style={{padding:"9px 10px",textAlign:"left",color:C.textLabel,fontWeight:700,fontSize:12,borderBottom:`1px solid ${C.cardBorder}`,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead><tbody>{dailyFiltered.map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"8px 10px",color:C.textPrimary,fontWeight:600,whiteSpace:"nowrap"}}>{r.date}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.day.slice(0,3)}</td><td style={{padding:"8px 10px",color:C.textLabel}}>{r.inboxes.toLocaleString()}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.nonAiSent.toLocaleString()}</td><td style={{padding:"8px 10px",color:"#2563eb",fontWeight:700}}>{r.nonAiBooked}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.aiSent.toLocaleString()}</td><td style={{padding:"8px 10px",color:"#7c3aed",fontWeight:700}}>{r.aiBooked}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{fmt(r.totalSent)}</td><td style={{padding:"8px 10px",color:"#16a34a",fontWeight:800}}>{r.totalBooked}</td><td style={{padding:"8px 10px"}}><TierPill value={r.sbRatio} sm/></td></tr>)}</tbody></table></div></Panel>
