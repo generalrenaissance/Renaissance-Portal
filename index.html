@@ -641,7 +641,7 @@ const NAV_SECTIONS=[
   {key:"inbox",label:"Accounts",Icon:IconInbox},
 ];
 
-function LeftSidebar({section,setSection,collapsed,setCollapsed}){
+function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setGlobalOffer}){
   const W=collapsed?60:220;
   return(
     <div style={{width:W,minWidth:W,flexShrink:0,background:"#ffffff",borderRight:`1px solid ${C.cardBorder}`,display:"flex",flexDirection:"column",transition:"width 0.22s ease",overflow:"hidden",boxShadow:"1px 0 4px rgba(0,0,0,0.05)",zIndex:30}}>
@@ -1457,7 +1457,7 @@ function App(){
 
   return(
     <div style={{fontFamily:"system-ui,sans-serif",background:C.bg,minHeight:"100vh",color:C.textPrimary,display:"flex",flexDirection:"row"}}>
-      <LeftSidebar section={section} setSection={setSection} collapsed={collapsed} setCollapsed={setCollapsed}/>
+      <LeftSidebar section={section} setSection={setSection} collapsed={collapsed} setCollapsed={setCollapsed} globalOffer={globalOffer} setGlobalOffer={setGlobalOffer}/>
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
         <div style={{flex:1,overflow:"hidden",display:"flex",flexDirection:"column"}}>
           {section==="overview"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderOverview()}</div>}
