@@ -644,9 +644,9 @@ const NAV_SECTIONS=[
 function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setGlobalOffer}){
   const W=collapsed?64:260;
   return(
-    <div style={{width:W,minWidth:W,flexShrink:0,background:"#ffffff",borderRight:`1px solid ${C.cardBorder}`,display:"flex",flexDirection:"column",transition:"width 0.22s ease",overflow:"hidden",boxShadow:"1px 0 4px rgba(0,0,0,0.05)",zIndex:30}}>
-      <div style={{height:56,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",padding:collapsed?"0":"0 18px",borderBottom:`1px solid ${C.cardBorder}`,flexShrink:0}}>
-        {!collapsed&&<span style={{fontWeight:900,fontSize:22,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif",letterSpacing:"-0.5px",whiteSpace:"nowrap",fontSize:16}}>Renaissance Portal</span>}
+    <div style={{width:W,minWidth:W,flexShrink:0,background:"#ffffff",borderRight:`1px solid ${C.cardBorder}`,display:"flex",flexDirection:"column",transition:"width 0.22s ease",overflow:"hidden",boxShadow:"1px 0 4px rgba(0,0,0,0.05)",zIndex:30,height:"100vh",flexShrink:0}}>
+      <div style={{height:56,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",padding:collapsed?"0":"0 14px",borderBottom:`1px solid ${C.cardBorder}`,flexShrink:0}}>
+        {!collapsed&&<span style={{fontWeight:900,fontSize:22,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif",letterSpacing:"-0.5px",fontSize:15,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>Renaissance Portal</span>}
         {collapsed&&<span style={{fontWeight:900,fontSize:20,color:"#000000",fontStyle:"italic",fontFamily:"'Arial Black','Arial',sans-serif"}}>RP</span>}
       </div>
       <nav style={{flex:1,padding:"8px 8px",display:"flex",flexDirection:"column",gap:2}}>
@@ -656,21 +656,13 @@ function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setG
             {!collapsed&&<span style={{fontSize:16,fontWeight:500,color:C.textMuted,whiteSpace:"nowrap"}}>Collapse</span>}
           </button>
         </div>
-        {/* Offer dropdown */}
-        <div style={{padding:collapsed?"4px":"0 8px",marginBottom:8}}>
-          {!collapsed&&<div style={{fontSize:9,fontWeight:800,color:C.textMuted,letterSpacing:1.5,textTransform:"uppercase",marginBottom:4,paddingLeft:4}}>Offer</div>}
-          <div style={{position:"relative"}}>
-            {!collapsed?(<select value={globalOffer} onChange={e=>setGlobalOffer(e.target.value)} style={{width:"100%",padding:"8px 12px",borderRadius:10,border:"none",background:"linear-gradient(135deg,#3b82f6,#6366f1)",color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer",outline:"none"}}>
-              {["Funding","Section 125","ERC"].map(o=><option key={o} value={o} style={{background:"#1e293b",color:"#fff"}}>{o}</option>)}
-            </select>):(<button onClick={()=>setGlobalOffer(g=>g==="Funding"?"Section 125":g==="Section 125"?"ERC":"Funding")} title={`Offer: ${globalOffer}`} style={{width:"100%",height:36,borderRadius:8,border:"1px solid #bfdbfe",background:"linear-gradient(135deg,#3b82f6,#6366f1)",color:"#fff",fontSize:11,fontWeight:800,cursor:"pointer",outline:"none"}}>{globalOffer.split(" ")[0][0]}</button>)}
-          </div>
-        </div>
+
         {NAV_SECTIONS.map(({key,label,Icon})=>{
           const active=section===key;
           return(
             <div key={key} className="nav-item-wrap">
               <button onClick={()=>setSection(key)} style={{width:"100%",display:"flex",alignItems:"center",gap:collapsed?0:11,padding:collapsed?"10px 0":"12px 16px",justifyContent:collapsed?"center":"flex-start",borderRadius:10,border:"none",cursor:"pointer",background:active?"#eff6ff":"transparent",color:active?"#1d4ed8":C.textSecondary,fontWeight:active?700:500,fontSize:17,outline:"none",transition:"background 0.15s"}}>
-                <Icon size={19} color={active?"#1d4ed8":C.textSecondary}/>
+                <Icon size={20} color={active?"#1d4ed8":C.textSecondary} style={{flexShrink:0}}/>
                 {!collapsed&&<span style={{whiteSpace:"nowrap",whiteSpace:"nowrap"}}>{label}</span>}
               </button>
               {collapsed&&<span className="nav-tooltip">{label}</span>}
@@ -698,7 +690,7 @@ function App(){
   const [globalOffer,setGlobalOffer]=useState("Funding");
   const [showBarM,setShowBarM]=useState(true);
   const [showLineM,setShowLineM]=useState(true);
-  const [showBarR,setShowBarR]=useState(false);
+  const [showBarR,setShowBarR]=useState(true);
   const [showLineR,setShowLineR]=useState(true);
   const [collapsed,setCollapsed]=useState(false);
   const [bizTab,setBizTab]=useState("Overview");
@@ -1046,10 +1038,10 @@ function App(){
         const insights=[
           {icon:"🚀",color:"#16a34a",title:`Email volume scaled ${(last.emailsSent/first.emailsSent).toFixed(1)}x`,body:`Grew from ${fmt(first.emailsSent)} emails/month in ${first.month} to ${fmt(last.emailsSent)} in ${last.month} — a ${emailGrowth}% increase across 8 months.`},
           {icon:"📈",color:"#4f46e5",title:`${totalMeetings.toLocaleString()} total meetings booked`,body:`Average of ${avgMonthly.toLocaleString()} meetings/month. Peak was January at 4,466 meetings. February held at 3,601 despite a 4-day system outage Feb 2–5.`},
-          {icon:"⚠️",color:"#dc2626",title:"Feb '26: worst ever S/B ratio at 4,917",body:`A higher S/B ratio means more emails needed per meeting — 4,917 is the least efficient month on record. 83.3% of days were in the >4,500 tier. This signals a conversion challenge that needs addressing.`},
+          {icon:"📊",color:"#0891b2",title:"Feb '26: highest S/B ratio on record at 4,917",body:`February's S/B ratio of 4,917 was the highest recorded — meaning more emails were required per meeting booked than any previous month. 83.3% of days fell in the >4,500 tier.`},
           {icon:"📅",color:"#0891b2",title:`Peak single day: ${peakDay.booked} meetings on ${peakDay.date}`,body:`${peakDay.month} produced the highest single-day meeting count. Weekend days average ${Math.round(avgWeekend)} meetings vs ${Math.round(avgWeekday)} on weekdays.`},
-          {icon:"💰",color:"#7c3aed",title:"Llama Funding debuts with 592 meetings in Feb",body:`New partner Llama Funding launched in February 2026 and immediately became the top-performing partner that month, surpassing GoQualifi (657) and BigThink (683) on a per-ratio basis.`},
-          {icon:"🤝",color:"#db2777",title:"Partner revenue diversification growing",body:`The network expanded from 2 active partners (Jul '25) to 4 by Feb '26. BigThink grew from 383 to 683 meetings month-over-month in Feb — a 78% jump.`},
+          
+          
           {icon:"📉",color:"#dc2626",title:`Feb vs Jan: ${Math.abs(momChange)}% ${momChange<0?"decrease":"increase"} in meetings`,body:`January's record 4,466 meetings was followed by 3,601 in February (${Math.abs(momChange)}% MoM drop), but this was heavily impacted by the 4-day system outage — adjusted daily rate was comparable.`},
           {icon:"🎯",color:"#059669",title:`${Math.round((totalSentAll/1e6)).toLocaleString()}M total emails sent all-time`,body:`${fmt(totalSentAll)} emails sent since July 2025. At the current Feb '26 conversion rate of 1 meeting per 4,917 emails, each percentage point improvement in ratio yields ~${Math.round(last.emailsSent/last.ratio*0.01*100)} extra meetings/month.`},
           {icon:"🏁",color:"#16a34a",title:`Goal tracker: ${progress}% to 10,000 meetings/month`,body:`At February's S/B ratio of ${last.ratio.toLocaleString()} (emails per meeting), reaching 10,000 meetings/month requires ~${(10000*last.ratio/1e6).toFixed(1)}M emails/month. Improving the ratio to 3,500 would only require ${(10000*3500/1e6).toFixed(1)}M emails — a ${Math.round((10000*last.ratio-10000*3500)/1e6*100)/100}M saving.`},
@@ -1455,15 +1447,15 @@ function App(){
   };
 
   return(
-    <div style={{fontFamily:"system-ui,sans-serif",background:C.bg,minHeight:"100vh",color:C.textPrimary,display:"flex",flexDirection:"row"}}>
+    <div style={{fontFamily:"system-ui,sans-serif",background:C.bg,height:"100vh",color:C.textPrimary,display:"flex",flexDirection:"row",overflow:"hidden"}}>
       <LeftSidebar section={section} setSection={setSection} collapsed={collapsed} setCollapsed={setCollapsed} globalOffer={globalOffer} setGlobalOffer={setGlobalOffer}/>
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",minWidth:0}}>
         <div style={{flex:1,overflow:"hidden",display:"flex",flexDirection:"column"}}>
-          {section==="overview"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderOverview()}</div>}
+          {section==="overview"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px",height:"100%"}}>{renderOverview()}</div>}
 
-          {section==="business"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderBusiness()}</div>}
+          {section==="business"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px",height:"100%"}}>{renderBusiness()}</div>}
           {section==="cm"&&<div style={{flex:1,display:"flex",overflow:"hidden"}}><div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",padding:"16px 20px",gap:12}}>{renderCM()}</div></div>}
-          {section==="inbox"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>{renderInbox()}</div>}
+          {section==="inbox"&&<div style={{flex:1,overflowY:"auto",padding:"20px 24px",height:"100%"}}>{renderInbox()}</div>}
         </div>
       </div>
     </div>
