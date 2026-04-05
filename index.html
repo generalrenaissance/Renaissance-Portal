@@ -1366,10 +1366,6 @@ function App(){
         {[
           {offer:"Business Funding",icon:"💼",color:"#4f46e5",bg:"#eff6ff",border:"#c7d2fe",
            allTime:totalBooked,mtd:mtd.booked,emails:fmt(last.emailsSent),kpi:mtd.ratio,kpiColor:mtd.ratio>4500?"#dc2626":"#16a34a"},
-          {offer:"Section 125",icon:"🏥",color:"#7c3aed",bg:"#faf5ff",border:"#ddd6fe",
-           allTime:"N/A",mtd:"Active",emails:"224K sent",kpi:"—",kpiColor:C.textMuted},
-          {offer:"ERC",icon:"💊",color:"#0891b2",bg:"#ecfeff",border:"#a5f3fc",
-           allTime:"N/A",mtd:"Active",emails:"198K sent",kpi:"—",kpiColor:C.textMuted},
         ].map((o,i)=>(
           <div key={i} style={{borderRadius:16,padding:"23px 26px",background:o.bg,border:`1px solid ${o.border}`,boxShadow:"0 1px 6px rgba(0,0,0,0.06)"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
