@@ -878,7 +878,7 @@ function App(){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <Panel title="TOP 3 CMs — ALL-TIME MEETINGS">
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {(()=>{const totalAllTime=topCMsMonth.reduce((s,r)=>s+r.allTimeBooked,0)||1;return topCMsMonth.map((r,i)=>{
+            {topCMsMonth.map((r,i)=>{const totalAllTime=topCMsMonth.reduce((s,r)=>s+r.allTimeBooked,0)||1;
               const pct=(r.allTimeBooked/totalAllTime)*100;
               return(
                 <div key={r.cm}>
@@ -889,7 +889,7 @@ function App(){
                   <div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${pct}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
                 </div>
               );
-            });})()}
+            });})}
           </div>
         </Panel>
         <Panel title="BUSINESS FUNDING — MEETINGS TREND">
@@ -905,6 +905,31 @@ function App(){
     );
   };
 
+
+  const totalMeetings=data.reduce((s,r)=>s+r.booked,0);
+  const totalSentAll=data.reduce((s,r)=>s+r.emailsSent,0);
+  const avgMonthly=Math.round(totalMeetings/data.length);
+  const bestPartnerMonth=data.reduce((b,d)=>{const v=Math.max(d.GoQualifi||0,d.BigThink||0,d.LlamaFunding||0);return v>b.v?{v,month:d.month}:b;},{v:0,month:""});
+  const weekendDays=dowStats.filter(r=>r.fullDay==="Saturday"||r.fullDay==="Sunday");
+  const weekdayDays=dowStats.filter(r=>r.fullDay!=="Saturday"&&r.fullDay!=="Sunday");
+  const avgWeekend=weekendDays.reduce((s,r)=>s+r.avgBooked,0)/weekendDays.length;
+  const avgWeekday=weekdayDays.reduce((s,r)=>s+r.avgBooked,0)/weekdayDays.length;
+  const febData=data.find(d=>d.month==="Feb '26")||{};
+  const janData=data.find(d=>d.month==="Jan '26")||{};
+  const momChange=janData.booked?Math.round((febData.booked-janData.booked)/janData.booked*100):0;
+  const peakDay=dailyRaw.reduce((b,r)=>r.booked>b.booked?r:b,{booked:0,date:"",month:""});
+  const insights=[
+    {icon:"🚀",color:"#16a34a",title:`Email volume scaled ${(last.emailsSent/first.emailsSent).toFixed(1)}x`,body:`Grew from ${fmt(first.emailsSent)} emails/month in ${first.month} to ${fmt(last.emailsSent)} in ${last.month} — a ${emailGrowth}% increase across 8 months.`},
+    {icon:"📈",color:"#4f46e5",title:`${totalMeetings.toLocaleString()} total meetings booked`,body:`Average of ${avgMonthly.toLocaleString()} meetings/month. Peak was January at 4,466 meetings. February held at 3,601 despite a 4-day system outage Feb 2–5.`},
+    {icon:"📊",color:"#0891b2",title:"Feb '26: highest S/B ratio on record at 4,917",body:`February's S/B ratio of 4,917 was the highest recorded — meaning more emails were required per meeting booked than any previous month. 83.3% of days fell in the >4,500 tier.`},
+    {icon:"📅",color:"#0891b2",title:`Peak single day: ${peakDay.booked} meetings on ${peakDay.date}`,body:`${peakDay.month} produced the highest single-day meeting count. Weekend days average ${Math.round(avgWeekend)} meetings vs ${Math.round(avgWeekday)} on weekdays.`},
+    
+    
+    {icon:"📉",color:"#dc2626",title:`Feb vs Jan: ${Math.abs(momChange)}% ${momChange<0?"decrease":"increase"} in meetings`,body:`January's record 4,466 meetings was followed by 3,601 in February (${Math.abs(momChange)}% MoM drop), but this was heavily impacted by the 4-day system outage — adjusted daily rate was comparable.`},
+    {icon:"🎯",color:"#059669",title:`${Math.round((totalSentAll/1e6)).toLocaleString()}M total emails sent all-time`,body:`${fmt(totalSentAll)} emails sent since July 2025. At the current Feb '26 conversion rate of 1 meeting per 4,917 emails, each percentage point improvement in ratio yields ~${Math.round(last.emailsSent/last.ratio*0.01*100)} extra meetings/month.`},
+    {icon:"🏁",color:"#16a34a",title:`Goal tracker: ${progress}% to 10,000 meetings/month`,body:`At February's S/B ratio of ${last.ratio.toLocaleString()} (emails per meeting), reaching 10,000 meetings/month requires ~${(10000*last.ratio/1e6).toFixed(1)}M emails/month. Improving the ratio to 3,500 would only require ${(10000*3500/1e6).toFixed(1)}M emails — a ${Math.round((10000*last.ratio-10000*3500)/1e6*100)/100}M saving.`},
+    {icon:"📊",color:"#0369a1",title:"Weekday vs weekend sending patterns",body:`Weekdays drive ${Math.round(avgWeekday)} avg meetings/day vs ${Math.round(avgWeekend)} on weekends. Friday is historically the strongest weekday. Weekend volume is significant and should not be overlooked.`},
+  ];
   const renderBusiness=()=>(
     <div style={{display:"flex",flexDirection:"column",gap:12}}>
       {/* Tabs always at top */}
@@ -1031,40 +1056,16 @@ function App(){
         <Card1><div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:14}}>WEEKDAY VS WEEKEND RATIO BY MONTH</div><ResponsiveContainer width="100%" height={286}><LineChart data={data.filter(d=>d.weekdayRatio||d.weekendRatio)}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[v.toLocaleString(),n]}/><Legend wrapperStyle={{fontSize:14,color:C.textLabel}}/><Line type="monotone" dataKey="weekdayRatio" stroke="#4f46e5" strokeWidth={2.5} dot={{r:4,fill:"#4f46e5",strokeWidth:0}} name="Weekday Ratio"/><Line type="monotone" dataKey="weekendRatio" stroke="#f59e0b" strokeWidth={2.5} dot={{r:4,fill:"#f59e0b",strokeWidth:0}} name="Weekend Ratio"/></LineChart></ResponsiveContainer></Card1>
         <Card1 style={{gridColumn:"1/-1"}}><div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:14}}>DAY OF WEEK BREAKDOWN TABLE</div><table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Day","Type","Avg Meetings","Avg Ratio","Total Meetings"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{dowStats.map((r,i)=>{const isWeekend=r.fullDay==="Saturday"||r.fullDay==="Sunday";return(<tr key={r.day} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:C.textPrimary}}>{r.fullDay}</td><td style={{padding:"12px 16px"}}><span style={{fontSize:13,fontWeight:700,color:isWeekend?"#f59e0b":"#4f46e5",background:isWeekend?"#fef3c7":"#eff6ff",padding:"2px 8px",borderRadius:6}}>{isWeekend?"Weekend":"Weekday"}</span></td><td style={{padding:"12px 16px",color:"#4f46e5",fontWeight:700}}>{r.avgBooked}</td><td style={{padding:"12px 16px",color:"#d97706"}}>{r.avgRatio>0?r.avgRatio.toLocaleString():"—"}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.totalBooked.toLocaleString()}</td></tr>);})}</tbody></table></Card1>
       </div>)}
-      {bizTab==="Insights"&&(()=>{
-        const totalMeetings=data.reduce((s,r)=>s+r.booked,0);
-        const totalSentAll=data.reduce((s,r)=>s+r.emailsSent,0);
-        const avgMonthly=Math.round(totalMeetings/data.length);
-        const bestPartnerMonth=data.reduce((b,d)=>{const v=Math.max(d.GoQualifi||0,d.BigThink||0,d.LlamaFunding||0);return v>b.v?{v,month:d.month}:b;},{v:0,month:""});
-        const weekendDays=dowStats.filter(r=>r.fullDay==="Saturday"||r.fullDay==="Sunday");
-        const weekdayDays=dowStats.filter(r=>r.fullDay!=="Saturday"&&r.fullDay!=="Sunday");
-        const avgWeekend=weekendDays.reduce((s,r)=>s+r.avgBooked,0)/weekendDays.length;
-        const avgWeekday=weekdayDays.reduce((s,r)=>s+r.avgBooked,0)/weekdayDays.length;
-        const febData=data.find(d=>d.month==="Feb '26")||{};
-        const janData=data.find(d=>d.month==="Jan '26")||{};
-        const momChange=janData.booked?Math.round((febData.booked-janData.booked)/janData.booked*100):0;
-        const peakDay=dailyRaw.reduce((b,r)=>r.booked>b.booked?r:b,{booked:0,date:"",month:""});
-        const insights=[
-          {icon:"🚀",color:"#16a34a",title:`Email volume scaled ${(last.emailsSent/first.emailsSent).toFixed(1)}x`,body:`Grew from ${fmt(first.emailsSent)} emails/month in ${first.month} to ${fmt(last.emailsSent)} in ${last.month} — a ${emailGrowth}% increase across 8 months.`},
-          {icon:"📈",color:"#4f46e5",title:`${totalMeetings.toLocaleString()} total meetings booked`,body:`Average of ${avgMonthly.toLocaleString()} meetings/month. Peak was January at 4,466 meetings. February held at 3,601 despite a 4-day system outage Feb 2–5.`},
-          {icon:"📊",color:"#0891b2",title:"Feb '26: highest S/B ratio on record at 4,917",body:`February's S/B ratio of 4,917 was the highest recorded — meaning more emails were required per meeting booked than any previous month. 83.3% of days fell in the >4,500 tier.`},
-          {icon:"📅",color:"#0891b2",title:`Peak single day: ${peakDay.booked} meetings on ${peakDay.date}`,body:`${peakDay.month} produced the highest single-day meeting count. Weekend days average ${Math.round(avgWeekend)} meetings vs ${Math.round(avgWeekday)} on weekdays.`},
-          
-          
-          {icon:"📉",color:"#dc2626",title:`Feb vs Jan: ${Math.abs(momChange)}% ${momChange<0?"decrease":"increase"} in meetings`,body:`January's record 4,466 meetings was followed by 3,601 in February (${Math.abs(momChange)}% MoM drop), but this was heavily impacted by the 4-day system outage — adjusted daily rate was comparable.`},
-          {icon:"🎯",color:"#059669",title:`${Math.round((totalSentAll/1e6)).toLocaleString()}M total emails sent all-time`,body:`${fmt(totalSentAll)} emails sent since July 2025. At the current Feb '26 conversion rate of 1 meeting per 4,917 emails, each percentage point improvement in ratio yields ~${Math.round(last.emailsSent/last.ratio*0.01*100)} extra meetings/month.`},
-          {icon:"🏁",color:"#16a34a",title:`Goal tracker: ${progress}% to 10,000 meetings/month`,body:`At February's S/B ratio of ${last.ratio.toLocaleString()} (emails per meeting), reaching 10,000 meetings/month requires ~${(10000*last.ratio/1e6).toFixed(1)}M emails/month. Improving the ratio to 3,500 would only require ${(10000*3500/1e6).toFixed(1)}M emails — a ${Math.round((10000*last.ratio-10000*3500)/1e6*100)/100}M saving.`},
-          {icon:"📊",color:"#0369a1",title:"Weekday vs weekend sending patterns",body:`Weekdays drive ${Math.round(avgWeekday)} avg meetings/day vs ${Math.round(avgWeekend)} on weekends. Friday is historically the strongest weekday. Weekend volume is significant and should not be overlooked.`},
-        ];
-        return(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+      {bizTab==="Insights"&&(
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
           {insights.map((ins,i)=>(<div key={i} style={{borderRadius:16,padding:20,border:`1px solid ${C.cardBorder}`,background:C.card,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:31,marginBottom:10}}>{ins.icon}</div><div style={{fontSize:17,fontWeight:700,color:ins.color,marginBottom:8}}>{ins.title}</div><div style={{fontSize:16,color:C.textSecondary,lineHeight:1.7}}>{ins.body}</div></div>))}
-        </div>);
-      })()}
+        </div>
+      )
     </div>
   );
 
 
-  const boards=[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}];
+    const boards=[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}];
   const renderCM=()=>(
     <div style={{display:"flex",flex:1,minHeight:0}}>
       {showCMSide&&(
@@ -1090,7 +1091,7 @@ function App(){
             <Panel title="MEETINGS BOOKED — DAILY"><ResponsiveContainer width="100%" height={247}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:12}} interval={8}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#cg1)" name="Total"/><Area type="monotone" dataKey="aiBooked" stroke="#7c3aed" strokeWidth={1.5} fill="transparent" name="AI" strokeDasharray="4 2"/></AreaChart></ResponsiveContainer></Panel>
             <Panel title="MONTHLY S/B RATIO"><ResponsiveContainer width="100%" height={247}><BarChart data={monthlyAgg}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="period" tick={{fill:C.textMuted,fontSize:13}}/><YAxis tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>v.toLocaleString()}/><Tooltip content={<CustomTip/>}/><Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/></BarChart></ResponsiveContainer></Panel>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:13,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color:color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:13,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
         </>)}
         {cmView==="daily"&&(<>
           <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}><span style={{fontSize:14,color:C.textLabel,fontWeight:700}}>MONTH:</span>{["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}</div>
@@ -1119,10 +1120,12 @@ function App(){
           <Panel title="S/B RATIO COMPARISON"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}44`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:10,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={Math.max(320,[...compareData].filter(r=>r.ratio).length*32)}><BarChart data={[...compareData].filter(r=>r.ratio).sort((a,b)=>a.ratio-b.ratio)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:13}} width={80}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="ratio" shape={<TierBar/>} label={{position:"right",fill:C.textMuted,fontSize:12,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
         </>)}
         {cmView==="boards"&&(<>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{boards.map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:17,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:12,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color:color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
+<>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{boards.map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:17,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:12,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
             <Panel title="ALL-TIME S/B RATIO"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}44`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:10,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={Math.max(360,[...allTimeCM].filter(r=>r.sbRatio).length*32)}><BarChart data={[...allTimeCM].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:13}} width={80}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:"right",fill:C.textMuted,fontSize:12,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
             <Panel title="ALL-TIME MEETINGS — TOTAL vs AI"><ResponsiveContainer width="100%" height={273}><BarChart data={[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)} margin={{left:0,right:10}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="cm" tick={{fill:C.textMuted,fontSize:13}} interval={0} angle={-30} textAnchor="end" height={58}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:13,color:C.textLabel}}/><Bar dataKey="allTimeBooked" name="All-Time" radius={[4,4,0,0]}>{allTimeCM.map((r,i)=><Cell key={i} fill={CM_COLORS[ALL_CMs.indexOf(r.cm)%CM_COLORS.length]}/>)}</Bar><Bar dataKey="allTimeAiBooked" name="AI" fill="#7c3aed" radius={[4,4,0,0]} opacity={.85}/></BarChart></ResponsiveContainer></Panel>
-          </></>)
+          </>
+          </>)
       </div>
     </div>
   );
@@ -1158,6 +1161,13 @@ function App(){
       );
     };
 
+    const svTotal=od.accountStatus.reduce((s,r)=>s+r.sendingVolume,0)||1;
+    const svTotalWS=od.workspaces.reduce((s,r)=>s+r.sendingVolume,0)||1;
+    const svTotalCM=od.campaignManagers.reduce((s,r)=>s+r.sendingVolume,0)||1;
+    const svTotalET=od.emailTypes.reduce((s,r)=>s+r.sendingVolume,0)||1;
+    const topInboxMgr=[...od.inboxManagers].sort((a,b)=>b.accounts-a.accounts)[0]||{manager:"—",accounts:0};
+    const activeESP=od.emailProviders.filter(p=>p.accounts>0);
+    const totalESP=od.emailProviders.reduce((s,r)=>s+r.accounts,0)||1;
     return(
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         {/* Offer selector */}
@@ -1259,7 +1269,7 @@ function App(){
             </Panel>
           </div>
           <Panel title="FULL STATUS TABLE">
-            <table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Status","Sending Vol","Accounts","% of Total","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{(()=>{const svTotal=od.accountStatus.reduce((s,r)=>s+r.sendingVolume,0)||1;return[...od.accountStatus].sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:r.color}}>{r.status}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{((r.sendingVolume/svTotal)*100).toFixed(1)}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:120}}><div style={{height:6,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.sendingVolume/svTotal)*100}%`,height:"100%",background:r.color,borderRadius:99}}/></div></td></tr>);})()}</tbody></table>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Status","Sending Vol","Accounts","% of Total","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{[...od.accountStatus].sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:r.color}}>{r.status}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{((r.sendingVolume/svTotal)*100).toFixed(1)}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:120}}><div style={{height:6,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.sendingVolume/svTotal)*100}%`,height:"100%",background:r.color,borderRadius:99}}/></div></td></tr>);}</tbody></table>
           </Panel>
         </div>)}
 
@@ -1275,7 +1285,7 @@ function App(){
             <ResponsiveContainer width="100%" height={Math.max(300, od.workspaces.filter(w=>w.sendingVolume>0||w.accounts>0).length*28)}><BarChart data={[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.sendingVolume-a.sendingVolume)} layout="vertical" margin={{left:10,right:85}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>fmt(v)}/><YAxis dataKey="workspace" type="category" tick={{fill:C.textSecondary,fontSize:13}} width={130}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Sending Volume"]}/><Bar dataKey="sendingVolume" radius={[0,4,4,0]} label={{position:"right",fill:C.textMuted,fontSize:12,formatter:v=>v>0?fmtFull(v):"—"}}>{[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><Cell key={i} fill={r.color}/>)}</Bar></BarChart></ResponsiveContainer>
           </Panel>
           <Panel title="WORKSPACE TABLE">
-            <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Workspace","Sending Vol","Accounts","% of Total","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{(()=>{const svTotalWS=od.workspaces.reduce((s,r)=>s+r.sendingVolume,0)||1;return[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:r.color}}>{r.workspace}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{((r.sendingVolume/svTotalWS)*100).toFixed(1)}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:100}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.sendingVolume/svTotalWS)*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);})()}</tbody></table></div>
+            <div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Workspace","Sending Vol","Accounts","% of Total","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{[...od.workspaces].filter(w=>w.accounts>0).sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:r.color}}>{r.workspace}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{((r.sendingVolume/svTotalWS)*100).toFixed(1)}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:100}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.sendingVolume/svTotalWS)*100}%`,height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);}</tbody></table></div>
           </Panel>
         </div>)}
 
@@ -1297,7 +1307,7 @@ function App(){
           </div>
           <Panel title="CM FULL TABLE">
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["CM","Sending Vol","Accounts","% SV Share","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>
-              {(()=>{const total=od.campaignManagers.reduce((s,r)=>s+r.sendingVolume,0)||1;return[...od.campaignManagers].sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:r.color}}>{r.cm}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{total>0?((r.sendingVolume/od.campaignManagers.reduce((s,x)=>s+x.sendingVolume,0)||1)*100).toFixed(1):0}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:100}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.sendingVolume/od.campaignManagers.reduce((s,x)=>s+x.sendingVolume,0)||1)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);})()}
+              {[...od.campaignManagers].sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:r.color}}>{r.cm}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{total>0?((r.sendingVolume/od.campaignManagers.reduce((s,x)=>s+x.sendingVolume,0)||1)*100).toFixed(1):0}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:100}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.sendingVolume/od.campaignManagers.reduce((s,x)=>s+x.sendingVolume,0)||1)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);}
               <tr style={{borderTop:`2px solid ${C.cardBorder}`,background:C.tableHead}}><td style={{padding:"12px 16px",fontWeight:800,color:C.textPrimary}}>Total</td><td style={{padding:"12px 16px",color:oc.primary,fontWeight:800}}>{fmtFull(od.campaignManagers.reduce((s,r)=>s+r.accounts,0))}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>100%</td><td style={{padding:"12px 16px",color:"#7c3aed",fontWeight:800}}>{fmtFull(od.campaignManagers.reduce((s,r)=>s+r.domains,0))}</td><td/></tr>
             </tbody></table>
           </Panel>
@@ -1308,7 +1318,7 @@ function App(){
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="🧑‍💼" label="Inbox Managers" value={String(od.inboxManagers.filter(m=>m.accounts>0).length)} color={oc.primary}/>
             <MiniCard icon="📊" label="Total Accounts" value={fmtFull(od.inboxManagers.reduce((s,r)=>s+r.accounts,0))} color="#0891b2"/>
-            {(()=>{const top=[...od.inboxManagers].sort((a,b)=>b.accounts-a.accounts)[0]||{manager:"—",accounts:0};return<MiniCard icon="🏆" label="Top Manager" value={top.manager} color="#d97706" sub={`${fmtFull(top.accounts)} accounts`}/>;})()}
+            {<MiniCard icon="🏆" label="Top Manager" value={topInboxMgr.manager} color="#d97706" sub={`${fmtFull(top.accounts)} accounts`}/>;}
             <MiniCard icon="🌐" label="Total Domains" value={fmtFull(od.inboxManagers.reduce((s,r)=>s+r.domains,0))} color="#7c3aed"/>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12}}>
@@ -1348,7 +1358,7 @@ function App(){
           </div>
           <Panel title="EMAIL TYPE TABLE">
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Type","Sending Vol","Accounts","% SV Share","Domains","Bar"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>
-              {(()=>{const total=od.emailTypes.reduce((s,r)=>s+r.sendingVolume,0)||1;return[...od.emailTypes].sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card,opacity:r.accounts>0?1:0.5}}><td style={{padding:"12px 16px",fontWeight:700,color:r.sendingVolume>0?r.color:C.textMuted}}>{r.type}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{total>0?((r.sendingVolume/total)*100).toFixed(1):0}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.sendingVolume/total)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);})()}
+              {[...od.emailTypes].sort((a,b)=>b.sendingVolume-a.sendingVolume).map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card,opacity:r.accounts>0?1:0.5}}><td style={{padding:"12px 16px",fontWeight:700,color:r.sendingVolume>0?r.color:C.textMuted}}>{r.type}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.sendingVolume>0?fmtFull(r.sendingVolume):"—"}</td><td style={{padding:"12px 16px",color:C.textPrimary}}>{fmtFull(r.accounts)}</td><td style={{padding:"12px 16px",color:C.textSecondary}}>{total>0?((r.sendingVolume/total)*100).toFixed(1):0}%</td><td style={{padding:"12px 16px",color:C.textMuted}}>{fmtFull(r.domains)}</td><td style={{padding:"12px 16px",minWidth:120}}><div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:total>0?`${(r.sendingVolume/total)*100}%`:"0%",height:"100%",background:r.color,borderRadius:99,maxWidth:"100%"}}/></div></td></tr>);}
             </tbody></table>
           </Panel>
         </div>)}
@@ -1392,11 +1402,8 @@ function App(){
 
         {/* ── EMAIL SERVICE PROVIDER ── */}
         {inboxTab==="Email Provider"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
-          {(()=>{
-            const activeProviders=od.emailProviders.filter(p=>p.accounts>0);
-            const totalESP=od.emailProviders.reduce((s,r)=>s+r.accounts,0);
-            const topESP=activeProviders[0]||{provider:"—",accounts:0};
-            return(<>
+          {(
+          <>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
                 <MiniCard icon="📡" label="Providers Active" value={String(activeProviders.length)} color={oc.primary}/>
                 <MiniCard icon="📊" label="Total Accounts" value={fmtFull(totalESP)} color="#0891b2"/>
@@ -1447,9 +1454,8 @@ function App(){
                   </tbody>
                 </table>
               </Panel>
-            </>);
-          })()}
-        </div>)}
+            </>
+          )}     </div>)}
       </div>
     );
   };
