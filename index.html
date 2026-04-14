@@ -908,7 +908,9 @@ function App(){
   const totalMeetings=data.reduce((s,r)=>s+r.booked,0);
   const totalSentAll=data.reduce((s,r)=>s+r.emailsSent,0);
   const avgMonthly=Math.round(totalMeetings/data.length);
-  const bestPartnerMonth=data.reduce((b,d)=>Math.max(d.GoQualifi||0,d.BigThink||0,d.LlamaFunding||0)>b.v?({v:Math.max(d.GoQualifi||0,d.BigThink||0,d.LlamaFunding||0),month:d.month}):b,({v:0,month:""}));
+  const bestPartnerMonthArr=data.map(d=>([Math.max(d.GoQualifi||0,d.BigThink||0,d.LlamaFunding||0),d.month])).sort((a,b)=>b[0]-a[0]);
+  const bestPartnerMonthV=bestPartnerMonthArr[0]?.[0]||0;
+  const bestPartnerMonthM=bestPartnerMonthArr[0]?.[1]||"";
   const weekendDays=dowStats.filter(r=>r.fullDay==="Saturday"||r.fullDay==="Sunday");
   const weekdayDays=dowStats.filter(r=>r.fullDay!=="Saturday"&&r.fullDay!=="Sunday");
   const avgWeekend=weekendDays.reduce((s,r)=>s+r.avgBooked,0)/weekendDays.length;
