@@ -698,7 +698,7 @@ function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setG
               </button>
               {collapsed&&<span className="nav-tooltip">{label}</span>}
             </div>
-        ))
+        ))}
       </nav>
       {/* Change #6: History icon — grey color, tooltip goes RIGHT */}
       <div style={{padding:collapsed?"10px 0":"10px 14px",borderTop:`1px solid ${C.cardBorder}`,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",flexShrink:0}}>
