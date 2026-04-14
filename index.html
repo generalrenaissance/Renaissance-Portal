@@ -819,30 +819,30 @@ function App(){
       
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12}}>
         <div style={{borderRadius:16,padding:"23px 26px",background:"linear-gradient(135deg,#eff6ff,#e0e7ff)",border:"1px solid #c7d2fe",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
-          <div style={{fontSize:26,marginBottom:6}}>📬</div>
+          <div style={{fontSize:26,marginBottom:6}}>{"📬"}</div>
           <div style={{fontSize:34,fontWeight:800,color:"#4f46e5"}}>{fmtFull(activeAccts)}</div>
           <div style={{fontSize:13,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>Active Inboxes</div>
           <div style={{fontSize:13,color:C.textMuted,marginTop:2}}>{fmtFull(warmupAccts)} in warmup</div>
         </div>
         <div style={{borderRadius:16,padding:"23px 26px",background:"linear-gradient(135deg,#fff7ed,#fef3c7)",border:"1px solid #fde68a",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
-          <div style={{fontSize:26,marginBottom:6}}>🏆</div>
+          <div style={{fontSize:26,marginBottom:6}}>{"🏆"}</div>
           <div style={{fontSize:34,fontWeight:800,color:"#d97706"}}>{peakDayObj.booked}</div>
           <div style={{fontSize:13,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>Record Day (Meetings)</div>
-          <div style={{fontSize:13,color:C.textMuted,marginTop:2}}>{peakDayObj.date} · {peakDayObj.month}</div>
+          <div style={{fontSize:13,color:C.textMuted,marginTop:2}}>{peakDayObj.date}{" · "}{peakDayObj.month}</div>
         </div>
         <div style={{borderRadius:16,padding:"23px 26px",background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"1px solid #86efac",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
-          <div style={{fontSize:26,marginBottom:6}}>🎯</div>
+          <div style={{fontSize:26,marginBottom:6}}>{"🎯"}</div>
           <div style={{fontSize:34,fontWeight:800,color:"#16a34a"}}>{mtd.booked.toLocaleString()}<span style={{fontSize:18,fontWeight:500,color:C.textMuted}}>/{goalMtgs.toLocaleString()}</span></div>
-          <div style={{fontSize:13,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>MTD Meetings · Goal {goalMtgs.toLocaleString()}</div>
+          <div style={{fontSize:13,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>MTD Meetings - Goal {goalMtgs.toLocaleString()}</div>
           <div style={{height:5,background:"#dcfce7",borderRadius:99,marginTop:8,overflow:"hidden"}}><div style={{width:`${Math.min((mtd.booked/goalMtgs)*100,100)}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
-          <div style={{fontSize:13,color:C.textMuted,marginTop:4}}>{((mtd.booked/goalMtgs)*100).toFixed(1)}% achieved · {daysLeft>0?`${mtgPerDayNeeded}/day needed`:"Month complete"}</div>
+          <div style={{fontSize:13,color:C.textMuted,marginTop:4}}>{((mtd.booked/goalMtgs)*100).toFixed(1)}% achieved - {daysLeft>0?`${mtgPerDayNeeded}/day needed`:"Month complete"}</div>
           </div>
         </div>
         <div style={{borderRadius:16,padding:"23px 26px",background:"linear-gradient(135deg,#ecfeff,#cffafe)",border:"1px solid #a5f3fc",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
-          <div style={{fontSize:26,marginBottom:6}}>📊</div>
+          <div style={{fontSize:26,marginBottom:6}}>{"📊"}</div>
           <div style={{fontSize:34,fontWeight:800,color:"#0891b2"}}>{mtd.ratio.toLocaleString()}</div>
-          <div style={{fontSize:13,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>MTD S/B Ratio · Goal &lt;{goalKpi.toLocaleString()}</div>
-          <div style={{fontSize:13,color:mtd.ratio>goalKpi?"#dc2626":"#16a34a",marginTop:4,fontWeight:700}}>{mtd.ratio>goalKpi?"⚠️ Above target":"✅ On target"}</div>
+          <div style={{fontSize:13,color:C.textLabel,marginTop:4,textTransform:"uppercase",letterSpacing:1}}>MTD S/B Ratio - Goal {"<"}{goalKpi.toLocaleString()}</div>
+          <div style={{fontSize:13,color:mtd.ratio>goalKpi?"#dc2626":"#16a34a",marginTop:4,fontWeight:700}}>{mtd.ratio>goalKpi?"Above target":"On target"}</div>
         </div>
       </div>
 
@@ -989,7 +989,7 @@ function App(){
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
           <Card1>
             <div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:4}}>BEST TIER % OVER TIME</div>
-            <div style={{fontSize:13,color:C.textMuted,marginBottom:14}}>% of days with S/B ratio &lt; 2,800 (most efficient)</div>
+            <div style={{fontSize:13,color:C.textMuted,marginBottom:14}}>% of days with S/B ratio {"<"} 2,800 (most efficient)</div>
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={kpiBandChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/>
@@ -1003,7 +1003,7 @@ function App(){
           </Card1>
           <Card1>
             <div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:4}}>WORST TIER % OVER TIME</div>
-            <div style={{fontSize:13,color:C.textMuted,marginBottom:14}}>% of days with S/B ratio &gt; 4,500 (least efficient)</div>
+            <div style={{fontSize:13,color:C.textMuted,marginBottom:14}}>% of days with S/B ratio {">"}  4,500 (least efficient)</div>
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={kpiBandChart}>
                 <CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/>
