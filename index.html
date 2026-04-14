@@ -700,8 +700,8 @@ function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setG
               </button>
               {collapsed&&<span className="nav-tooltip">{label}</span>}
             </div>
-          );
-        })}
+          
+        )}
       </nav>
       {/* Change #6: History icon — grey color, tooltip goes RIGHT */}
       <div style={{padding:collapsed?"10px 0":"10px 14px",borderTop:`1px solid ${C.cardBorder}`,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",flexShrink:0}}>
@@ -849,14 +849,11 @@ function App(){
         </div>
       </div>
 
-      {/* ── Row 2: Offer Snapshots ── */}
       {/* ── Row 3: Partner Summary ── */}
       <Panel title="PARTNER SUMMARY — MTD & ALL-TIME">
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:4}}>
-          {partners.map(p=>{
-            const allTimeMtgs=data.reduce((s,d)=>s+(d[p.key]||0),0);
-            const mtdMtgs=mtd[p.key]||0;
-            return(
+          {partners.map(p=>(
+
               <div key={p.key} style={{background:p.bg,border:`1px solid ${p.border}`,borderRadius:14,padding:"18px 21px"}}>
                 <div style={{fontSize:16,fontWeight:700,color:p.color,marginBottom:10}}>{p.name}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
@@ -868,8 +865,8 @@ function App(){
                   <div style={{gridColumn:"1/-1"}}><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>Model</div><div style={{fontSize:14,fontWeight:600,color:C.textSecondary}}>{p.model}</div></div>
                 </div>
               </div>
-            );
-          })}
+            
+          )}
         </div>
       </Panel>
 
@@ -877,18 +874,17 @@ function App(){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <Panel title="TOP 3 CMs — ALL-TIME MEETINGS">
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {topCMsMonth.map((r,i)=>{const totalAllTime=topCMsMonth.reduce((s,r)=>s+r.allTimeBooked,0)||1;
-              const pct=(r.allTimeBooked/totalAllTime)*100;
-              return(
+            {topCMsMonth.map((r,i)=>(
+
                 <div key={r.cm}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
                     <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:23}}>{MEDAL[i]}</span><span style={{fontSize:17,fontWeight:700,color:C.textPrimary}}>{r.cm}</span></div>
                     <span style={{fontSize:17,fontWeight:800,color:"#16a34a"}}>{r.allTimeBooked.toLocaleString()}</span>
                   </div>
-                  <div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${pct}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
+                  <div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.allTimeBooked/(topCMsMonth.reduce((s,r)=>s+r.allTimeBooked,0)||1))*100}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
                 </div>
-              );
-            })}
+              
+            )}
           </div>
         </Panel>
         <Panel title="BUSINESS FUNDING — MEETINGS TREND">
@@ -986,7 +982,7 @@ function App(){
           {key:"BigThink",name:"Big Think Capital",model:"PPA + 10% Rev Share",color:"#f3d76c",textColor:"#0891b2",note:"Fastest growing."},
           {key:"GoQualifi",name:"GoQualifi",model:"PPA",color:"#e199ac",textColor:"#2563eb",note:"Consistent PPA."},
           {key:"LlamaFunding",name:"Llama Funding",model:"PPA",color:"#c4b5fd",textColor:"#7c3aed",note:"New partner Feb '26."}
-        ].map((p,i)=>{const latest=[...partnerData].reverse().find(d=>d[p.key]);return(<div key={i} style={{borderRadius:16,padding:20,border:`1px solid ${C.cardBorder}`,background:C.card,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:14,fontWeight:700,color:p.textColor,marginBottom:10,textTransform:"uppercase"}}>{p.name}</div><div style={{fontSize:42,fontWeight:800,color:C.textPrimary}}>{latest?.[p.key]?.toLocaleString()||"–"}</div><div style={{fontSize:13,color:C.textMuted,marginBottom:8}}>{latest?.month}</div><div style={{fontSize:14,color:C.textSecondary}}>Model: {p.model}</div><div style={{fontSize:14,color:C.textLabel,marginTop:4}}>{p.note}</div></div>);})}</div>
+        ].map((p,i)=>(<div key={i} style={{borderRadius:16,padding:20,border:`1px solid ${C.cardBorder}`,background:C.card,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:14,fontWeight:700,color:p.textColor,marginBottom:10,textTransform:"uppercase"}}>{p.name}</div><div style={{fontSize:42,fontWeight:800,color:C.textPrimary}}>{[...partnerData].reverse().find(d=>d[p.key])?.[p.key]?.toLocaleString()||"–"}</div><div style={{fontSize:13,color:C.textMuted,marginBottom:8}}>{[...partnerData].reverse().find(d=>d[p.key])?.month}</div><div style={{fontSize:14,color:C.textSecondary}}>Model: {p.model}</div><div style={{fontSize:14,color:C.textLabel,marginTop:4}}>{p.note}</div></div>))}</div>
         <Card1><div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:14}}>BOOKINGS TREND BY PARTNER</div><ResponsiveContainer width="100%" height={260}><LineChart data={partnerData}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Legend wrapperStyle={{fontSize:14}}/><Line type="monotone" dataKey="GoQualifi" stroke="#2563eb" strokeWidth={2.5} dot={{r:3}} connectNulls/><Line type="monotone" dataKey="BigThink" stroke="#d4a017" strokeWidth={2.5} dot={{r:3}} name="Big Think" connectNulls/><Line type="monotone" dataKey="GreenBridge" stroke="#7aad0a" strokeWidth={2.5} dot={{r:3}} name="GreenBridge" connectNulls/><Line type="monotone" dataKey="LlamaFunding" stroke="#7c3aed" strokeWidth={2.5} dot={{r:3}} name="Llama Funding" connectNulls/></LineChart></ResponsiveContainer></Card1>
         
       </div>)}
@@ -1053,7 +1049,7 @@ function App(){
         </div>
         {/* Change #8: Weekday vs Weekend chart now lives here */}
         <Card1><div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:14}}>WEEKDAY VS WEEKEND RATIO BY MONTH</div><ResponsiveContainer width="100%" height={286}><LineChart data={data.filter(d=>d.weekdayRatio||d.weekendRatio)}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1} formatter={(v,n)=>[v.toLocaleString(),n]}/><Legend wrapperStyle={{fontSize:14,color:C.textLabel}}/><Line type="monotone" dataKey="weekdayRatio" stroke="#4f46e5" strokeWidth={2.5} dot={{r:4,fill:"#4f46e5",strokeWidth:0}} name="Weekday Ratio"/><Line type="monotone" dataKey="weekendRatio" stroke="#f59e0b" strokeWidth={2.5} dot={{r:4,fill:"#f59e0b",strokeWidth:0}} name="Weekend Ratio"/></LineChart></ResponsiveContainer></Card1>
-        <Card1 style={{gridColumn:"1/-1"}}><div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:14}}>DAY OF WEEK BREAKDOWN TABLE</div><table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Day","Type","Avg Meetings","Avg Ratio","Total Meetings"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{dowStats.map((r,i)=>{const isWeekend=r.fullDay==="Saturday"||r.fullDay==="Sunday";return(<tr key={r.day} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:C.textPrimary}}>{r.fullDay}</td><td style={{padding:"12px 16px"}}><span style={{fontSize:13,fontWeight:700,color:isWeekend?"#f59e0b":"#4f46e5",background:isWeekend?"#fef3c7":"#eff6ff",padding:"2px 8px",borderRadius:6}}>{isWeekend?"Weekend":"Weekday"}</span></td><td style={{padding:"12px 16px",color:"#4f46e5",fontWeight:700}}>{r.avgBooked}</td><td style={{padding:"12px 16px",color:"#d97706"}}>{r.avgRatio>0?r.avgRatio.toLocaleString():"—"}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.totalBooked.toLocaleString()}</td></tr>);})}</tbody></table></Card1>
+        <Card1 style={{gridColumn:"1/-1"}}><div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:14}}>DAY OF WEEK BREAKDOWN TABLE</div><table style={{width:"100%",borderCollapse:"collapse",fontSize:16}}><thead><tr>{["Day","Type","Avg Meetings","Avg Ratio","Total Meetings"].map(h=><th key={h} style={{textAlign:"left",padding:"12px 16px",borderBottom:`1px solid ${C.cardBorder}`,color:C.textLabel,fontSize:13,fontWeight:700,textTransform:"uppercase",background:C.tableHead}}>{h}</th>)}</tr></thead><tbody>{dowStats.map((r,i)=>(<tr key={r.day} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"12px 16px",fontWeight:700,color:C.textPrimary}}>{r.fullDay}</td><td style={{padding:"12px 16px"}}><span style={{fontSize:13,fontWeight:700,color:(r.fullDay==="Saturday"||r.fullDay==="Sunday")?"#f59e0b":"#4f46e5",background:(r.fullDay==="Saturday"||r.fullDay==="Sunday")?"#fef3c7":"#eff6ff",padding:"2px 8px",borderRadius:6}}>{(r.fullDay==="Saturday"||r.fullDay==="Sunday")?"Weekend":"Weekday"}</span></td><td style={{padding:"12px 16px",color:"#4f46e5",fontWeight:700}}>{r.avgBooked}</td><td style={{padding:"12px 16px",color:"#d97706"}}>{r.avgRatio>0?r.avgRatio.toLocaleString():"—"}</td><td style={{padding:"12px 16px",color:"#16a34a",fontWeight:700}}>{r.totalBooked.toLocaleString()}</td></tr>))}</tbody></table></Card1>
       </div>)}
       {bizTab==="Insights"&&(
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -1090,7 +1086,7 @@ function App(){
             <Panel title="MEETINGS BOOKED — DAILY"><ResponsiveContainer width="100%" height={247}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:12}} interval={8}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#cg1)" name="Total"/><Area type="monotone" dataKey="aiBooked" stroke="#7c3aed" strokeWidth={1.5} fill="transparent" name="AI" strokeDasharray="4 2"/></AreaChart></ResponsiveContainer></Panel>
             <Panel title="MONTHLY S/B RATIO"><ResponsiveContainer width="100%" height={247}><BarChart data={monthlyAgg}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="period" tick={{fill:C.textMuted,fontSize:13}}/><YAxis tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>v.toLocaleString()}/><Tooltip content={<CustomTip/>}/><Bar dataKey="sbRatio" shape={<TierBar/>} name="S/B Ratio"/></BarChart></ResponsiveContainer></Panel>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:13,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color:color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{[{title:"ALL-TIME MEETINGS",key:"allTimeBooked",color:"#16a34a",asc:false},{title:"AI MEETINGS",key:"allTimeAiBooked",color:"#7c3aed",asc:false},{title:"BEST S/B RATIO",key:"sbRatio",asc:true,tier:true}].map(({title,key,color,asc,tier})=>{const _s=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]).slice(0,5);const _t=_s.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:7}}>{_s.map((r,i)=>{const pct=(r[key]/_t)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:16,width:18}}>{i<3?MEDAL[i]:<span style={{fontSize:13,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color:color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:24}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
         </>)}
         {cmView==="daily"&&(<>
           <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}><span style={{fontSize:14,color:C.textLabel,fontWeight:700}}>MONTH:</span>{["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}</div>
@@ -1119,7 +1115,7 @@ function App(){
           <Panel title="S/B RATIO COMPARISON"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}44`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:10,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={Math.max(320,[...compareData].filter(r=>r.ratio).length*32)}><BarChart data={[...compareData].filter(r=>r.ratio).sort((a,b)=>a.ratio-b.ratio)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:13}} width={80}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="ratio" shape={<TierBar/>} label={{position:"right",fill:C.textMuted,fontSize:12,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
         </>)}
         {cmView==="boards"&&(<>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{boards.map(({title,key,color,asc,tier})=>{const sorted=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const totalVal=sorted.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{sorted.map((r,i)=>{const pct=(r[key]/totalVal)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:17,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:12,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color:color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>{boards.map(({title,key,color,asc,tier})=>{const _s=[...allTimeCM].filter(d=>d[key]>0).sort((a,b)=>asc?a[key]-b[key]:b[key]-a[key]);const _t=_s.reduce((s,r)=>s+r[key],0)||1;return(<Panel key={title} title={title}><div style={{display:"flex",flexDirection:"column",gap:8}}>{_s.map((r,i)=>{const pct=(r[key]/_t)*100;return(<div key={r.cm}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:17,width:20}}>{i<3?MEDAL[i]:<span style={{fontSize:12,color:C.textMuted}}>{i+1}</span>}</span><span style={{fontSize:14,color:C.textPrimary,fontWeight:600}}>{r.cm}</span></div>{tier?<TierPill value={r[key]} sm/>:<span style={{fontSize:14,fontWeight:800,color:color}}>{r[key].toLocaleString()}</span>}</div><div style={{height:3,backgroundColor:"#e2e8f0",borderRadius:2,marginLeft:26}}><div style={{height:3,borderRadius:2,width:`${pct}%`,backgroundColor:color||"#4f46e5"}}/></div></div>);})}</div></Panel>);})}</div>
             <Panel title="ALL-TIME S/B RATIO"><div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{TIERS.map(t=><div key={t.label} style={{display:"flex",alignItems:"center",gap:4,background:t.glow,border:`1px solid ${t.color}44`,borderRadius:5,padding:"2px 7px"}}><div style={{width:6,height:6,borderRadius:2,backgroundColor:t.color}}/><span style={{fontSize:10,fontWeight:700,color:t.color}}>{t.label}</span></div>)}</div><ResponsiveContainer width="100%" height={Math.max(360,[...allTimeCM].filter(r=>r.sbRatio).length*32)}><BarChart data={[...allTimeCM].filter(r=>r.sbRatio).sort((a,b)=>a.sbRatio-b.sbRatio)} layout="vertical" margin={{left:10,right:75}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine} horizontal={false}/><XAxis type="number" tick={{fill:C.textMuted,fontSize:12}} tickFormatter={v=>v.toLocaleString()}/><YAxis dataKey="cm" type="category" tick={{fill:C.textSecondary,fontSize:13}} width={80}/><Tooltip content={<CustomTip/>} formatter={v=>[v.toLocaleString(),"Ratio"]}/><Bar dataKey="sbRatio" shape={<TierBar/>} label={{position:"right",fill:C.textMuted,fontSize:12,formatter:v=>v.toLocaleString()}}/></BarChart></ResponsiveContainer></Panel>
             <Panel title="ALL-TIME MEETINGS — TOTAL vs AI"><ResponsiveContainer width="100%" height={273}><BarChart data={[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked)} margin={{left:0,right:10}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="cm" tick={{fill:C.textMuted,fontSize:13}} interval={0} angle={-30} textAnchor="end" height={58}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:13,color:C.textLabel}}/><Bar dataKey="allTimeBooked" name="All-Time" radius={[4,4,0,0]}>{allTimeCM.map((r,i)=><Cell key={i} fill={CM_COLORS[ALL_CMs.indexOf(r.cm)%CM_COLORS.length]}/>)}</Bar><Bar dataKey="allTimeAiBooked" name="AI" fill="#7c3aed" radius={[4,4,0,0]} opacity={.85}/></BarChart></ResponsiveContainer></Panel>
           </>)
@@ -1474,7 +1470,6 @@ function App(){
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
-
 </script>
 </body>
 </html>
