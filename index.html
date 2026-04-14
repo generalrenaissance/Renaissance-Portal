@@ -700,7 +700,7 @@ function LeftSidebar({section,setSection,collapsed,setCollapsed,globalOffer,setG
             </div>
         ))}
       </nav>
-      {/* Change #6: History icon — grey color, tooltip goes RIGHT */}
+      
       <div style={{padding:collapsed?"10px 0":"10px 14px",borderTop:`1px solid ${C.cardBorder}`,display:"flex",alignItems:"center",justifyContent:collapsed?"center":"flex-start",flexShrink:0}}>
         <div className="history-wrap">
           <div style={{display:"flex",alignItems:"center",gap:6,cursor:"default",padding:"4px 6px",borderRadius:8}}>
@@ -816,7 +816,7 @@ function App(){
     return(
     <div style={{display:"flex",flexDirection:"column",gap:16}}>
 
-      {/* ── Row 1: Active Inboxes + Record Day + Goal Tracker ── */}
+      
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12}}>
         <div style={{borderRadius:16,padding:"23px 26px",background:"linear-gradient(135deg,#eff6ff,#e0e7ff)",border:"1px solid #c7d2fe",boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
           <div style={{fontSize:26,marginBottom:6}}>📬</div>
@@ -846,7 +846,7 @@ function App(){
         </div>
       </div>
 
-      {/* ── Row 3: Partner Summary ── */}
+      
       <Panel title="PARTNER SUMMARY — MTD & ALL-TIME">
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:4}}>
           {partners.map(p=>(
@@ -854,8 +854,8 @@ function App(){
               <div key={p.key} style={{background:p.bg,border:`1px solid ${p.border}`,borderRadius:14,padding:"18px 21px"}}>
                 <div style={{fontSize:16,fontWeight:700,color:p.color,marginBottom:10}}>{p.name}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
-                  <div><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>All-Time Mtgs</div><div style={{fontSize:20,fontWeight:800,color:C.textPrimary}}>{allTimeMtgs.toLocaleString()}</div></div>
-                  <div><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>MTD Mtgs</div><div style={{fontSize:20,fontWeight:800,color:p.color}}>{mtdMtgs.toLocaleString()}</div></div>
+                  <div><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>All-Time Mtgs</div><div style={{fontSize:20,fontWeight:800,color:C.textPrimary}}>{data.reduce((s,d)=>s+(d[p.key]||0),0).toLocaleString()}</div></div>
+                  <div><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>MTD Mtgs</div><div style={{fontSize:20,fontWeight:800,color:p.color}}>{(mtd[p.key]||0).toLocaleString()}</div></div>
                   
                   
                   
@@ -867,7 +867,7 @@ function App(){
         </div>
       </Panel>
 
-      {/* ── Row 4: Top 3 CMs This Month + Charts ── */}
+      
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <Panel title="TOP 3 CMs — ALL-TIME MEETINGS">
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -1077,7 +1077,7 @@ function App(){
           ))}
         </div>
         {cmView==="home"&&(<>
-          {/* Change #5: 🤖 replaced with 💻 */}
+          
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"All-Time Meetings",value:correctAllTimeCMTotal.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"All-Time Emails",value:fmt(allTs),color:"#0891b2"},{icon:"💻",label:"AI Meetings",value:allAi.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"Team S/B Ratio",value:allR?allR.toLocaleString():"—",color:getTier(allR)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"18px 21px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:26,marginBottom:5}}>{c.icon}</div><div style={{fontSize:29,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:13,color:C.textLabel,marginTop:3,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div></div>))}</div>
           <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
             <Panel title="MEETINGS BOOKED — DAILY"><ResponsiveContainer width="100%" height={247}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:12}} interval={8}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#cg1)" name="Total"/><Area type="monotone" dataKey="aiBooked" stroke="#7c3aed" strokeWidth={1.5} fill="transparent" name="AI" strokeDasharray="4 2"/></AreaChart></ResponsiveContainer></Panel>
@@ -1087,7 +1087,7 @@ function App(){
         </>)}
         {cmView==="daily"&&(<>
           <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}><span style={{fontSize:14,color:C.textLabel,fontWeight:700}}>MONTH:</span>{["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}</div>
-          {/* Change #5: 🤖 replaced with 💻 */}
+          
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"Meetings",value:dailyKpi.tb.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"Emails",value:fmt(dailyKpi.ts),color:"#0891b2"},{icon:"💻",label:"AI Meetings",value:dailyKpi.ai.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"S/B Ratio",value:dailyKpi.r?dailyKpi.r.toLocaleString():"—",color:getTier(dailyKpi.r)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"18px 21px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:23,marginBottom:5}}>{c.icon}</div><div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:13,color:C.textLabel,marginTop:3,textTransform:"uppercase"}}>{c.label}</div></div>))}</div>
           <div style={{display:"flex",flexDirection:"column",gap:12}}>
             <Panel title="DAILY MEETINGS"><ResponsiveContainer width="100%" height={260}><AreaChart data={dailyFiltered.filter(r=>r.totalBooked>0)}><defs><linearGradient id="ddg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:10}} interval={(i,v)=>v.split(" ")[1]==="1"||v.split(" ")[1]==="15"||["28","29","30","31"].includes(v.split(" ")[1])} tickFormatter={v=>v}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#ddg1)" name="Total"/></AreaChart></ResponsiveContainer></Panel>
@@ -1096,10 +1096,10 @@ function App(){
           <Panel title="DAILY TABLE"><div style={{overflowX:"auto",maxHeight:320,overflowY:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:14}}><thead style={{position:"sticky",top:0,background:C.tableHead,zIndex:5}}><tr>{["Date","Day","Inboxes","Non-AI Sent","Non-AI Booked","AI Sent","AI Booked","Total Sent","Total Booked","S/B"].map(h=><th key={h} style={{padding:"9px 10px",textAlign:"left",color:C.textLabel,fontWeight:700,fontSize:12,borderBottom:`1px solid ${C.cardBorder}`,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead><tbody>{dailyFiltered.map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"8px 10px",color:C.textPrimary,fontWeight:600,whiteSpace:"nowrap"}}>{r.date}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.day.slice(0,3)}</td><td style={{padding:"8px 10px",color:C.textLabel}}>{r.inboxes.toLocaleString()}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.nonAiSent.toLocaleString()}</td><td style={{padding:"8px 10px",color:"#2563eb",fontWeight:700}}>{r.nonAiBooked}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.aiSent.toLocaleString()}</td><td style={{padding:"8px 10px",color:"#7c3aed",fontWeight:700}}>{r.aiBooked}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{fmt(r.totalSent)}</td><td style={{padding:"8px 10px",color:"#16a34a",fontWeight:800}}>{r.totalBooked}</td><td style={{padding:"8px 10px"}}><TierPill value={r.sbRatio} sm/></td></tr>)}</tbody></table></div></Panel>
         </>)}
         {cmView==="cms"&&(<>
-          {/* Change #5: 🤖 replaced with 💻 */}
+          
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"Meetings",value:cmTb.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"Emails",value:fmt(cmTs),color:"#0891b2"},{icon:"💻",label:"AI Meetings",value:cmAi.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"Team S/B",value:teamR?teamR.toLocaleString():"—",color:getTier(teamR)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"18px 21px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:23,marginBottom:5}}>{c.icon}</div><div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:13,color:C.textLabel,marginTop:3,textTransform:"uppercase"}}>{c.label}</div></div>))}</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            {/* Change #2: Two bar graphs in Campaign Managers — different blues */}
+            
             <Panel title="MEETINGS BY CM"><ResponsiveContainer width="100%" height={320}><BarChart data={cmAgg} margin={{bottom:10}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="cm" tick={{fill:C.textMuted,fontSize:11}} interval={0} angle={-35} textAnchor="end" height={65}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:13,color:C.textLabel}}/><Bar dataKey="nonAiBooked" name="Non-AI" stackId="a" fill="#2563eb" radius={[0,0,3,3]}/><Bar dataKey="aiBooked" name="AI" stackId="a" fill="#93c5fd" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></Panel>
             <Panel title={`INBOX OWNERSHIP · ${totalInboxes.toLocaleString()}`}><ResponsiveContainer width="100%" height={273}><PieChart><Pie data={inboxPie} cx="50%" cy="50%" innerRadius={45} outerRadius={78} dataKey="value" paddingAngle={3}>{inboxPie.map((_,i)=><Cell key={i} fill={CM_COLORS[ALL_CMs.indexOf(_.name)%CM_COLORS.length]} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" inboxes",n]}/><Legend iconSize={8} wrapperStyle={{fontSize:12,color:C.textLabel}}/></PieChart></ResponsiveContainer></Panel>
           </div>
@@ -1175,7 +1175,7 @@ function App(){
           ))}
         </div>
 
-        {/* ── OVERVIEW ── */}
+        
         {inboxTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             {[
@@ -1242,7 +1242,7 @@ function App(){
           </Panel>
         </div>)}
 
-        {/* ── ACCOUNT STATUS ── */}
+        
         {inboxTab==="Account Status"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="📤" label="Total Sending Vol" value={fmtFull(od.accountStatus.reduce((s,r)=>s+r.sendingVolume,0))} color={oc.primary}/>
@@ -1263,7 +1263,7 @@ function App(){
           </Panel>
         </div>)}
 
-        {/* ── WORKSPACES ── */}
+        
         {inboxTab==="Workspaces"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="🏢" label="Total Workspaces" value={String(od.workspaces.filter(w=>w.accounts>0).length)} color={oc.primary}/>
@@ -1279,7 +1279,7 @@ function App(){
           </Panel>
         </div>)}
 
-        {/* ── CAMPAIGN MANAGERS ── */}
+        
         {inboxTab==="Campaign Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="👥" label="Campaign Managers" value={String(od.campaignManagers.filter(c=>c.accounts>0).length)} color={oc.primary}/>
@@ -1303,7 +1303,7 @@ function App(){
           </Panel>
         </div>)}
 
-        {/* ── INBOX MANAGERS ── */}
+        
         {inboxTab==="Inbox Managers"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="🧑‍💼" label="Inbox Managers" value={String(od.inboxManagers.filter(m=>m.accounts>0).length)} color={oc.primary}/>
@@ -1321,7 +1321,7 @@ function App(){
           </div>
         </div>)}
 
-        {/* ── EMAIL TYPES ── */}
+        
         {inboxTab==="Email Types"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="📧" label="Email Types" value={String(od.emailTypes.filter(e=>e.accounts>0).length)} color={oc.primary}/>
@@ -1353,7 +1353,7 @@ function App(){
           </Panel>
         </div>)}
 
-        {/* ── GROUPS ── */}
+        
         {inboxTab==="Groups"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             <MiniCard icon="🅰️" label="Group A" value={fmtFull(od.groups[0]?.accounts||0)} color="#2563eb" sub={`${fmtFull(od.groups[0]?.domains||0)} domains`}/>
@@ -1390,7 +1390,7 @@ function App(){
           </div>
         </div>)}
 
-        {/* ── EMAIL SERVICE PROVIDER ── */}
+        
         {inboxTab==="Email Provider"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           {(
           <>
