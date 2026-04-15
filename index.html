@@ -813,7 +813,7 @@ function App(){
     const topCMsMonth=[...allTimeCM].sort((a,b)=>b.allTimeBooked-a.allTimeBooked).slice(0,3);
     const peakDayObj=dailyRaw.reduce((b,r)=>r.booked>b.booked?r:b,{booked:0,date:"",month:""});
 
-    return(
+    return(<>
     <div style={{display:"flex",flexDirection:"column",gap:16}}>
 
       
@@ -895,7 +895,7 @@ function App(){
       </div>
 
     </div>
-    );
+    </>);
   };
 
 
