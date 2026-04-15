@@ -850,18 +850,14 @@ function App(){
       <Panel title="PARTNER SUMMARY - MTD and ALL-TIME">
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:4}}>
           {partners.map(p=>(
-              <div key={p.key} style={{background:p.bg,border:`1px solid ${p.border}`,borderRadius:14,padding:"18px 21px"}}>
+              <div key={p.key} style={{background:p.bg,border:"1px solid "+p.border,borderRadius:14,padding:"18px 21px"}}>
                 <div style={{fontSize:16,fontWeight:700,color:p.color,marginBottom:10}}>{p.name}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
                   <div><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>All-Time Mtgs</div><div style={{fontSize:20,fontWeight:800,color:C.textPrimary}}>{data.reduce((s,d)=>s+(d[p.key]||0),0).toLocaleString()}</div></div>
                   <div><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>MTD Mtgs</div><div style={{fontSize:20,fontWeight:800,color:p.color}}>{(mtd[p.key]||0).toLocaleString()}</div></div>
-                  
-                  
-                  
                   <div style={{gridColumn:"1/-1"}}><div style={{fontSize:10,color:C.textMuted,textTransform:"uppercase",letterSpacing:0.8}}>Model</div><div style={{fontSize:14,fontWeight:600,color:C.textSecondary}}>{p.model}</div></div>
                 </div>
               </div>
-            
           )}
         </div>
       </Panel>
@@ -878,7 +874,6 @@ function App(){
                   </div>
                   <div style={{height:5,background:"#e2e8f0",borderRadius:99}}><div style={{width:`${(r.allTimeBooked/(topCMsMonth.reduce((s,r)=>s+r.allTimeBooked,0)||1))*100}%`,height:"100%",background:"linear-gradient(90deg,#16a34a,#22c55e)",borderRadius:99}}/></div>
                 </div>
-              
             )}
           </div>
         </Panel>
@@ -913,8 +908,6 @@ function App(){
     {icon:"📈",color:"#4f46e5",title:`${totalMeetings.toLocaleString()} total meetings booked`,body:`Average of ${avgMonthly.toLocaleString()} meetings/month. Peak was January at 4,466 meetings. February held at 3,601 despite a 4-day system outage Feb 2–5.`},
     {icon:"📊",color:"#0891b2",title:"Feb '26: highest S/B ratio on record at 4,917",body:`February's S/B ratio of 4,917 was the highest recorded — meaning more emails were required per meeting booked than any previous month. 83.3% of days fell in the >4,500 tier.`},
     {icon:"📅",color:"#0891b2",title:`Peak single day: ${peakDay.booked} meetings on ${peakDay.date}`,body:`${peakDay.month} produced the highest single-day meeting count. Weekend days average ${Math.round(avgWeekend)} meetings vs ${Math.round(avgWeekday)} on weekdays.`},
-    
-    
     {icon:"📉",color:"#dc2626",title:`Feb vs Jan: ${Math.abs(momChange)}% ${momChange<0?"decrease":"increase"} in meetings`,body:`January's record 4,466 meetings was followed by 3,601 in February (${Math.abs(momChange)}% MoM drop), but this was heavily impacted by the 4-day system outage — adjusted daily rate was comparable.`},
     {icon:"🎯",color:"#059669",title:`${Math.round((totalSentAll/1e6)).toLocaleString()}M total emails sent all-time`,body:`${fmt(totalSentAll)} emails sent since July 2025. At the current Feb '26 conversion rate of 1 meeting per 4,917 emails, each percentage point improvement in ratio yields ~${Math.round(last.emailsSent/last.ratio*0.01*100)} extra meetings/month.`},
     {icon:"🏁",color:"#16a34a",title:`Goal tracker: ${progress}% to 10,000 meetings/month`,body:`At February's S/B ratio of ${last.ratio.toLocaleString()} (emails per meeting), reaching 10,000 meetings/month requires ~${(10000*last.ratio/1e6).toFixed(1)}M emails/month. Improving the ratio to 3,500 would only require ${(10000*3500/1e6).toFixed(1)}M emails — a ${Math.round((10000*last.ratio-10000*3500)/1e6*100)/100}M saving.`},
@@ -979,7 +972,6 @@ function App(){
           {key:"LlamaFunding",name:"Llama Funding",model:"PPA",color:"#c4b5fd",textColor:"#7c3aed",note:"New partner Feb '26."}
         ].map((p,i)=>(<div key={i} style={{borderRadius:16,padding:20,border:`1px solid ${C.cardBorder}`,background:C.card,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:14,fontWeight:700,color:p.textColor,marginBottom:10,textTransform:"uppercase"}}>{p.name}</div><div style={{fontSize:42,fontWeight:800,color:C.textPrimary}}>{[...partnerData].reverse().find(d=>d[p.key])?.[p.key]?.toLocaleString()||"–"}</div><div style={{fontSize:13,color:C.textMuted,marginBottom:8}}>{[...partnerData].reverse().find(d=>d[p.key])?.month}</div><div style={{fontSize:14,color:C.textSecondary}}>Model: {p.model}</div><div style={{fontSize:14,color:C.textLabel,marginTop:4}}>{p.note}</div></div>))}</div>
         <Card1><div style={{fontSize:16,fontWeight:600,color:C.textLabel,marginBottom:14}}>BOOKINGS TREND BY PARTNER</div><ResponsiveContainer width="100%" height={260}><LineChart data={partnerData}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="month" tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><YAxis tick={{fontSize:13,fill:C.textMuted}} axisLine={false} tickLine={false}/><Tooltip contentStyle={TIP1}/><Legend wrapperStyle={{fontSize:14}}/><Line type="monotone" dataKey="GoQualifi" stroke="#2563eb" strokeWidth={2.5} dot={{r:3}} connectNulls/><Line type="monotone" dataKey="BigThink" stroke="#d4a017" strokeWidth={2.5} dot={{r:3}} name="Big Think" connectNulls/><Line type="monotone" dataKey="GreenBridge" stroke="#7aad0a" strokeWidth={2.5} dot={{r:3}} name="GreenBridge" connectNulls/><Line type="monotone" dataKey="LlamaFunding" stroke="#7c3aed" strokeWidth={2.5} dot={{r:3}} name="Llama Funding" connectNulls/></LineChart></ResponsiveContainer></Card1>
-        
       </div>)}
       {bizTab==="KPI Bands"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{KPI_BANDS.map(b=><div key={b.key} style={{display:"flex",alignItems:"center",gap:6,background:`${b.color}10`,borderRadius:8,padding:"5px 12px",border:`1px solid ${b.color}44`}}><div style={{width:8,height:8,borderRadius:2,background:b.color}}/><span style={{fontSize:14,color:C.textSecondary}}>{b.label}</span></div>)}</div>
@@ -995,7 +987,6 @@ function App(){
                 <YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:12,fill:C.textMuted}} axisLine={false} tickLine={false} domain={[0,100]}/>
                 <Tooltip contentStyle={TIP1} formatter={(v)=>[`${v.toFixed(1)}%`,"Best Tier"]}/>
                 <Line type="monotone" dataKey="0-2800" stroke="#16A34A" strokeWidth={2.5} dot={{r:4,fill:"#16A34A"}} name="Best Tier %"/>
-                
               </LineChart>
             </ResponsiveContainer>
           </Card1>
@@ -1009,7 +1000,6 @@ function App(){
                 <YAxis tickFormatter={v=>`${v}%`} tick={{fontSize:12,fill:C.textMuted}} axisLine={false} tickLine={false} domain={[0,100]}/>
                 <Tooltip contentStyle={TIP1} formatter={(v)=>[`${v.toFixed(1)}%`,"Worst Tier"]}/>
                 <Line type="monotone" dataKey=">4500" stroke="#DC2626" strokeWidth={2.5} dot={{r:4,fill:"#DC2626"}} name="Worst Tier %"/>
-                
               </LineChart>
             </ResponsiveContainer>
           </Card1>
@@ -1075,7 +1065,6 @@ function App(){
           ))}
         </div>
         {cmView==="home"&&(<>
-          
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"All-Time Meetings",value:correctAllTimeCMTotal.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"All-Time Emails",value:fmt(allTs),color:"#0891b2"},{icon:"💻",label:"AI Meetings",value:allAi.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"Team S/B Ratio",value:allR?allR.toLocaleString():"—",color:getTier(allR)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"18px 21px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:26,marginBottom:5}}>{c.icon}</div><div style={{fontSize:29,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:13,color:C.textLabel,marginTop:3,textTransform:"uppercase",letterSpacing:.8}}>{c.label}</div></div>))}</div>
           <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:12}}>
             <Panel title="MEETINGS BOOKED - DAILY"><ResponsiveContainer width="100%" height={247}><AreaChart data={CM_DAILY.filter(r=>r.totalBooked>5)}><defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:12}} interval={8}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#cg1)" name="Total"/><Area type="monotone" dataKey="aiBooked" stroke="#7c3aed" strokeWidth={1.5} fill="transparent" name="AI" strokeDasharray="4 2"/></AreaChart></ResponsiveContainer></Panel>
@@ -1085,7 +1074,6 @@ function App(){
         </>)}
         {cmView==="daily"&&(<>
           <div style={{display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}><span style={{fontSize:14,color:C.textLabel,fontWeight:700}}>MONTH:</span>{["All",...ALL_CM_MONTHS].map(m=><Btn key={m} active={dailyMonth===m} onClick={()=>setDailyMonth(m)}>{m==="All"?"All":m.slice(0,3)}</Btn>)}</div>
-          
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"Meetings",value:dailyKpi.tb.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"Emails",value:fmt(dailyKpi.ts),color:"#0891b2"},{icon:"💻",label:"AI Meetings",value:dailyKpi.ai.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"S/B Ratio",value:dailyKpi.r?dailyKpi.r.toLocaleString():"—",color:getTier(dailyKpi.r)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"18px 21px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:23,marginBottom:5}}>{c.icon}</div><div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:13,color:C.textLabel,marginTop:3,textTransform:"uppercase"}}>{c.label}</div></div>))}</div>
           <div style={{display:"flex",flexDirection:"column",gap:12}}>
             <Panel title="DAILY MEETINGS"><ResponsiveContainer width="100%" height={260}><AreaChart data={dailyFiltered.filter(r=>r.totalBooked>0)}><defs><linearGradient id="ddg1" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#4f46e5" stopOpacity={.15}/><stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:10}} interval={(i,v)=>v.split(" ")[1]==="1"||v.split(" ")[1]==="15"||["28","29","30","31"].includes(v.split(" ")[1])} tickFormatter={v=>v}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Area type="monotone" dataKey="totalBooked" stroke="#4f46e5" strokeWidth={2} fill="url(#ddg1)" name="Total"/></AreaChart></ResponsiveContainer></Panel>
@@ -1094,10 +1082,8 @@ function App(){
           <Panel title="DAILY TABLE"><div style={{overflowX:"auto",maxHeight:320,overflowY:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:14}}><thead style={{position:"sticky",top:0,background:C.tableHead,zIndex:5}}><tr>{["Date","Day","Inboxes","Non-AI Sent","Non-AI Booked","AI Sent","AI Booked","Total Sent","Total Booked","S/B"].map(h=><th key={h} style={{padding:"9px 10px",textAlign:"left",color:C.textLabel,fontWeight:700,fontSize:12,borderBottom:`1px solid ${C.cardBorder}`,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead><tbody>{dailyFiltered.map((r,i)=><tr key={i} style={{borderBottom:`1px solid ${C.tableBorder}`,background:i%2?C.tableAlt:C.card}}><td style={{padding:"8px 10px",color:C.textPrimary,fontWeight:600,whiteSpace:"nowrap"}}>{r.date}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.day.slice(0,3)}</td><td style={{padding:"8px 10px",color:C.textLabel}}>{r.inboxes.toLocaleString()}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.nonAiSent.toLocaleString()}</td><td style={{padding:"8px 10px",color:"#2563eb",fontWeight:700}}>{r.nonAiBooked}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{r.aiSent.toLocaleString()}</td><td style={{padding:"8px 10px",color:"#7c3aed",fontWeight:700}}>{r.aiBooked}</td><td style={{padding:"8px 10px",color:C.textSecondary}}>{fmt(r.totalSent)}</td><td style={{padding:"8px 10px",color:"#16a34a",fontWeight:800}}>{r.totalBooked}</td><td style={{padding:"8px 10px"}}><TierPill value={r.sbRatio} sm/></td></tr>)}</tbody></table></div></Panel>
         </>)}
         {cmView==="cms"&&(<>
-          
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>{[{icon:"📅",label:"Meetings",value:cmTb.toLocaleString(),color:"#4f46e5"},{icon:"📧",label:"Emails",value:fmt(cmTs),color:"#0891b2"},{icon:"💻",label:"AI Meetings",value:cmAi.toLocaleString(),color:"#7c3aed"},{icon:"🎯",label:"Team S/B",value:teamR?teamR.toLocaleString():"—",color:getTier(teamR)?.color||C.textPrimary}].map((c,i)=>(<div key={i} style={{background:C.card,border:`1px solid ${C.cardBorder}`,borderRadius:14,padding:"18px 21px",boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div style={{fontSize:23,marginBottom:5}}>{c.icon}</div><div style={{fontSize:26,fontWeight:800,color:c.color}}>{c.value}</div><div style={{fontSize:13,color:C.textLabel,marginTop:3,textTransform:"uppercase"}}>{c.label}</div></div>))}</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            
             <Panel title="MEETINGS BY CM"><ResponsiveContainer width="100%" height={320}><BarChart data={cmAgg} margin={{bottom:10}}><CartesianGrid strokeDasharray="3 3" stroke={C.gridLine}/><XAxis dataKey="cm" tick={{fill:C.textMuted,fontSize:11}} interval={0} angle={-35} textAnchor="end" height={65}/><YAxis tick={{fill:C.textMuted,fontSize:12}}/><Tooltip content={<CustomTip/>}/><Legend iconSize={8} wrapperStyle={{fontSize:13,color:C.textLabel}}/><Bar dataKey="nonAiBooked" name="Non-AI" stackId="a" fill="#2563eb" radius={[0,0,3,3]}/><Bar dataKey="aiBooked" name="AI" stackId="a" fill="#93c5fd" radius={[3,3,0,0]}/></BarChart></ResponsiveContainer></Panel>
             <Panel title={`INBOX OWNERSHIP · ${totalInboxes.toLocaleString()}`}><ResponsiveContainer width="100%" height={273}><PieChart><Pie data={inboxPie} cx="50%" cy="50%" innerRadius={45} outerRadius={78} dataKey="value" paddingAngle={3}>{inboxPie.map((_,i)=><Cell key={i} fill={CM_COLORS[ALL_CMs.indexOf(_.name)%CM_COLORS.length]} stroke="transparent"/>)}</Pie><Tooltip content={<CustomTip/>} formatter={(v,n)=>[v.toLocaleString()+" inboxes",n]}/><Legend iconSize={8} wrapperStyle={{fontSize:12,color:C.textLabel}}/></PieChart></ResponsiveContainer></Panel>
           </div>
@@ -1173,13 +1159,11 @@ function App(){
           ))}
         </div>
 
-        
         {inboxTab==="Overview"&&(<div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             {[
               {icon:"📤",label:"Total Sending Volume",value:fmtFull(totalSV),color:oc.primary,gradient:`linear-gradient(135deg,${oc.light},${oc.border}55)`,border:oc.border,sub:`${fmtFull(totalAccts)} accounts`},
               {icon:"✅",label:"Active Accounts Sending",value:fmtFull(activeSV),color:"#16a34a",gradient:"linear-gradient(135deg,#f0fdf4,#dcfce7)",border:"#bbf7d0",sub:`${fmtFull(activeA)} accounts`},
-              
               {icon:"🌐",label:"Total Domains",value:fmtFull(totalDoms),color:"#7c3aed",gradient:"linear-gradient(135deg,#faf5ff,#ede9fe)",border:"#ddd6fe",sub:`${fmtFull(totalAccts)} total accts`},
             ].map((c,i)=>(
               <div key={i} style={{borderRadius:16,padding:"23px 26px",background:c.gradient,border:`1px solid ${c.border}`,boxShadow:"0 2px 8px rgba(0,0,0,0.07)"}}>
